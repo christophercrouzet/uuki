@@ -1,0 +1,7 @@
+---
+Checks: '*,-clang-analyzer-valist.Uninitialized,-llvm-header-guard,-llvm-include-order,-llvmlibc-restrict-system-libc-headers,-readability-function-cognitive-complexity'
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+...
