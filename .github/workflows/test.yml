@@ -65,7 +65,7 @@ jobs:
       - name: Test (debug)
         working-directory: ${{ runner.workspace }}/build
         shell: bash
-        run: ctest -C Debug
+        run: ctest -C Debug --output-on-failure
 
       - name: Build (release)
         working-directory: ${{ runner.workspace }}/build
@@ -75,4 +75,4 @@ jobs:
       - name: Test (release)
         working-directory: ${{ runner.workspace }}/build
         shell: bash
-        run: ctest -C Release
+        run: ctest -C Release --output-on-failure
