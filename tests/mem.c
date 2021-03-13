@@ -3,6 +3,37 @@
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
 
+RX_TEST_CASE(mem, get_alignment)
+{
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)0),
+        0);
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)1),
+        1);
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)2),
+        2);
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)3),
+        4);
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)4),
+        4);
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)61029),
+        (size_t)1 << 16);
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)1221700),
+        (size_t)1 << 21);
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)137438953472),
+        (size_t)1 << 37);
+    RX_UINT_REQUIRE_EQUAL(
+        W_GET_ALIGNMENT((size_t)2100107785318157799),
+        (size_t)1 << 61);
+}
+
 RX_TEST_CASE(mem, linear_alloc)
 {
     size_t i;
