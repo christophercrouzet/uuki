@@ -119,7 +119,10 @@ w__mem_sys_alloc_allocate(void *inst,
 #endif
 
     if (buf == NULL) {
-        W_LOG_ERROR("failed to allocate %zu bytes\n", size);
+        W_LOG_ERROR(
+            "failed to allocate %zu bytes with a %zu-byte alignment\n",
+            size,
+            alignment);
         return W_ERROR_ALLOCATION_FAILED;
     }
 
@@ -186,7 +189,10 @@ w__mem_sys_alloc_reallocate(void *inst,
     return W_SUCCESS;
 
 alloc_error:
-    W_LOG_ERROR("failed to allocate %zu bytes\n", size);
+    W_LOG_ERROR(
+        "failed to allocate %zu bytes with a %zu-byte alignment\n",
+        size,
+        alignment);
     return W_ERROR_ALLOCATION_FAILED;
 }
 
