@@ -2,11 +2,15 @@
 #define UUKI_BASE_MEM_H
 
 #include <uuki/base/status.h>
+#include <uuki/base/private/mem.h>
 
 #include <stddef.h>
 #include <stdlib.h>
 
 #define W_DEFAULT_ALIGNMENT sizeof(void *)
+
+#define W_GET_ALIGNMENT(x)                                                     \
+    (1 + (W__MEM_GET_ALIGNMENT_1((x) - 1)))
 
 #define W_ALLOCATE(alloc, ptr, size)                                           \
     ((alloc)->allocate(                                                        \

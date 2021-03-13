@@ -4,7 +4,6 @@
 #include <uuki/base/assert.h>
 #include <uuki/base/logging.h>
 #include <uuki/base/macros.inl>
-#include <uuki/base/math.h>
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
 
@@ -22,7 +21,7 @@
     w__##name##_max_cap = (SIZE_MAX / sizeof(type));                           \
                                                                                \
     static const size_t                                                        \
-    w__##name##_alignment = W_CEIL_POW2(sizeof(type), type);                   \
+    w__##name##_alignment = W_GET_ALIGNMENT(sizeof(type));                     \
                                                                                \
     static enum w_status                                                       \
     w__##name##_realloc(struct w_alloc *alloc,                                 \
