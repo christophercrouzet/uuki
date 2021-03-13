@@ -111,23 +111,27 @@ w__mem_sys_alloc_allocate(void *inst,
 #if defined(W_PLATFORM_WINDOWS)
     {
         buf = _aligned_malloc(size, alignment);
+        if (buf == NULL) {
+            goto alloc_error;
+        }
     }
 #else
     {
-        buf = aligned_alloc(alignment, size);
+        if (posix_memalign(&buf, alignment, size) != 0) {
+            goto alloc_error;
+        }
     }
 #endif
 
-    if (buf == NULL) {
-        W_LOG_ERROR(
-            "failed to allocate %zu bytes with a %zu-byte alignment\n",
-            size,
-            alignment);
-        return W_ERROR_ALLOCATION_FAILED;
-    }
-
     *ptr = buf;
     return W_SUCCESS;
+
+alloc_error:
+    W_LOG_ERROR(
+        "failed to allocate %zu bytes with a %zu-byte alignment\n",
+        size,
+        alignment);
+    return W_ERROR_ALLOCATION_FAILED;
 }
 
 static enum w_status
@@ -169,8 +173,7 @@ w__mem_sys_alloc_reallocate(void *inst,
     {
         void *tmp;
 
-        buf = aligned_alloc(alignment, size);
-        if (buf == NULL) {
+        if (posix_memalign(&buf, alignment, size) != 0) {
             goto alloc_error;
         }
 
