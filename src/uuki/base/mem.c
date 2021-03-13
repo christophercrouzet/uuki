@@ -110,7 +110,7 @@ w__mem_sys_alloc_allocate(void *inst,
 
 #if defined(W_PLATFORM_WINDOWS)
     {
-        buf = _aligned_malloc(size, alignment)
+        buf = _aligned_malloc(size, alignment);
     }
 #else
     {
@@ -160,7 +160,7 @@ w__mem_sys_alloc_reallocate(void *inst,
 
 #if defined(W_PLATFORM_WINDOWS)
     {
-        buf = _aligned_realloc(*ptr, size, alignment)
+        buf = _aligned_realloc(*ptr, size, alignment);
         if (buf == NULL) {
             goto alloc_error;
         }
