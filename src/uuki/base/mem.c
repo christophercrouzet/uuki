@@ -206,6 +206,8 @@ w__mem_sys_alloc_free(void *inst,
                       size_t alignment)
 {
     W__UNUSED_PARAM(inst);
+    W__UNUSED_PARAM(size);
+    W__UNUSED_PARAM(alignment);
 
     W_ASSERT(size == 0 || w_size_is_pow2(alignment));
     W_ASSERT(alignment >= w__mem_min_alignment);
@@ -444,8 +446,10 @@ w_linear_alloc_free(void *inst,
                     size_t size,
                     size_t alignment)
 {
+    W__UNUSED_PARAM(inst);
     W__UNUSED_PARAM(ptr);
     W__UNUSED_PARAM(size);
+    W__UNUSED_PARAM(alignment);
 
     W_ASSERT(inst != NULL);
     W_ASSERT(w_size_is_pow2(alignment));
