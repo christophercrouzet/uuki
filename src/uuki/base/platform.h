@@ -5,13 +5,13 @@
 #include <stddef.h>
 
 #if defined(_WIN32)
-    #define W_PLATFORM_WINDOWS
+    #define W_OS_WINDOWS
 #elif defined(__unix__) || defined(__APPLE__)
-    #define W_PLATFORM_UNIX
+    #define W_OS_UNIX
     #if defined(__APPLE__)
-        #define W_PLATFORM_DARWIN
+        #define W_OS_DARWIN
     #elif defined(__linux__)
-        #define W_PLATFORM_LINUX
+        #define W_OS_LINUX
     #endif
 #endif
 

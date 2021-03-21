@@ -83,7 +83,7 @@ w__mem_sys_alloc_reallocate(void *inst,
 // System Allocator: Definitions
 // ---------------------------------------------------------------- //   O-(''Q)
 
-#if defined(W_PLATFORM_WINDOWS)
+#if defined(W_OS_WINDOWS)
     #include <malloc.h>
 #else
     #include <stdlib.h>
@@ -108,7 +108,7 @@ w__mem_sys_alloc_allocate(void *inst,
         return W_SUCCESS;
     }
 
-#if defined(W_PLATFORM_WINDOWS)
+#if defined(W_OS_WINDOWS)
     {
         buf = _aligned_malloc(size, alignment);
         if (buf == NULL) {
@@ -162,7 +162,7 @@ w__mem_sys_alloc_reallocate(void *inst,
         return W_SUCCESS;
     }
 
-#if defined(W_PLATFORM_WINDOWS)
+#if defined(W_OS_WINDOWS)
     {
         buf = _aligned_realloc(*ptr, size, alignment);
         if (buf == NULL) {
@@ -210,7 +210,7 @@ w__mem_sys_alloc_free(void *inst,
     W_ASSERT(size == 0 || w_size_is_pow2(alignment));
     W_ASSERT(alignment >= w__mem_min_alignment);
 
-#if defined(W_PLATFORM_WINDOWS)
+#if defined(W_OS_WINDOWS)
     _aligned_free((void *)ptr);
 #else
     #if defined(__GNUC__)
