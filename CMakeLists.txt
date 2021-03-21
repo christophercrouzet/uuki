@@ -59,6 +59,7 @@ macro(w_add_library target)
     target_link_libraries(${target}
         PRIVATE ${W_ADD_LIBRARY_DEPENDS})
     add_library(${PROJECT_NAME}::${target} ALIAS ${target})
+    target_compile_options(${target} PRIVATE -save-temps=obj)
 
     if (UNIX)
         target_compile_definitions(${target}
@@ -149,6 +150,7 @@ macro(w_add_test)
         NAME ${W_ADD_TEST_NAME}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND test-${W_ADD_TEST_NAME})
+    target_compile_options(test-${W_ADD_TEST_NAME} PRIVATE -save-temps=obj)
     list(APPEND W_TEST_TARGETS test-${W_ADD_TEST_NAME})
 endmacro()
 
