@@ -37,7 +37,7 @@ set(W_LIBRARY_TARGETS)
 macro(w_add_library target)
     set(W_ADD_LIBRARY_OPTIONS)
     set(W_ADD_LIBRARY_SINGLE_VALUE_ARGS)
-    set(W_ADD_LIBRARY_MULTI_VALUE_ARGS FILES DEPENDS PROPERTIES)
+    set(W_ADD_LIBRARY_MULTI_VALUE_ARGS FILES DEPENDS INCLUDES PROPERTIES)
     cmake_parse_arguments(
         W_ADD_LIBRARY
         "${W_ADD_LIBRARY_OPTIONS}"
@@ -55,7 +55,8 @@ macro(w_add_library target)
             LIBRARY_OUTPUT_DIRECTORY lib
             ${W_ADD_LIBRARY_PROPERTIES})
     target_include_directories(${target}
-        PUBLIC ${W_SOURCE_DIR})
+        PUBLIC ${W_SOURCE_DIR}
+        PRIVATE ${W_ADD_LIBRARY_INCLUDES})
     target_link_libraries(${target}
         PRIVATE ${W_ADD_LIBRARY_DEPENDS})
     add_library(${PROJECT_NAME}::${target} ALIAS ${target})
@@ -88,7 +89,7 @@ set(W_BINARY_TARGETS)
 macro(w_add_binary target)
     set(W_ADD_BINARY_OPTIONS)
     set(W_ADD_BINARY_SINGLE_VALUE_ARGS)
-    set(W_ADD_BINARY_MULTI_VALUE_ARGS FILES DEPENDS PROPERTIES)
+    set(W_ADD_BINARY_MULTI_VALUE_ARGS FILES DEPENDS INCLUDES PROPERTIES)
     cmake_parse_arguments(
         W_ADD_BINARY
         "${W_ADD_BINARY_OPTIONS}"
@@ -103,7 +104,8 @@ macro(w_add_binary target)
             RUNTIME_OUTPUT_DIRECTORY bin
             ${W_ADD_BINARY_PROPERTIES})
     target_include_directories(${target}
-        PUBLIC ${W_SOURCE_DIR})
+        PUBLIC ${W_SOURCE_DIR}
+        PRIVATE ${W_ADD_BINARY_INCLUDES})
     target_link_libraries(${target}
         PRIVATE ${W_ADD_BINARY_DEPENDS})
     add_executable(${PROJECT_NAME}::${target} ALIAS ${target})
@@ -129,7 +131,7 @@ set(W_TEST_TARGETS)
 macro(w_add_test)
     set(W_ADD_TEST_OPTIONS)
     set(W_ADD_TEST_SINGLE_VALUE_ARGS NAME)
-    set(W_ADD_TEST_MULTI_VALUE_ARGS FILES DEPENDS PROPERTIES)
+    set(W_ADD_TEST_MULTI_VALUE_ARGS FILES DEPENDS INCLUDES PROPERTIES)
     cmake_parse_arguments(
         W_ADD_TEST
         "${W_ADD_TEST_OPTIONS}"
@@ -143,6 +145,8 @@ macro(w_add_test)
             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests
             OUTPUT_NAME ${W_ADD_TEST_NAME}
             ${W_ADD_TEST_PROPERTIES})
+    target_include_directories(test-${W_ADD_TEST_NAME}
+        PRIVATE ${W_ADD_TEST_INCLUDES})
     target_link_libraries(test-${W_ADD_TEST_NAME}
         PRIVATE
             rexo
