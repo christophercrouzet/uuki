@@ -1,6 +1,6 @@
 #include <rexo.h>
 
-#include <uuki/base/array.inl>
+#include <uuki/base/array.h>
 #include <uuki/base/macros.inl>
 #include <uuki/base/status.h>
 
@@ -12,7 +12,7 @@ W__PACKED_STRUCT(data) {
     int32_t b;
 };
 
-W_ARRAY_MAKE(data_array, struct data);
+W_ARRAY_MAKE(w__data_array, struct data);
 
 RX_TEST_CASE(array, main)
 {

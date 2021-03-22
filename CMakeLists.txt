@@ -76,7 +76,8 @@ w_add_library(base
         src/uuki/base/io.c
         src/uuki/base/logging.c
         src/uuki/base/math.c
-        src/uuki/base/mem.c)
+        src/uuki/base/mem.c
+        src/uuki/base/private/array.c)
 
 add_custom_target(libraries DEPENDS ${W_LIBRARY_TARGETS})
 
