@@ -239,26 +239,14 @@ w__mem_sys_alloc = {
 
 static enum w_status
 w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
-                             void **ptr,
-                             size_t prev_size,
-                             size_t size,
-                             size_t alignment,
-                             size_t end)
+                             size_t size)
 {
     enum w_status status;
-    size_t padding;
+    void *buf;
     size_t cap;
     size_t used;
-    size_t ptr_offset;
-    void *buf;
 
     status = W_SUCCESS;
-
-    // The actual size to allocate is the given size plus the padding
-    // required to fulfill the requested alignment.
-    W_ASSERT(!W__MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
-    padding = (uintptr_t)W__MEM_ALIGN_UP(end, alignment) - end;
-    size += padding;
 
     if (W__UINT_IS_ADD_WRAPPING(alloc->used, size, SIZE_MAX)) {
         W_LOG_ERROR("the size and/or alignment requested are too large\n");
@@ -273,11 +261,6 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
     cap = alloc->cap;
     w_grow_cap(&cap, used, 1);
 
-    // The given pointer will get invalidated after reallocating the buffer,
-    // so we need to store its position relative to the beginning of the buffer
-    // so that we can recover its updated location within the new buffer.
-    ptr_offset = (uintptr_t)*ptr - (uintptr_t)alloc->buf;
-
     buf = alloc->buf;
     status = alloc->parent->reallocate(
         alloc->parent->inst, &buf, alloc->cap, cap, alloc->alignment);
@@ -285,24 +268,10 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
         return status;
     }
 
-    if (prev_size != 0) {
-        void *tmp;
-
-        tmp = memcpy(
-            (void *)((uintptr_t)buf + alloc->used + padding),
-            (void *)((uintptr_t)buf + ptr_offset),
-            w__mem_min(prev_size, size));
-        if (tmp == NULL) {
-            W_LOG_ERROR("failed to copy the buffer\n");
-            status = W_ERROR_COPY_FAILED;
-        }
-    }
-
     alloc->buf = buf;
     alloc->cap = cap;
 
 exit:
-    *ptr = (void *)((uintptr_t)alloc->buf + alloc->used + padding);
     alloc->used = used;
     return status;
 }
@@ -356,12 +325,16 @@ w_linear_alloc_allocate(void *inst,
                         size_t size,
                         size_t alignment)
 {
+    enum w_status status;
     struct w_linear_alloc *alloc;
+    size_t padding;
     size_t end;
 
     W_ASSERT(inst != NULL);
     W_ASSERT(ptr != NULL);
     W_ASSERT(size == 0 || w_size_is_pow2(alignment));
+
+    status = W_SUCCESS;
 
     alloc = (struct w_linear_alloc *)inst;
 
@@ -375,7 +348,18 @@ w_linear_alloc_allocate(void *inst,
     }
 
     end = (uintptr_t)alloc->buf + alloc->used;
-    return w__mem_linear_alloc_allocate(alloc, ptr, 0, size, alignment, end);
+
+    // Compute the padding required to fulfill the requested alignment.
+    W_ASSERT(!W__MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
+    padding = (uintptr_t)W__MEM_ALIGN_UP(end, alignment) - end;
+
+    status = w__mem_linear_alloc_allocate(alloc, size + padding);
+    if (status != W_SUCCESS) {
+        return status;
+    }
+
+    *ptr = (void *)((uintptr_t)alloc->buf + alloc->used - size);
+    return status;
 }
 
 enum w_status
@@ -387,11 +371,16 @@ w_linear_alloc_reallocate(void *inst,
 {
     enum w_status status;
     struct w_linear_alloc *alloc;
+    size_t padding;
     size_t end;
+    size_t src_offset;
+    size_t dst_offset;
 
     W_ASSERT(inst != NULL);
     W_ASSERT(ptr != NULL);
     W_ASSERT(size == 0 || w_size_is_pow2(alignment));
+
+    status = W_SUCCESS;
 
     alloc = (struct w_linear_alloc *)inst;
 
@@ -409,6 +398,12 @@ w_linear_alloc_reallocate(void *inst,
     }
 
     end = (uintptr_t)alloc->buf + alloc->used;
+
+    // The pointers might get invalidated after reallocating the buffer,
+    // so we need to store their position relative to the beginning of
+    // the buffer so that we can then recover their updated location.
+    src_offset = (uintptr_t)*ptr - (uintptr_t)alloc->buf;
+    dst_offset = alloc->used;
 
     if ((uintptr_t)*ptr + prev_size == end) {
         // The block to reallocate is the last one in the buffer.
@@ -431,12 +426,31 @@ w_linear_alloc_reallocate(void *inst,
         }
     }
 
-    status = w__mem_linear_alloc_allocate(
-        alloc, ptr, prev_size, size, alignment, end);
+    // Compute the padding required to fulfill the requested alignment.
+    W_ASSERT(!W__MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
+    padding = (uintptr_t)W__MEM_ALIGN_UP(end, alignment) - end;
+
+    dst_offset += padding;
+
+    status = w__mem_linear_alloc_allocate(alloc, size + padding);
     if (status != W_SUCCESS) {
         return status;
     }
 
+    {
+        void *tmp;
+
+        tmp = memcpy(
+            (void *)((uintptr_t)alloc->buf + dst_offset),
+            (void *)((uintptr_t)alloc->buf + src_offset),
+            w__mem_min(prev_size, size));
+        if (tmp == NULL) {
+            W_LOG_ERROR("failed to copy the buffer\n");
+            status = W_ERROR_COPY_FAILED;
+        }
+    }
+
+    *ptr = (void *)((uintptr_t)alloc->buf + dst_offset);
     return status;
 }
 
