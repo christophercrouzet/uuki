@@ -171,20 +171,11 @@ w__mem_sys_alloc_reallocate(void *inst,
     }
 #else
     {
-        void *tmp;
-
         if (posix_memalign(&buf, alignment, size) != 0) {
             goto alloc_error;
         }
 
-        tmp = memcpy(buf, *ptr, prev_size);
-        if (tmp == NULL) {
-            free(buf);
-            W_LOG_ERROR("failed to copy the buffer\n");
-            return W_ERROR_COPY_FAILED;
-        }
-
-        free(*ptr);
+        memcpy(buf, *ptr, prev_size);
     }
 #endif
 
@@ -437,18 +428,10 @@ w_linear_alloc_reallocate(void *inst,
         return status;
     }
 
-    {
-        void *tmp;
-
-        tmp = memcpy(
-            (void *)((uintptr_t)alloc->buf + dst_offset),
-            (void *)((uintptr_t)alloc->buf + src_offset),
-            w__mem_min(prev_size, size));
-        if (tmp == NULL) {
-            W_LOG_ERROR("failed to copy the buffer\n");
-            status = W_ERROR_COPY_FAILED;
-        }
-    }
+    memcpy(
+        (void *)((uintptr_t)alloc->buf + dst_offset),
+        (void *)((uintptr_t)alloc->buf + src_offset),
+        w__mem_min(prev_size, size));
 
     *ptr = (void *)((uintptr_t)alloc->buf + dst_offset);
     return status;
