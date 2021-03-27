@@ -44,6 +44,8 @@ w__array_realloc(struct w_alloc *alloc,
     }
 
     *cap = new_cap;
+
+    W_ASSERT(status == W_SUCCESS);
     return status;
 }
 
@@ -82,6 +84,8 @@ w__array_create(struct w_alloc *alloc,
     *array_buf = buf;
     *array_cap = new_cap;
     *array_count = 0;
+
+    W_ASSERT(status == W_SUCCESS);
     return status;
 }
 
@@ -152,5 +156,7 @@ w__array_extend(struct w_alloc *alloc,
 exit:
     *slice = (void*)((uintptr_t)*array_buf + element_size * (*array_count));
     *array_count = count;
+
+    W_ASSERT(status == W_SUCCESS);
     return status;
 }

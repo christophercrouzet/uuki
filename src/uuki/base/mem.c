@@ -264,6 +264,8 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
 
 exit:
     alloc->used = used;
+
+    W_ASSERT(status == W_SUCCESS);
     return status;
 }
 
@@ -298,6 +300,8 @@ w_linear_alloc_create(struct w_linear_alloc *alloc,
     alloc->cap = size;
     alloc->used = 0;
     alloc->alignment = alignment;
+
+    W_ASSERT(status == W_SUCCESS);
     return status;
 }
 
@@ -350,6 +354,8 @@ w_linear_alloc_allocate(void *inst,
     }
 
     *ptr = (void *)((uintptr_t)alloc->buf + alloc->used - size);
+
+    W_ASSERT(status == W_SUCCESS);
     return status;
 }
 
@@ -434,6 +440,8 @@ w_linear_alloc_reallocate(void *inst,
         w__mem_min(prev_size, size));
 
     *ptr = (void *)((uintptr_t)alloc->buf + dst_offset);
+
+    W_ASSERT(status == W_SUCCESS);
     return status;
 }
 
