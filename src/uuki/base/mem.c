@@ -421,6 +421,10 @@ w_linear_alloc_reallocate(void *inst,
             alloc->used += size - prev_size;
             return W_SUCCESS;
         }
+
+        size -= prev_size;
+        end -= prev_size;
+        dst_offset -= prev_size;
     }
 
     // Compute the padding required to fulfill the requested alignment.
