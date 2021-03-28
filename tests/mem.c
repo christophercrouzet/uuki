@@ -72,6 +72,7 @@ RX_TEST_CASE(mem, linear_alloc)
     RX_INT_REQUIRE_EQUAL(((unsigned char *)it)[2], 2);
 
     // Allocate 2 bytes with a 128-byte alignment.
+    ptr = (void *)((uintptr_t)linear_alloc.buf + 3);
     status = w_linear_alloc_allocate(&linear_alloc, &ptr, 2, 128);
     for (i = 0; i < 2; ++i) {
         ((unsigned char *)ptr)[i] = (unsigned char)((i + 3) * 2);
