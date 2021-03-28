@@ -81,7 +81,7 @@ RX_TEST_CASE(mem, linear_alloc)
     RX_REQUIRE(linear_alloc.buf != NULL);
     RX_UINT_REQUIRE_EQUAL((uintptr_t)linear_alloc.buf % 8192, 0);
     RX_UINT_REQUIRE_EQUAL(linear_alloc.used, 130);
-    RX_UINT_REQUIRE_EQUAL(linear_alloc.cap, 256);
+    RX_UINT_REQUIRE_EQUAL(linear_alloc.cap, 130);
     RX_UINT_REQUIRE_EQUAL((uintptr_t)ptr % 128, 0);
 
     it = linear_alloc.buf;
@@ -105,7 +105,7 @@ RX_TEST_CASE(mem, linear_alloc)
     RX_REQUIRE(linear_alloc.buf != NULL);
     RX_UINT_REQUIRE_EQUAL((uintptr_t)linear_alloc.buf % 8192, 0);
     RX_UINT_REQUIRE_EQUAL(linear_alloc.used, 133);
-    RX_UINT_REQUIRE_EQUAL(linear_alloc.cap, 256);
+    RX_UINT_REQUIRE_EQUAL(linear_alloc.cap, 133);
     RX_UINT_REQUIRE_EQUAL((uintptr_t)ptr % 128, 0);
 
     it = linear_alloc.buf;
@@ -132,7 +132,7 @@ RX_TEST_CASE(mem, linear_alloc)
     RX_REQUIRE(linear_alloc.buf != NULL);
     RX_UINT_REQUIRE_EQUAL((uintptr_t)linear_alloc.buf % 8192, 0);
     RX_UINT_REQUIRE_EQUAL(linear_alloc.used, 4102);
-    RX_UINT_REQUIRE_EQUAL(linear_alloc.cap, 8192);
+    RX_UINT_REQUIRE_EQUAL(linear_alloc.cap, 4102);
     RX_UINT_REQUIRE_EQUAL((uintptr_t)ptr % 4096, 0);
 
     it = linear_alloc.buf;
@@ -168,7 +168,7 @@ RX_TEST_CASE(mem, linear_alloc)
     RX_REQUIRE(linear_alloc.buf != NULL);
     RX_UINT_REQUIRE_EQUAL((uintptr_t)linear_alloc.buf % 8192, 0);
     RX_UINT_REQUIRE_EQUAL(linear_alloc.used, 4165);
-    RX_UINT_REQUIRE_EQUAL(linear_alloc.cap, 8192);
+    RX_UINT_REQUIRE_EQUAL(linear_alloc.cap, 4165);
     RX_UINT_REQUIRE_EQUAL((uintptr_t)ptr % 64, 0);
 
     it = linear_alloc.buf;

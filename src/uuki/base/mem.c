@@ -235,7 +235,6 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
     enum w_status status;
     void *buf;
     size_t cap;
-    size_t used;
 
     status = W_SUCCESS;
 
@@ -244,13 +243,10 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
         return W_ERROR_MAX_SIZE_EXCEEDED;
     }
 
-    used = alloc->used + size;
-    if (alloc->cap >= used) {
+    cap = alloc->used + size;
+    if (alloc->cap >= cap) {
         goto exit;
     }
-
-    cap = alloc->cap;
-    w_grow_cap(&cap, used, 1);
 
     buf = alloc->buf;
     status = alloc->parent->reallocate(
@@ -263,7 +259,7 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
     alloc->cap = cap;
 
 exit:
-    alloc->used = used;
+    alloc->used = cap;
 
     W_ASSERT(status == W_SUCCESS);
     return status;
