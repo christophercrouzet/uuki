@@ -77,9 +77,9 @@ struct w_linear_alloc {
 };
 
 void
-w_grow_cap(size_t *cap,
-           size_t req,
-           size_t element_size);
+w_grow_cap_pow2(size_t *cap,
+                size_t req,
+                size_t element_size);
 
 enum w_status
 w_linear_alloc_create(struct w_linear_alloc *alloc,

@@ -43,9 +43,9 @@ w__mem_min(size_t a,
 // ---------------------------------------------------------------- //   O-(''Q)
 
 void
-w_grow_cap(size_t *cap,
-           size_t req,
-           size_t element_size)
+w_grow_cap_pow2(size_t *cap,
+                size_t req,
+                size_t element_size)
 {
     req = w__mem_max(*cap * 2, req);
 

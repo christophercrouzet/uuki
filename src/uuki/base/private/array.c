@@ -29,7 +29,7 @@ w__array_realloc(struct w_alloc *alloc,
     W_ASSERT(*buf == NULL || req > *cap);
 
     new_cap = *cap;
-    w_grow_cap(&new_cap, req, element_size);
+    w_grow_cap_pow2(&new_cap, req, element_size);
     W_ASSERT(new_cap > *cap);
 
     status = W_REALLOCATE_ALIGNED(
