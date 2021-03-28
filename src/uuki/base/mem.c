@@ -434,10 +434,12 @@ w_linear_alloc_reallocate(void *inst,
         return status;
     }
 
-    memcpy(
-        (void *)((uintptr_t)alloc->buf + dst_offset),
-        (void *)((uintptr_t)alloc->buf + src_offset),
-        w__mem_min(prev_size, size));
+    if (src_offset != dst_offset) {
+        memcpy(
+            (void *)((uintptr_t)alloc->buf + dst_offset),
+            (void *)((uintptr_t)alloc->buf + src_offset),
+            w__mem_min(prev_size, size));
+    }
 
     *ptr = (void *)((uintptr_t)alloc->buf + dst_offset);
 
