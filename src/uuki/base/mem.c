@@ -435,6 +435,11 @@ w_linear_alloc_reallocate(void *inst,
     }
 
     if (src_offset != dst_offset) {
+        W_ASSERT(
+            !W_ARE_BUFS_OVERLAPPING(
+                (void *)((uintptr_t)alloc->buf + dst_offset),
+                (void *)((uintptr_t)alloc->buf + src_offset),
+                w__mem_min(prev_size, size)));
         memcpy(
             (void *)((uintptr_t)alloc->buf + dst_offset),
             (void *)((uintptr_t)alloc->buf + src_offset),

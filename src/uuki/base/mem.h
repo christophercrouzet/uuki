@@ -9,6 +9,12 @@
 
 #define W_DEFAULT_ALIGNMENT sizeof(void *)
 
+#define W_ARE_BUFS_OVERLAPPING(a, b, size)                                     \
+    (((uintptr_t)(a) <= (uintptr_t)(b)                                         \
+         && (uintptr_t)(a) + (size) > (uintptr_t)(b))                          \
+     || ((uintptr_t)(b) <= (uintptr_t)(a)                                      \
+         && (uintptr_t)(b) + (size) > (uintptr_t)(a)))
+
 #define W_GET_ALIGNMENT(x)                                                     \
     (1 + (W__MEM_GET_ALIGNMENT_1((x) - 1)))
 
