@@ -36,7 +36,7 @@ w_file_open(struct w_file *file,
     }
 
     W_LOG_ERROR("failed to open the file ‘%s’\n", path);
-    return W_STREAM_IO_FAILED;
+    return W_ERROR_STREAM_IO_FAILED;
 }
 
 enum w_status
@@ -59,7 +59,7 @@ w_file_read(size_t *size,
 
             W_LOG_ERROR(
                 "failed to reach the end of the file ‘%s’\n", file->path);
-            return W_STREAM_IO_FAILED;
+            return W_ERROR_STREAM_IO_FAILED;
         }
 
         errno = 0;
@@ -71,7 +71,7 @@ w_file_read(size_t *size,
 
             W_LOG_ERROR("failed to retrieve the size of the file ‘%s’\n",
                         file->path);
-            return W_STREAM_IO_FAILED;
+            return W_ERROR_STREAM_IO_FAILED;
         }
 
         *size = (size_t)pos;
@@ -85,7 +85,7 @@ w_file_read(size_t *size,
         }
 
         W_LOG_ERROR("failed to rewind the file ‘%s’\n", file->path);
-        return W_STREAM_IO_FAILED;
+        return W_ERROR_STREAM_IO_FAILED;
     }
 
     errno = 0;
@@ -95,7 +95,7 @@ w_file_read(size_t *size,
         }
 
         W_LOG_ERROR("failed to read the file ‘%s’\n", file->path);
-        return W_STREAM_IO_FAILED;
+        return W_ERROR_STREAM_IO_FAILED;
     }
 
     return W_SUCCESS;
@@ -114,7 +114,7 @@ w_file_close(struct w_file *file)
         }
 
         W_LOG_ERROR("failed to close the file ‘%s’\n", file->path);
-        return W_STREAM_IO_FAILED;
+        return W_ERROR_STREAM_IO_FAILED;
     }
 
     return W_SUCCESS;
