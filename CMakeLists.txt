@@ -162,28 +162,28 @@ endmacro()
 enable_testing()
 
 w_add_test(
-    NAME array
-    FILES tests/array.c
+    NAME base_array
+    FILES tests/base/array.c
     DEPENDS base)
 
 w_add_test(
-    NAME io
-    FILES tests/io.c
+    NAME base_io
+    FILES tests/base/io.c
     DEPENDS base)
 
 w_add_test(
-    NAME logging
-    FILES tests/logging.c
+    NAME base_logging
+    FILES tests/base/logging.c
     DEPENDS base)
 
 w_add_test(
-    NAME macros
-    FILES tests/macros.c
+    NAME base_macros
+    FILES tests/base/macros.c
     DEPENDS base)
 
 w_add_test(
-    NAME mem
-    FILES tests/mem.c
+    NAME base_mem
+    FILES tests/base/mem.c
     DEPENDS base)
 
 add_custom_target(tests DEPENDS ${W_TEST_TARGETS})

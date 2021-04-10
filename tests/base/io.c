@@ -6,7 +6,7 @@
 
 #define SIZE 13
 #define BUF "hello, world!\0"
-#define FILE_PATH "tests/data/io.txt"
+#define FILE_PATH "tests/base/data/io.txt"
 
 RX_TEST_CASE(io, main)
 {
