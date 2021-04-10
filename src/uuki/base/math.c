@@ -1,6 +1,7 @@
 #include "math.h"
 
 #include <uuki/base/assert.h>
+#include <uuki/base/macros.h>
 
 #include <limits.h>
 #include <stddef.h>

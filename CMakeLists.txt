@@ -177,6 +177,11 @@ w_add_test(
     DEPENDS base)
 
 w_add_test(
+    NAME macros
+    FILES tests/macros.c
+    DEPENDS base)
+
+w_add_test(
     NAME mem
     FILES tests/mem.c
     DEPENDS base)
