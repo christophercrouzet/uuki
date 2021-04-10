@@ -1,13 +1,13 @@
 #include <rexo.h>
 
 #include <uuki/base/array.h>
-#include <uuki/base/macros.inl>
+#include <uuki/base/macros.h>
 #include <uuki/base/status.h>
 
 #include <stddef.h>
 #include <stdint.h>
 
-W__PACKED_STRUCT(data) {
+W_PACKED_STRUCT(data) {
     int8_t a;
     int32_t b;
 };

@@ -73,6 +73,6 @@
             count);                                                            \
     }                                                                          \
                                                                                \
-    W__REQUIRE_SEMICOLON
+    W_REQUIRE_SEMICOLON
 
 #endif // UUKI_BASE_ARRAY_H

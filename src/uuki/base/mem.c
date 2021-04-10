@@ -2,7 +2,7 @@
 
 #include <uuki/base/assert.h>
 #include <uuki/base/logging.h>
-#include <uuki/base/macros.inl>
+#include <uuki/base/macros.h>
 #include <uuki/base/math.h>
 #include <uuki/base/platform.h>
 #include <uuki/base/status.h>
@@ -12,7 +12,7 @@
 #include <string.h>
 
 #define W__MEM_ALIGN_UP_IS_WRAPPING(ptr, alignment)                            \
-    W__UINT_IS_ADD_WRAPPING(                                                   \
+    W_UINT_IS_ADD_WRAPPING(                                                    \
         (uintptr_t)(ptr), (uintptr_t)(alignment) - 1, UINTPTR_MAX)
 
 #define W__MEM_ALIGN_UP(ptr, alignment)                                        \
@@ -49,7 +49,7 @@ w_grow_cap_pow2(size_t *cap,
 {
     req = w__mem_max(*cap * 2, req);
 
-    W_ASSERT(!W__UINT_IS_MUL_WRAPPING(req, element_size, SIZE_MAX));
+    W_ASSERT(!W_UINT_IS_MUL_WRAPPING(req, element_size, SIZE_MAX));
     if (W_IS_CEIL_POW2_WRAPPING(req * element_size, size_t)) {
         *cap = SIZE_MAX / element_size;
         return;
@@ -97,7 +97,7 @@ w__mem_sys_alloc_allocate(void *inst,
 {
     void *buf;
 
-    W__UNUSED_PARAM(inst);
+    W_UNUSED_PARAM(inst);
 
     W_ASSERT(ptr != NULL);
     W_ASSERT(size == 0 || w_size_is_pow2(alignment));
@@ -143,7 +143,7 @@ w__mem_sys_alloc_reallocate(void *inst,
 {
     void *buf;
 
-    W__UNUSED_PARAM(inst);
+    W_UNUSED_PARAM(inst);
 
     W_ASSERT(ptr != NULL);
     W_ASSERT(size == 0 || w_size_is_pow2(alignment));
@@ -196,9 +196,9 @@ w__mem_sys_alloc_free(void *inst,
                       size_t size,
                       size_t alignment)
 {
-    W__UNUSED_PARAM(inst);
-    W__UNUSED_PARAM(size);
-    W__UNUSED_PARAM(alignment);
+    W_UNUSED_PARAM(inst);
+    W_UNUSED_PARAM(size);
+    W_UNUSED_PARAM(alignment);
 
     W_ASSERT(size == 0 || w_size_is_pow2(alignment));
     W_ASSERT(alignment >= w__mem_min_alignment);
@@ -238,7 +238,7 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
 
     status = W_SUCCESS;
 
-    if (W__UINT_IS_ADD_WRAPPING(alloc->used, size, SIZE_MAX)) {
+    if (W_UINT_IS_ADD_WRAPPING(alloc->used, size, SIZE_MAX)) {
         W_LOG_ERROR("the size and/or alignment requested are too large\n");
         return W_ERROR_MAX_SIZE_EXCEEDED;
     }
@@ -407,7 +407,7 @@ w_linear_alloc_reallocate(void *inst,
             return W_SUCCESS;
         }
 
-        if (W__UINT_IS_ADD_WRAPPING(alloc->used, size - prev_size, SIZE_MAX)) {
+        if (W_UINT_IS_ADD_WRAPPING(alloc->used, size - prev_size, SIZE_MAX)) {
             W_LOG_ERROR("the size requested is too large\n");
             return W_ERROR_MAX_SIZE_EXCEEDED;
         }
@@ -458,10 +458,10 @@ w_linear_alloc_free(void *inst,
                     size_t size,
                     size_t alignment)
 {
-    W__UNUSED_PARAM(inst);
-    W__UNUSED_PARAM(ptr);
-    W__UNUSED_PARAM(size);
-    W__UNUSED_PARAM(alignment);
+    W_UNUSED_PARAM(inst);
+    W_UNUSED_PARAM(ptr);
+    W_UNUSED_PARAM(size);
+    W_UNUSED_PARAM(alignment);
 
     W_ASSERT(inst != NULL);
     W_ASSERT(w_size_is_pow2(alignment));
