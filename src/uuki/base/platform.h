@@ -1,7 +1,6 @@
 #ifndef UUKI_BASE_PLATFORM_H
 #define UUKI_BASE_PLATFORM_H
 
-#include <limits.h>
 #include <stddef.h>
 
 #define W_COMPILER(x)                                                          \
@@ -128,25 +127,42 @@
     #define W__OS_UNIX() 1
 #endif
 
-/*
-   The word width macro represents whether the code is to be generated for a
-   32-bit or 64-bit target platform. Some CPUs, such as the x86-64 processors,
-   allow running code in 32-bit mode if compiled using the -m32 or -mx32
-   compiler switches, in which case `W_WORD_WIDTH` is set to 32.
-*/
-#if (!(defined(__x86_64__) || defined(_M_X64)) || defined(__ILP32__))          \
-        && !(defined(__itanium__) || defined(_M_IA64))                         \
-        && !(defined(__powerpc64__) || defined(__ppc64__))                     \
-        && !defined(__aarch64__)
-    #define W_WORD_WIDTH 32
+// Some CPUs, such as the x86-64 processors, allow running code in 32-bit mode
+// if compiled using the -m32 or -mx32 compiler switches, in which case
+// the macro `W_PTR_SIZE` is set to 32.
+#if W_COMPILER(GNUC_COMPLIANT)
+    #if __SIZEOF_POINTER__ == 8
+        #define W_PTR_SIZE 8
+    #elif __SIZEOF_POINTER__ == 4
+        #define W_PTR_SIZE 4
+    #else
+        #error "Unsupported pointer size."
+    #endif
+#elif W_COMPILER(MSVC)
+    #if defined(_WIN64)
+        #define W_PTR_SIZE 8
+    #elif defined(_WIN32)
+        #define W_PTR_SIZE 4
+    #else
+        #error "Unsupported pointer size."
+    #endif
 #else
-    #define W_WORD_WIDTH 64
+    #include <stdint.h>
+    #if UINTPTR_MAX == UINT64_MAX
+        #define W_PTR_SIZE 8
+    #elif UINTPTR_MAX == UINT32_MAX
+        #define W_PTR_SIZE 4
+    #else
+        #error "Unsupported pointer size."
+    #endif
 #endif
 
-#define W_SIZE_WIDTH W_WORD_WIDTH
+typedef char
+w__platform_invalid_ptr_size[W_PTR_SIZE == sizeof(void *) ? 1 : -1];
+
+#define W_SIZE_T_SIZE W_PTR_SIZE
 
 typedef char
-w__platform_invalid_size_width[
-    W_SIZE_WIDTH == sizeof(size_t) * CHAR_BIT ? 1 : -1];
+w__platform_invalid_size_t_size[W_SIZE_T_SIZE == sizeof(size_t) ? 1 : -1];
 
 #endif // UUKI_BASE_PLATFORM_H
