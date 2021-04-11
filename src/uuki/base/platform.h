@@ -4,15 +4,94 @@
 #include <limits.h>
 #include <stddef.h>
 
+#define W_OS(x)                                                                \
+    W__OS_##x()
+
 #if defined(_WIN32)
-    #define W_OS_WINDOWS
-#elif defined(__unix__) || defined(__APPLE__)
-    #define W_OS_UNIX
-    #if defined(__APPLE__)
-        #define W_OS_DARWIN
-    #elif defined(__linux__)
-        #define W_OS_LINUX
-    #endif
+    #define W__OS_DARWIN() 0
+    #define W__OS_DRAGON_FLY_BSD() 0
+    #define W__OS_FREE_BSD() 0
+    #define W__OS_LINUX() 0
+    #define W__OS_NET_BSD() 0
+    #define W__OS_OPEN_BSD() 0
+    #define W__OS_QNX() 0
+    #define W__OS_WINDOWS() 1
+#elif defined(__linux__)
+    #define W__OS_DARWIN() 0
+    #define W__OS_DRAGON_FLY_BSD() 0
+    #define W__OS_FREE_BSD() 0
+    #define W__OS_LINUX() 1
+    #define W__OS_NET_BSD() 0
+    #define W__OS_OPEN_BSD() 0
+    #define W__OS_QNX() 0
+    #define W__OS_WINDOWS() 0
+#elif defined(__APPLE__)
+    #define W__OS_DARWIN() 1
+    #define W__OS_DRAGON_FLY_BSD() 0
+    #define W__OS_FREE_BSD() 0
+    #define W__OS_LINUX() 0
+    #define W__OS_NET_BSD() 0
+    #define W__OS_OPEN_BSD() 0
+    #define W__OS_QNX() 0
+    #define W__OS_WINDOWS() 0
+#elif defined(__DragonFly__)
+    #define W__OS_DARWIN() 0
+    #define W__OS_DRAGON_FLY_BSD() 1
+    #define W__OS_FREE_BSD() 0
+    #define W__OS_LINUX() 0
+    #define W__OS_NET_BSD() 0
+    #define W__OS_OPEN_BSD() 0
+    #define W__OS_QNX() 0
+    #define W__OS_WINDOWS() 0
+#elif defined(__FreeBSD__)
+    #define W__OS_DARWIN() 0
+    #define W__OS_DRAGON_FLY_BSD() 0
+    #define W__OS_FREE_BSD() 1
+    #define W__OS_LINUX() 0
+    #define W__OS_NET_BSD() 0
+    #define W__OS_OPEN_BSD() 0
+    #define W__OS_QNX() 0
+    #define W__OS_WINDOWS() 0
+#elif defined(__NetBSD__)
+    #define W__OS_DARWIN() 0
+    #define W__OS_DRAGON_FLY_BSD() 0
+    #define W__OS_FREE_BSD() 0
+    #define W__OS_LINUX() 0
+    #define W__OS_NET_BSD() 1
+    #define W__OS_OPEN_BSD() 0
+    #define W__OS_QNX() 0
+    #define W__OS_WINDOWS() 0
+#elif defined(__OpenBSD__)
+    #define W__OS_DARWIN() 0
+    #define W__OS_DRAGON_FLY_BSD() 0
+    #define W__OS_FREE_BSD() 0
+    #define W__OS_LINUX() 0
+    #define W__OS_NET_BSD() 0
+    #define W__OS_OPEN_BSD() 1
+    #define W__OS_QNX() 0
+    #define W__OS_WINDOWS() 0
+#elif defined(__QNX__) || defined(__QNXNTO__)
+    #define W__OS_DARWIN() 0
+    #define W__OS_DRAGON_FLY_BSD() 0
+    #define W__OS_FREE_BSD() 0
+    #define W__OS_LINUX() 0
+    #define W__OS_NET_BSD() 0
+    #define W__OS_OPEN_BSD() 0
+    #define W__OS_QNX() 1
+    #define W__OS_WINDOWS() 0
+#else
+    #define W__OS_DARWIN() 0
+    #define W__OS_DRAGON_FLY_BSD() 0
+    #define W__OS_FREE_BSD() 0
+    #define W__OS_LINUX() 0
+    #define W__OS_NET_BSD() 0
+    #define W__OS_OPEN_BSD() 0
+    #define W__OS_QNX() 0
+    #define W__OS_WINDOWS() 0
+#endif
+
+#if defined(__unix__)
+    #define W__OS_UNIX() 1
 #endif
 
 /*
