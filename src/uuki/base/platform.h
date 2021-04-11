@@ -4,6 +4,40 @@
 #include <limits.h>
 #include <stddef.h>
 
+#define W_COMPILER(x)                                                          \
+    W__COMPILER_##x()
+
+#if defined(_MSC_VER)
+    #define W__COMPILER_MSVC() 1
+    #define W__COMPILER_CLANG() 0
+    #define W__COMPILER_INTEL() 0
+    #define W__COMPILER_GCC() 0
+#elif defined(__clang__)
+    #define W__COMPILER_MSVC() 0
+    #define W__COMPILER_CLANG() 1
+    #define W__COMPILER_INTEL() 0
+    #define W__COMPILER_GCC() 0
+#elif defined(__INTEL_COMPILER)
+    #define W__COMPILER_MSVC() 0
+    #define W__COMPILER_CLANG() 0
+    #define W__COMPILER_INTEL() 1
+    #define W__COMPILER_GCC() 0
+#elif defined(__GNUC__)
+    #define W__COMPILER_MSVC() 0
+    #define W__COMPILER_CLANG() 0
+    #define W__COMPILER_INTEL() 0
+    #define W__COMPILER_GCC() 1
+#else
+    #define W__COMPILER_MSVC() 0
+    #define W__COMPILER_CLANG() 0
+    #define W__COMPILER_INTEL() 0
+    #define W__COMPILER_GCC() 0
+#endif
+
+#if defined(__GNUC__)
+    #define W__COMPILER_GNUC_COMPLIANT() 1
+#endif
+
 #define W_OS(x)                                                                \
     W__OS_##x()
 
