@@ -18,6 +18,10 @@ else
 CONFIG := $(config)
 endif
 
+ifdef cc
+CC := $(cc)
+endif
+
 # ------------------------------------------------------------------------------
 
 FILES :=
@@ -52,10 +56,12 @@ endef
 define w_create_makefile_rule =
 $(OUT_DIR)/$(1)/Makefile:
 	@ mkdir -p $(OUT_DIR)/$(1)
-	@ cd $(OUT_DIR)/$(1) && cmake                                              \
-	    -DCMAKE_BUILD_TYPE=$(1)                                                \
-	    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON                                     \
-	    $(PROJECT_DIR)
+	@ cd $(OUT_DIR)/$(1)                                                       \
+	    && export CC="$(cc)"                                                   \
+	    && cmake                                                               \
+	        -DCMAKE_BUILD_TYPE=$(1)                                            \
+	        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON                                 \
+	        $(PROJECT_DIR)
 
 BUILD_DIRS += $(OUT_DIR)/$(1)
 MAKE_FILES += $(OUT_DIR)/$(1)/Makefile
