@@ -3,23 +3,23 @@ PROJECT_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 # ------------------------------------------------------------------------------
 
 ifndef outdir
-OUT_DIR := build
+	OUT_DIR := build
 else
-OUT_DIR := $(outdir)
+	OUT_DIR := $(outdir)
 endif
 
 ifndef config
-CONFIG := debug
+	CONFIG := debug
 else ifneq "$(filter-out debug release all,$(config))" ""
-$(error the 'config' option is not valid)
+	$(error the 'config' option is not valid)
 else ifneq "$(filter all,$(config))" ""
-CONFIG := debug release
+	CONFIG := debug release
 else
-CONFIG := $(config)
+	CONFIG := $(config)
 endif
 
 ifdef cc
-CC := $(cc)
+	CC := $(cc)
 endif
 
 # ------------------------------------------------------------------------------
