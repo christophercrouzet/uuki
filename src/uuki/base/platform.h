@@ -35,6 +35,8 @@
 
 #if defined(__GNUC__)
     #define W__COMPILER_GNUC_COMPLIANT() 1
+#else
+    #define W__COMPILER_GNUC_COMPLIANT() 0
 #endif
 
 #define W_OS(x)                                                                \
@@ -125,6 +127,8 @@
 
 #if defined(__unix__)
     #define W__OS_UNIX() 1
+#else
+    #define W__OS_UNIX() 0
 #endif
 
 // Some CPUs, such as the x86-64 processors, allow running code in 32-bit mode
