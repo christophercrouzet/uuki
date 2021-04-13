@@ -161,12 +161,10 @@
     #endif
 #endif
 
-typedef char
-w__platform_invalid_ptr_size[W_PTR_SIZE == sizeof(void *) ? 1 : -1];
+_Static_assert(W_PTR_SIZE == sizeof(void *), "invalid pointer size");
 
 #define W_SIZE_T_SIZE W_PTR_SIZE
 
-typedef char
-w__platform_invalid_size_t_size[W_SIZE_T_SIZE == sizeof(size_t) ? 1 : -1];
+_Static_assert(W_SIZE_T_SIZE == sizeof(size_t), "invalid size_t size");
 
 #endif // UUKI_BASE_PLATFORM_H
