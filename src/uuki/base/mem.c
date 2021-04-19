@@ -58,28 +58,6 @@ w_grow_cap_pow2(size_t *cap,
     *cap = w_size_ceil_pow2(req);
 }
 
-// System Allocator: Forward Declarations
-// ---------------------------------------------------------------- //   O-(''Q)
-
-static enum w_status
-w__mem_sys_alloc_allocate(void *inst,
-                          void **ptr,
-                          size_t size,
-                          size_t alignment);
-
-static void
-w__mem_sys_alloc_free(void *inst,
-                      const void *ptr,
-                      size_t size,
-                      size_t alignment);
-
-static enum w_status
-w__mem_sys_alloc_reallocate(void *inst,
-                            void **ptr,
-                            size_t prev_size,
-                            size_t size,
-                            size_t alignment);
-
 // System Allocator: Definitions
 // ---------------------------------------------------------------- //   O-(''Q)
 
@@ -132,6 +110,33 @@ alloc_error:
         size,
         alignment);
     return W_ERROR_ALLOCATION_FAILED;
+}
+
+static void
+w__mem_sys_alloc_free(void *inst,
+                      const void *ptr,
+                      size_t size,
+                      size_t alignment)
+{
+    W_UNUSED_PARAM(inst);
+    W_UNUSED_PARAM(size);
+    W_UNUSED_PARAM(alignment);
+
+    W_ASSERT(size == 0 || w_size_is_pow2(alignment));
+    W_ASSERT(alignment >= w__mem_min_alignment);
+
+#if W_OS(WINDOWS)
+    _aligned_free((void *)ptr);
+#else
+    #if defined(__GNUC__)
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wcast-qual"
+    #endif
+    free((void *)ptr);
+    #if defined(__GNUC__)
+        #pragma GCC diagnostic pop
+    #endif
+#endif
 }
 
 static enum w_status
@@ -190,38 +195,11 @@ alloc_error:
     return W_ERROR_ALLOCATION_FAILED;
 }
 
-static void
-w__mem_sys_alloc_free(void *inst,
-                      const void *ptr,
-                      size_t size,
-                      size_t alignment)
-{
-    W_UNUSED_PARAM(inst);
-    W_UNUSED_PARAM(size);
-    W_UNUSED_PARAM(alignment);
-
-    W_ASSERT(size == 0 || w_size_is_pow2(alignment));
-    W_ASSERT(alignment >= w__mem_min_alignment);
-
-#if W_OS(WINDOWS)
-    _aligned_free((void *)ptr);
-#else
-    #if defined(__GNUC__)
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wcast-qual"
-    #endif
-    free((void *)ptr);
-    #if defined(__GNUC__)
-        #pragma GCC diagnostic pop
-    #endif
-#endif
-}
-
 static struct w_alloc
 w__mem_sys_alloc = {
     w__mem_sys_alloc_allocate,
-    w__mem_sys_alloc_reallocate,
     w__mem_sys_alloc_free,
+    w__mem_sys_alloc_reallocate,
     NULL,
 };
 
@@ -355,6 +333,21 @@ w_linear_alloc_allocate(void *inst,
     return status;
 }
 
+void
+w_linear_alloc_free(void *inst,
+                    const void *ptr,
+                    size_t size,
+                    size_t alignment)
+{
+    W_UNUSED_PARAM(inst);
+    W_UNUSED_PARAM(ptr);
+    W_UNUSED_PARAM(size);
+    W_UNUSED_PARAM(alignment);
+
+    W_ASSERT(inst != NULL);
+    W_ASSERT(w_size_is_pow2(alignment));
+}
+
 enum w_status
 w_linear_alloc_reallocate(void *inst,
                           void **ptr,
@@ -453,21 +446,6 @@ w_linear_alloc_reallocate(void *inst,
 }
 
 void
-w_linear_alloc_free(void *inst,
-                    const void *ptr,
-                    size_t size,
-                    size_t alignment)
-{
-    W_UNUSED_PARAM(inst);
-    W_UNUSED_PARAM(ptr);
-    W_UNUSED_PARAM(size);
-    W_UNUSED_PARAM(alignment);
-
-    W_ASSERT(inst != NULL);
-    W_ASSERT(w_size_is_pow2(alignment));
-}
-
-void
 w_linear_alloc_get_universal_alloc(struct w_alloc *alloc,
                                    struct w_linear_alloc *linear_alloc)
 {
@@ -475,7 +453,7 @@ w_linear_alloc_get_universal_alloc(struct w_alloc *alloc,
     W_ASSERT(linear_alloc != NULL);
 
     alloc->allocate = w_linear_alloc_allocate;
-    alloc->reallocate = w_linear_alloc_reallocate;
     alloc->free = w_linear_alloc_free;
+    alloc->reallocate = w_linear_alloc_reallocate;
     alloc->inst = linear_alloc;
 }
