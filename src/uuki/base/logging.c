@@ -5,7 +5,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define W__LOGGING_LVL_COUNT W__LOG_LVL_LAST - W__LOG_LVL_FIRST + 1
+#define W__LOGGING_LVL_COUNT                                                   \
+    W__LOGGING_LOG_LVL_LAST - W__LOGGING_LOG_LVL_FIRST + 1
 
 static enum w_log_lvl
 w__logging_lvl = W_LOG_LVL_WARNING;
@@ -59,7 +60,7 @@ w_vlog(enum w_log_lvl lvl,
        va_list args)
 {
     W_ASSERT(w__logging_styling == 0 || w__logging_styling == 1);
-    W_ASSERT(lvl >= W__LOG_LVL_FIRST && lvl <= W__LOG_LVL_LAST);
+    W_ASSERT(lvl >= W__LOGGING_LOG_LVL_FIRST && lvl <= W__LOGGING_LOG_LVL_LAST);
     W_ASSERT(file != NULL);
     W_ASSERT(fmt != NULL);
 
@@ -82,7 +83,7 @@ w_log(enum w_log_lvl lvl,
 {
     va_list args;
 
-    W_ASSERT(lvl >= W__LOG_LVL_FIRST && lvl <= W__LOG_LVL_LAST);
+    W_ASSERT(lvl >= W__LOGGING_LOG_LVL_FIRST && lvl <= W__LOGGING_LOG_LVL_LAST);
     W_ASSERT(file != NULL);
     W_ASSERT(fmt != NULL);
 
@@ -100,7 +101,7 @@ w_get_log_lvl_prop()
 void
 w_set_log_lvl(enum w_log_lvl lvl)
 {
-    if (lvl < W__LOG_LVL_FIRST || lvl > W__LOG_LVL_LAST) {
+    if (lvl < W__LOGGING_LOG_LVL_FIRST || lvl > W__LOGGING_LOG_LVL_LAST) {
         W_LOG_ERROR("level out of range\n");
         return;
     }

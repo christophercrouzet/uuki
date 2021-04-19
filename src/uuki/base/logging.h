@@ -26,16 +26,16 @@
     W_LOG(W_LOG_LVL_DEBUG, __VA_ARGS__)
 
 enum w_log_lvl {
-    W_LOG_LVL_NONE    = 0,
-    W_LOG_LVL_FATAL   = 1,
-    W_LOG_LVL_ERROR   = 2,
-    W_LOG_LVL_WARNING = 3,
-    W_LOG_LVL_INFO    = 4,
-    W_LOG_LVL_DEBUG   = 5,
-    W_LOG_LVL_ALL     = W_LOG_LVL_DEBUG,
+    W_LOG_LVL_NONE            = 0,
+    W_LOG_LVL_FATAL           = 1,
+    W_LOG_LVL_ERROR           = 2,
+    W_LOG_LVL_WARNING         = 3,
+    W_LOG_LVL_INFO            = 4,
+    W_LOG_LVL_DEBUG           = 5,
+    W_LOG_LVL_ALL             = W_LOG_LVL_DEBUG,
 
-    W__LOG_LVL_FIRST  = W_LOG_LVL_NONE,
-    W__LOG_LVL_LAST   = W_LOG_LVL_ALL,
+    W__LOGGING_LOG_LVL_FIRST  = W_LOG_LVL_NONE,
+    W__LOGGING_LOG_LVL_LAST   = W_LOG_LVL_ALL,
 };
 
 void

@@ -10,7 +10,7 @@
     (void)(x)
 
 #define W_REQUIRE_SEMICOLON                                                    \
-    void w__dummy(void)
+    void w__macros_dummy(void)
 
 #if defined(_MSC_VER)
     #define W_PACKED_STRUCT(name)                                              \
