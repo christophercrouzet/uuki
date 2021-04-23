@@ -140,7 +140,7 @@
     #elif __SIZEOF_POINTER__ == 4
         #define W_PTR_SIZE 4
     #else
-        #error "Unsupported pointer size."
+        #error "could not determine the pointer size"
     #endif
 #elif W_COMPILER(MSVC)
     #if defined(_WIN64)
@@ -148,7 +148,7 @@
     #elif defined(_WIN32)
         #define W_PTR_SIZE 4
     #else
-        #error "Unsupported pointer size."
+        #error "could not determine the pointer size"
     #endif
 #else
     #include <stdint.h>
@@ -157,14 +157,16 @@
     #elif UINTPTR_MAX == UINT32_MAX
         #define W_PTR_SIZE 4
     #else
-        #error "Unsupported pointer size."
+        #error "could not determine the pointer size"
     #endif
 #endif
 
-_Static_assert(W_PTR_SIZE == sizeof(void *), "invalid pointer size");
+_Static_assert(
+    W_PTR_SIZE == sizeof(void *), "could not determine the pointer size");
 
 #define W_SIZE_T_SIZE W_PTR_SIZE
 
-_Static_assert(W_SIZE_T_SIZE == sizeof(size_t), "invalid size_t size");
+_Static_assert(
+    W_SIZE_T_SIZE == sizeof(size_t), "could not determine the size_t size");
 
 #endif // UUKI_BASE_PLATFORM_H

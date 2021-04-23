@@ -4,7 +4,7 @@
 #include <uuki/base/platform.h>
 
 #if W_SIZE_T_SIZE >= 16
-    #error "Unsupported size width."
+    #error "unexpected size_t width"
 #else
     #define W__MACROS_GET_ALIGNMENT_6(x)                                       \
         ((x) | ((x) >> 32))
