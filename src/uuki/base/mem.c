@@ -13,7 +13,7 @@
 
 #define W__MEM_ALIGN_UP_IS_WRAPPING(ptr, alignment)                            \
     W_UINT_IS_ADD_WRAPPING(                                                    \
-        (uintptr_t)(ptr), (uintptr_t)(alignment) - 1, UINTPTR_MAX)
+        UINTPTR_MAX, (uintptr_t)(ptr), (uintptr_t)(alignment) - 1)
 
 #define W__MEM_ALIGN_UP(ptr, alignment)                                        \
     (((uintptr_t)(ptr) + (uintptr_t)(alignment) - 1)                           \
@@ -49,8 +49,8 @@ w_grow_cap_pow2(size_t *cap,
 {
     req = w__mem_max(*cap * 2, req);
 
-    W_ASSERT(!W_UINT_IS_MUL_WRAPPING(req, element_size, SIZE_MAX));
-    if (W_IS_CEIL_POW2_WRAPPING(req * element_size, size_t)) {
+    W_ASSERT(!W_UINT_IS_MUL_WRAPPING(SIZE_MAX, req, element_size));
+    if (W_IS_CEIL_POW2_WRAPPING(size_t, req * element_size)) {
         *cap = SIZE_MAX / element_size;
         return;
     }
@@ -216,7 +216,7 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
 
     status = W_SUCCESS;
 
-    if (W_UINT_IS_ADD_WRAPPING(alloc->used, size, SIZE_MAX)) {
+    if (W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, size)) {
         W_LOG_ERROR("the size and/or alignment requested are too large\n");
         return W_ERROR_MAX_SIZE_EXCEEDED;
     }
@@ -400,7 +400,7 @@ w_linear_alloc_reallocate(void *inst,
             return W_SUCCESS;
         }
 
-        if (W_UINT_IS_ADD_WRAPPING(alloc->used, size - prev_size, SIZE_MAX)) {
+        if (W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, size - prev_size)) {
             W_LOG_ERROR("the size requested is too large\n");
             return W_ERROR_MAX_SIZE_EXCEEDED;
         }

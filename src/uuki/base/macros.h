@@ -25,16 +25,25 @@
 // Overflow Checks
 // ---------------------------------------------------------------- //   O-(''Q)
 
-#define W_UINT_IS_ADD_WRAPPING(a, b, max)                                      \
-    ((a) > (max) - (b))
+#define W_UINT_IS_ADD_WRAPPING(max, x, ...)                                    \
+    W__CONCAT(                                                                 \
+        W__UINT_IS_ADD_WRAPPING_,                                              \
+        W__COUNT_ARGS(__VA_ARGS__)                                             \
+    )(max, x, __VA_ARGS__)
 
-#define W_UINT_IS_SUB_WRAPPING(a, b)                                           \
-    ((a) < (b))
+#define W_UINT_IS_SUB_WRAPPING(max, x, ...)                                    \
+    W__CONCAT(                                                                 \
+        W__UINT_IS_SUB_WRAPPING_,                                              \
+        W__COUNT_ARGS(__VA_ARGS__)                                             \
+    )(max, x, __VA_ARGS__)
 
-#define W_UINT_IS_MUL_WRAPPING(a, b, max)                                      \
-    ((a) > (max) / (b))
+#define W_UINT_IS_MUL_WRAPPING(max, x, ...)                                    \
+    W__CONCAT(                                                                 \
+        W__UINT_IS_MUL_WRAPPING_,                                              \
+        W__COUNT_ARGS(__VA_ARGS__)                                             \
+    )(max, x, __VA_ARGS__)
 
-#define W_IS_CEIL_POW2_WRAPPING(x, type)                                       \
+#define W_IS_CEIL_POW2_WRAPPING(type, x)                                       \
     ((x) > (type)1 << (sizeof(type) * CHAR_BIT - 1))
 
 // Memory

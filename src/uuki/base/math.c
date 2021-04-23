@@ -17,7 +17,7 @@ w_size_ceil_pow2(size_t x)
 {
     size_t i;
 
-    W_ASSERT(!W_IS_CEIL_POW2_WRAPPING(x, size_t));
+    W_ASSERT(!W_IS_CEIL_POW2_WRAPPING(size_t, x));
 
     --x;
     for (i = 1; i < sizeof(size_t) * CHAR_BIT; i *= 2) {
