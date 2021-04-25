@@ -2,35 +2,35 @@
 
 #include <uuki/base/macros.h>
 
-RX_TEST_CASE(macros, get_alignment)
+RX_TEST_CASE(macros, round_up_pow2)
 {
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)0),
+        W_ROUND_UP_POW2(0ULL),
         0);
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)1),
+        W_ROUND_UP_POW2(1ULL),
         1);
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)2),
+        W_ROUND_UP_POW2(2ULL),
         2);
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)3),
+        W_ROUND_UP_POW2(3ULL),
         4);
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)4),
+        W_ROUND_UP_POW2(4ULL),
         4);
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)61029),
-        (size_t)1 << 16);
+        W_ROUND_UP_POW2(61029ULL),
+        1ULL << 16);
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)1221700),
-        (size_t)1 << 21);
+        W_ROUND_UP_POW2(1221700ULL),
+        1ULL << 21);
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)137438953472),
-        (size_t)1 << 37);
+        W_ROUND_UP_POW2(137438953472ULL),
+        1ULL << 37);
     RX_UINT_REQUIRE_EQUAL(
-        W_GET_ALIGNMENT((size_t)2100107785318157799),
-        (size_t)1 << 61);
+        W_ROUND_UP_POW2(2100107785318157799ULL),
+        1ULL << 61);
 }
 
 int

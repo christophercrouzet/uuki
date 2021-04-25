@@ -16,7 +16,7 @@
     };                                                                         \
                                                                                \
     static const size_t                                                        \
-    name##_alignment = W_GET_ALIGNMENT(sizeof(type));                          \
+    name##_alignment = W_ROUND_UP_POW2(sizeof(type));                          \
                                                                                \
     static enum w_status                                                       \
     name##_create(struct w_alloc *alloc,                                       \

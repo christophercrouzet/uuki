@@ -50,7 +50,7 @@ w_grow_cap_pow2(size_t *cap,
     req = w__mem_max(*cap * 2, req);
 
     W_ASSERT(!W_UINT_IS_MUL_WRAPPING(SIZE_MAX, req, element_size));
-    if (W_IS_CEIL_POW2_WRAPPING(size_t, req * element_size)) {
+    if (W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, req * element_size)) {
         *cap = SIZE_MAX / element_size;
         return;
     }
@@ -78,7 +78,7 @@ w__mem_sys_alloc_allocate(void *inst,
     W_UNUSED_PARAM(inst);
 
     W_ASSERT(ptr != NULL);
-    W_ASSERT(size == 0 || w_size_is_pow2(alignment));
+    W_ASSERT(size == 0 || W_IS_POW2(alignment));
     W_ASSERT(alignment >= w__mem_min_alignment);
 
     if (size == 0) {
@@ -122,7 +122,7 @@ w__mem_sys_alloc_free(void *inst,
     W_UNUSED_PARAM(size);
     W_UNUSED_PARAM(alignment);
 
-    W_ASSERT(size == 0 || w_size_is_pow2(alignment));
+    W_ASSERT(size == 0 || W_IS_POW2(alignment));
     W_ASSERT(alignment >= w__mem_min_alignment);
 
 #if W_OS(WINDOWS)
@@ -151,7 +151,7 @@ w__mem_sys_alloc_reallocate(void *inst,
     W_UNUSED_PARAM(inst);
 
     W_ASSERT(ptr != NULL);
-    W_ASSERT(size == 0 || w_size_is_pow2(alignment));
+    W_ASSERT(size == 0 || W_IS_POW2(alignment));
     W_ASSERT(alignment >= w__mem_min_alignment);
 
     if (*ptr == NULL) {
@@ -301,7 +301,7 @@ w_linear_alloc_allocate(void *inst,
 
     W_ASSERT(inst != NULL);
     W_ASSERT(ptr != NULL);
-    W_ASSERT(size == 0 || w_size_is_pow2(alignment));
+    W_ASSERT(size == 0 || W_IS_POW2(alignment));
 
     status = W_SUCCESS;
 
@@ -345,7 +345,7 @@ w_linear_alloc_free(void *inst,
     W_UNUSED_PARAM(alignment);
 
     W_ASSERT(inst != NULL);
-    W_ASSERT(w_size_is_pow2(alignment));
+    W_ASSERT(W_IS_POW2(alignment));
 }
 
 enum w_status
@@ -364,7 +364,7 @@ w_linear_alloc_reallocate(void *inst,
 
     W_ASSERT(inst != NULL);
     W_ASSERT(ptr != NULL);
-    W_ASSERT(size == 0 || w_size_is_pow2(alignment));
+    W_ASSERT(size == 0 || W_IS_POW2(alignment));
 
     status = W_SUCCESS;
 
