@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 size_t
-w_size_ceil_pow2(size_t x)
+w_size_round_up_pow2(size_t x)
 {
     size_t i;
 

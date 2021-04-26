@@ -55,7 +55,7 @@ w_grow_cap_pow2(size_t *cap,
         return;
     }
 
-    *cap = w_size_ceil_pow2(req);
+    *cap = w_size_round_up_pow2(req);
 }
 
 // System Allocator: Definitions
