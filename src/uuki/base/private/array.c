@@ -2,6 +2,8 @@
 
 #include <uuki/base/assert.h>
 #include <uuki/base/logging.h>
+#include <uuki/base/macros.h>
+#include <uuki/base/math.h>
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
 
@@ -10,6 +12,29 @@
 
 #define W__ARRAY_GET_MAX_CAP(element_size)                                     \
     (SIZE_MAX / (element_size))
+
+static size_t
+w__array_max(size_t a,
+             size_t b)
+{
+    return a > b ? a : b;
+}
+
+static void
+w__array_grow_cap(size_t *cap,
+                  size_t req,
+                  size_t element_size)
+{
+    req = w__array_max(*cap * 2, req);
+
+    W_ASSERT(!W_UINT_IS_MUL_WRAPPING(SIZE_MAX, req, element_size));
+    if (W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, req * element_size)) {
+        *cap = SIZE_MAX / element_size;
+        return;
+    }
+
+    *cap = w_size_round_up_pow2(req);
+}
 
 static enum w_status
 w__array_realloc(struct w_alloc *alloc,
@@ -29,7 +54,7 @@ w__array_realloc(struct w_alloc *alloc,
     W_ASSERT(*buf == NULL || req > *cap);
 
     new_cap = *cap;
-    w_grow_cap_pow2(&new_cap, req, element_size);
+    w__array_grow_cap(&new_cap, req, element_size);
     W_ASSERT(new_cap > *cap);
 
     status = W_REALLOCATE_ALIGNED(

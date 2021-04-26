@@ -3,7 +3,6 @@
 #include <uuki/base/assert.h>
 #include <uuki/base/logging.h>
 #include <uuki/base/macros.h>
-#include <uuki/base/math.h>
 #include <uuki/base/platform.h>
 #include <uuki/base/status.h>
 
@@ -26,36 +25,10 @@ static const size_t
 w__mem_min_alignment = sizeof(void *);
 
 static size_t
-w__mem_max(size_t a,
-           size_t b)
-{
-    return a > b ? a : b;
-}
-
-static size_t
 w__mem_min(size_t a,
            size_t b)
 {
     return a < b ? a : b;
-}
-
-// Public Helpers
-// ---------------------------------------------------------------- //   O-(''Q)
-
-void
-w_grow_cap_pow2(size_t *cap,
-                size_t req,
-                size_t element_size)
-{
-    req = w__mem_max(*cap * 2, req);
-
-    W_ASSERT(!W_UINT_IS_MUL_WRAPPING(SIZE_MAX, req, element_size));
-    if (W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, req * element_size)) {
-        *cap = SIZE_MAX / element_size;
-        return;
-    }
-
-    *cap = w_size_round_up_pow2(req);
 }
 
 // System Allocator: Definitions

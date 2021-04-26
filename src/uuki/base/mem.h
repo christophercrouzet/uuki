@@ -65,11 +65,6 @@ struct w_linear_alloc {
     size_t alignment;
 };
 
-void
-w_grow_cap_pow2(size_t *cap,
-                size_t req,
-                size_t element_size);
-
 enum w_status
 w_linear_alloc_create(struct w_linear_alloc *alloc,
                       struct w_alloc *parent,
