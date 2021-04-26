@@ -1,10 +1,11 @@
 #ifndef UUKI_BASE_PRIVATE_ARRAY_H
 #define UUKI_BASE_PRIVATE_ARRAY_H
 
-#include <uuki/base/mem.h>
 #include <uuki/base/status.h>
 
 #include <stddef.h>
+
+struct w_alloc;
 
 enum w_status
 w__array_create(struct w_alloc *alloc,

@@ -2,6 +2,8 @@
 
 #include <uuki/base/macros.h>
 
+#include <stddef.h>
+
 RX_TEST_CASE(macros, round_up_pow2)
 {
     RX_UINT_REQUIRE_EQUAL(

@@ -2,10 +2,12 @@
 
 #include <uuki/base/array.h>
 #include <uuki/base/macros.h>
+#include <uuki/base/mem.h>
 #include <uuki/base/status.h>
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 W_PACKED_STRUCT(data) {
     int8_t a;

@@ -3,6 +3,9 @@
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
 
+#include <stddef.h>
+#include <stdint.h>
+
 RX_TEST_CASE(mem, linear_alloc)
 {
     size_t i;

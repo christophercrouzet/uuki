@@ -2,6 +2,8 @@
 
 #include <uuki/base/logging.h>
 
+#include <stddef.h>
+
 RX_TEST_CASE(logging, styling_off)
 {
     w_set_log_styling(0);
