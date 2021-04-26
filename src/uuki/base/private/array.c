@@ -27,11 +27,9 @@ w__array_grow_cap(size_t *cap,
 {
     req = w__array_max(*cap * 2, req);
 
-    W_ASSERT(!W_UINT_IS_MUL_WRAPPING(SIZE_MAX, req, element_size));
-    if (W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, req * element_size)) {
-        *cap = SIZE_MAX / element_size;
-        return;
-    }
+    W_ASSERT(!W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, req));
+    W_ASSERT(
+        !W_UINT_IS_MUL_WRAPPING(SIZE_MAX, W_ROUND_UP_POW2(req), element_size));
 
     *cap = w_size_round_up_pow2(req);
 }
