@@ -77,6 +77,7 @@ endmacro()
 
 w_add_library(base
     FILES
+        src/uuki/base/bit.c
         src/uuki/base/io.c
         src/uuki/base/logging.c
         src/uuki/base/math.c
