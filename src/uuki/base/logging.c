@@ -1,6 +1,7 @@
 #include "logging.h"
 
 #include <uuki/base/assert.h>
+#include <uuki/base/debugging.h>
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -8,8 +9,13 @@
 #define W__LOGGING_LVL_COUNT                                                   \
     W__LOGGING_LOG_LVL_LAST - W__LOGGING_LOG_LVL_FIRST + 1
 
-static enum w_log_lvl
-w__logging_lvl = W_LOG_LVL_WARNING;
+#if W_DEBUGGING(ENABLED)
+    static enum w_log_lvl
+    w__logging_lvl = W_LOG_LVL_DEBUG;
+#else
+    static enum w_log_lvl
+    w__logging_lvl = W_LOG_LVL_WARNING;
+#endif
 
 static int
 w__logging_styling = 0;
