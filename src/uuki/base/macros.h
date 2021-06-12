@@ -108,22 +108,28 @@
 // ---------------------------------------------------------------- //   O-(''Q)
 
 #define W_UINT_IS_ADD_WRAPPING(max, x, ...)                                    \
-    W__CONCAT(                                                                 \
-        W__UINT_IS_ADD_WRAPPING_,                                              \
-        W__COUNT_ARGS(__VA_ARGS__)                                             \
-    )(max, x, __VA_ARGS__)
+    W__EXPAND(                                                                 \
+        W__CONCAT(                                                             \
+            W__UINT_IS_ADD_WRAPPING_,                                          \
+            W__COUNT_ARGS(__VA_ARGS__)                                         \
+        )(max, x, __VA_ARGS__)                                                 \
+    )
 
 #define W_UINT_IS_SUB_WRAPPING(max, x, ...)                                    \
-    W__CONCAT(                                                                 \
-        W__UINT_IS_SUB_WRAPPING_,                                              \
-        W__COUNT_ARGS(__VA_ARGS__)                                             \
-    )(max, x, __VA_ARGS__)
+    W__EXPAND(                                                                 \
+        W__CONCAT(                                                             \
+            W__UINT_IS_SUB_WRAPPING_,                                          \
+            W__COUNT_ARGS(__VA_ARGS__)                                         \
+        )(max, x, __VA_ARGS__)                                                 \
+    )
 
 #define W_UINT_IS_MUL_WRAPPING(max, x, ...)                                    \
-    W__CONCAT(                                                                 \
-        W__UINT_IS_MUL_WRAPPING_,                                              \
-        W__COUNT_ARGS(__VA_ARGS__)                                             \
-    )(max, x, __VA_ARGS__)
+    W__EXPAND(                                                                 \
+        W__CONCAT(                                                             \
+            W__UINT_IS_MUL_WRAPPING_,                                          \
+            W__COUNT_ARGS(__VA_ARGS__)                                         \
+        )(max, x, __VA_ARGS__)                                                 \
+    )
 
 #define W_IS_ROUND_UP_POW2_WRAPPING(max, x)                                    \
     (!W_IS_POW2(x) && W_ROUND_DOWN_POW2(x) > (max) / 2)
