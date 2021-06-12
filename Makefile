@@ -46,7 +46,7 @@ endef
 # $(2): filters.
 define w_find_files =
 $(foreach _x,$(wildcard $(1:=/*)),$(call \
-	w_find_src_files,$(_x),$(2)) $(filter $(2),$(_x)))
+	w_find_files,$(_x),$(2)) $(filter $(2),$(_x)))
 endef
 
 # ------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ PKGS := $(notdir $(wildcard src/uuki/*))
 $(foreach _x,$(PKGS),$(eval $(call                                             \
     w_create_pkg_rule,$(_x))))
 
-FILES += $(call w_find_src_files,src/uuki,%.h %.c)
+FILES += $(call w_find_files,src/uuki,%.h %.c)
 
 # ------------------------------------------------------------------------------
 

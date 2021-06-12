@@ -174,27 +174,27 @@ endmacro()
 enable_testing()
 
 w_add_test(
-    NAME base_array
+    NAME base-array
     FILES tests/base/array.c
     DEPENDS base)
 
 w_add_test(
-    NAME base_io
+    NAME base-io
     FILES tests/base/io.c
     DEPENDS base)
 
 w_add_test(
-    NAME base_logging
+    NAME base-logging
     FILES tests/base/logging.c
     DEPENDS base)
 
 w_add_test(
-    NAME base_macros
+    NAME base-macros
     FILES tests/base/macros.c
     DEPENDS base)
 
 w_add_test(
-    NAME base_mem
+    NAME base-mem
     FILES tests/base/mem.c
     DEPENDS base)
 
