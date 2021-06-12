@@ -109,6 +109,12 @@ w_set_log_lvl(enum w_log_lvl lvl)
     w__logging_lvl = lvl;
 }
 
+int
+w_get_log_styling()
+{
+    return w__logging_styling;
+}
+
 void
 w_set_log_styling(int styling)
 {
