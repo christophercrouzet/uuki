@@ -67,7 +67,9 @@ macro(w_add_library target)
 
     if (UNIX)
         target_compile_definitions(${target}
-            PUBLIC _POSIX_C_SOURCE=200112L)
+            PUBLIC
+                _DEFAULT_SOURCE
+                _POSIX_C_SOURCE=200112L)
         target_link_libraries(${target}
             PRIVATE pthread)
     endif()
