@@ -93,7 +93,7 @@ w_log(enum w_log_lvl lvl,
 }
 
 enum w_log_lvl
-w_get_log_lvl_prop()
+w_get_log_lvl()
 {
     return w__logging_lvl;
 }

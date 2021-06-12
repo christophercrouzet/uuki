@@ -82,7 +82,7 @@ alloc_error:
         "failed to allocate %zu bytes with a %zu-byte alignment\n",
         size,
         alignment);
-    return W_ERROR_ALLOCATION_FAILED;
+    return W_ERROR_ALLOC_FAILED;
 }
 
 static void
@@ -165,7 +165,7 @@ alloc_error:
         "failed to allocate %zu bytes with a %zu-byte alignment\n",
         size,
         alignment);
-    return W_ERROR_ALLOCATION_FAILED;
+    return W_ERROR_ALLOC_FAILED;
 }
 
 static struct w_alloc

@@ -5,7 +5,7 @@
 
 #define W_LOG(lvl, ...)                                                        \
     do {                                                                       \
-        if ((lvl) <= w_get_log_lvl_prop()) {                                   \
+        if ((lvl) <= w_get_log_lvl()) {                                        \
             w_log((lvl), __FILE__, __LINE__, __VA_ARGS__);                     \
         }                                                                      \
     } while (0)
@@ -53,7 +53,7 @@ w_log(enum w_log_lvl lvl,
       ...);
 
 enum w_log_lvl
-w_get_log_lvl_prop();
+w_get_log_lvl();
 
 void
 w_set_log_lvl(enum w_log_lvl lvl);
