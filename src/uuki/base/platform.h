@@ -1,6 +1,7 @@
 #ifndef UUKI_BASE_PLATFORM_H
 #define UUKI_BASE_PLATFORM_H
 
+#include <assert.h>
 #include <stddef.h>
 
 #define W_COMPILER(x)                                                          \
@@ -161,12 +162,12 @@
     #endif
 #endif
 
-_Static_assert(
+static_assert(
     W_PTR_SIZE == sizeof(void *), "could not determine the pointer size");
 
 #define W_SIZE_T_SIZE W_PTR_SIZE
 
-_Static_assert(
+static_assert(
     W_SIZE_T_SIZE == sizeof(size_t), "could not determine the size_t size");
 
 #endif // UUKI_BASE_PLATFORM_H
