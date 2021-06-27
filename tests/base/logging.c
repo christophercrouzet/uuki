@@ -25,8 +25,10 @@ RX_TEST_CASE(logging, styling_on)
 }
 
 int
-main(int argc,
-     const char **argv)
+main(
+    int argc,
+    const char **argv
+)
 {
     w_set_log_lvl(W_LOG_LVL_ALL);
     return rx_main(0, NULL, argc, argv) == RX_SUCCESS ? 0 : 1;

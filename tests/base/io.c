@@ -25,8 +25,10 @@ RX_TEST_CASE(io, main)
 }
 
 int
-main(int argc,
-     const char **argv)
+main(
+    int argc,
+    const char **argv
+)
 {
     return rx_main(0, NULL, argc, argv) == RX_SUCCESS ? 0 : 1;
 }

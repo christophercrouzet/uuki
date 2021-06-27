@@ -8,8 +8,10 @@
 #include <stdlib.h>
 
 static enum w_status
-w_run(struct w_alloc *alloc,
-      const char *path)
+w_run(
+    struct w_alloc *alloc,
+    const char *path
+)
 {
     enum w_status status;
     struct w_file file;
@@ -20,27 +22,32 @@ w_run(struct w_alloc *alloc,
     W_ASSERT(path != NULL);
 
     status = w_file_open(&file, path);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         goto exit;
     }
 
     status = w_file_read(&size, NULL, &file);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         goto exit;
     }
 
     status = W_ALLOCATE(alloc, &buf, size);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         goto exit;
     }
 
     status = w_file_read(&size, buf, &file);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         goto buf_cleanup;
     }
 
     status = w_file_close(&file);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         goto buf_cleanup;
     }
 
@@ -52,28 +59,33 @@ exit:
 }
 
 int
-main(int argc,
-     const char **argv)
+main(
+    int argc,
+    const char **argv
+)
 {
     enum w_status status;
     struct w_alloc alloc;
     struct w_linear_alloc linear_alloc;
 
-    if (argc < 2) {
+    if (argc < 2)
+    {
         W_LOG_WARNING("no input files\n");
         return EXIT_SUCCESS;
     }
 
     status = w_linear_alloc_create(
         &linear_alloc, NULL, 4096, W_DEFAULT_ALIGNMENT);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         goto exit;
     }
 
     w_linear_alloc_get_universal_alloc(&alloc, &linear_alloc);
 
     status = w_run(&alloc, argv[1]);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         goto linear_alloc_cleanup;
     }
 

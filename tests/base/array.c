@@ -38,8 +38,9 @@ RX_TEST_CASE(array, main)
 
     // Extension without reallocation.
     status = w__data_array_extend(&alloc, &slice, &array, 3);
-    for (i = 0; i < 3; ++i) {
-        slice[i] = (struct data){
+    for (i = 0; i < 3; ++i)
+    {
+        slice[i] = (struct data) {
             (int8_t)i,
             (int32_t)(i * i),
         };
@@ -59,8 +60,9 @@ RX_TEST_CASE(array, main)
 
     // Extension with reallocation.
     status = w__data_array_extend(&alloc, &slice, &array, 2);
-    for (i = 0; i < 2; ++i) {
-        slice[i] = (struct data){
+    for (i = 0; i < 2; ++i)
+    {
+        slice[i] = (struct data) {
             (int8_t)i,
             (int32_t)((i + 3) * (i + 3) * (i + 3)),
         };
@@ -86,8 +88,10 @@ RX_TEST_CASE(array, main)
 }
 
 int
-main(int argc,
-     const char **argv)
+main(
+    int argc,
+    const char **argv
+)
 {
     return rx_main(0, NULL, argc, argv) == RX_SUCCESS ? 0 : 1;
 }

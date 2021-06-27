@@ -3,7 +3,9 @@
 #include <stdint.h>
 
 uint32_t
-w_count_leading_zero_bits_32(uint32_t x)
+w_count_leading_zero_bits_32(
+    uint32_t x
+)
 {
     unsigned long idx;
 
@@ -12,7 +14,9 @@ w_count_leading_zero_bits_32(uint32_t x)
 }
 
 uint64_t
-w_count_leading_zero_bits_64(uint64_t x)
+w_count_leading_zero_bits_64(
+    uint64_t x
+)
 {
     unsigned long idx;
 

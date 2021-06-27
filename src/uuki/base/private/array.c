@@ -14,16 +14,20 @@
     (SIZE_MAX / (element_size))
 
 static size_t
-w__array_max(size_t a,
-             size_t b)
+w__array_max(
+    size_t a,
+    size_t b
+)
 {
     return a > b ? a : b;
 }
 
 static void
-w__array_grow_cap(size_t *cap,
-                  size_t req,
-                  size_t element_size)
+w__array_grow_cap(
+    size_t *cap,
+    size_t req,
+    size_t element_size
+)
 {
     req = w__array_max(*cap * 2, req);
 
@@ -35,12 +39,14 @@ w__array_grow_cap(size_t *cap,
 }
 
 static enum w_status
-w__array_realloc(struct w_alloc *alloc,
-                 size_t element_size,
-                 size_t alignment,
-                 void **buf,
-                 size_t *cap,
-                 size_t req)
+w__array_realloc(
+    struct w_alloc *alloc,
+    size_t element_size,
+    size_t alignment,
+    void **buf,
+    size_t *cap,
+    size_t req
+)
 {
     enum w_status status;
     size_t new_cap;
@@ -60,8 +66,10 @@ w__array_realloc(struct w_alloc *alloc,
         buf,
         element_size * (*cap),
         element_size * new_cap,
-        alignment);
-    if (status != W_SUCCESS) {
+        alignment
+    );
+    if (status != W_SUCCESS)
+    {
         W_LOG_DEBUG("failed to reallocate the array\n");
         return status;
     }
@@ -73,13 +81,15 @@ w__array_realloc(struct w_alloc *alloc,
 }
 
 enum w_status
-w__array_create(struct w_alloc *alloc,
-                size_t element_size,
-                size_t alignment,
-                void **array_buf,
-                size_t *array_cap,
-                size_t *array_count,
-                size_t cap)
+w__array_create(
+    struct w_alloc *alloc,
+    size_t element_size,
+    size_t alignment,
+    void **array_buf,
+    size_t *array_cap,
+    size_t *array_count,
+    size_t cap
+)
 {
     enum w_status status;
     void *buf;
@@ -90,7 +100,8 @@ w__array_create(struct w_alloc *alloc,
     W_ASSERT(array_cap != NULL);
     W_ASSERT(array_count != NULL);
 
-    if (cap > W__ARRAY_GET_MAX_CAP(element_size)) {
+    if (cap > W__ARRAY_GET_MAX_CAP(element_size))
+    {
         W_LOG_ERROR("the requested capacity is too large\n");
         return W_ERROR_MAX_SIZE_EXCEEDED;
     }
@@ -99,7 +110,8 @@ w__array_create(struct w_alloc *alloc,
     new_cap = 0;
     status = w__array_realloc(
         alloc, element_size, alignment, &buf, &new_cap, cap);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         W_LOG_DEBUG("failed to create the array\n");
         return status;
     }
@@ -113,11 +125,13 @@ w__array_create(struct w_alloc *alloc,
 }
 
 void
-w__array_destroy(struct w_alloc *alloc,
-                 size_t element_size,
-                 size_t alignment,
-                 void *array_buf,
-                 size_t array_cap)
+w__array_destroy(
+    struct w_alloc *alloc,
+    size_t element_size,
+    size_t alignment,
+    void *array_buf,
+    size_t array_cap
+)
 {
     W_ASSERT(alloc != NULL);
     W_ASSERT(array_buf != NULL);
@@ -126,18 +140,21 @@ w__array_destroy(struct w_alloc *alloc,
         alloc,
         array_buf,
         element_size * array_cap,
-        alignment);
+        alignment
+    );
 }
 
 enum w_status
-w__array_extend(struct w_alloc *alloc,
-                size_t element_size,
-                size_t alignment,
-                void **slice,
-                void **array_buf,
-                size_t *array_cap,
-                size_t *array_count,
-                size_t count)
+w__array_extend(
+    struct w_alloc *alloc,
+    size_t element_size,
+    size_t alignment,
+    void **slice,
+    void **array_buf,
+    size_t *array_cap,
+    size_t *array_count,
+    size_t count
+)
 {
     enum w_status status;
     size_t cap;
@@ -160,7 +177,8 @@ w__array_extend(struct w_alloc *alloc,
     }
 
     count += *array_count;
-    if (*array_cap >= count) {
+    if (*array_cap >= count)
+    {
         goto exit;
     }
 
@@ -168,7 +186,8 @@ w__array_extend(struct w_alloc *alloc,
     cap = *array_cap;
     status = w__array_realloc(
         alloc, element_size, alignment, &buf, &cap, count);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         W_LOG_DEBUG("failed to extend the array\n");
         return status;
     }

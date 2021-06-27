@@ -4,11 +4,14 @@
 #include <stdarg.h>
 
 #define W_LOG(lvl, ...)                                                        \
-    do {                                                                       \
-        if ((lvl) <= w_get_log_lvl()) {                                        \
+    do                                                                         \
+    {                                                                          \
+        if ((lvl) <= w_get_log_lvl())                                          \
+        {                                                                      \
             w_log((lvl), __FILE__, __LINE__, __VA_ARGS__);                     \
         }                                                                      \
-    } while (0)
+    }                                                                          \
+    while (0)
 
 #define W_LOG_FATAL(...)                                                       \
     W_LOG(W_LOG_LVL_FATAL, __VA_ARGS__)
@@ -39,29 +42,41 @@ enum w_log_lvl {
 };
 
 void
-w_vlog(enum w_log_lvl lvl,
-       const char *file,
-       int line,
-       const char *fmt,
-       va_list args);
+w_vlog(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    const char *fmt,
+    va_list args
+);
 
 void
-w_log(enum w_log_lvl lvl,
-      const char *file,
-      int line,
-      const char *fmt,
-      ...);
+w_log(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    const char *fmt,
+    ...
+);
 
 enum w_log_lvl
-w_get_log_lvl();
+w_get_log_lvl(
+    void
+);
 
 void
-w_set_log_lvl(enum w_log_lvl lvl);
+w_set_log_lvl(
+    enum w_log_lvl lvl
+);
 
 int
-w_get_log_styling();
+w_get_log_styling(
+    void
+);
 
 void
-w_set_log_styling(int styling);
+w_set_log_styling(
+    int styling
+);
 
 #endif // UUKI_BASE_LOGGING_H

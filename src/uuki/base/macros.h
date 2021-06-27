@@ -24,7 +24,7 @@
 
 #define W_ILOG2(x)                                                             \
     (                                                                          \
-        (x) < 2 ? 0 :                                                          \
+        (x) < 2            ?  0 :                                              \
         (x) & (1ULL << 63) ? 63 :                                              \
         (x) & (1ULL << 63) ? 63 :                                              \
         (x) & (1ULL << 62) ? 62 :                                              \
@@ -138,9 +138,15 @@
 // ---------------------------------------------------------------- //   O-(''Q)
 
 #define W_ARE_BUFS_OVERLAPPING(a, b, size)                                     \
-    (((uintptr_t)(a) <= (uintptr_t)(b)                                         \
-         && (uintptr_t)(a) + (size) > (uintptr_t)(b))                          \
-     || ((uintptr_t)(b) <= (uintptr_t)(a)                                      \
-         && (uintptr_t)(b) + (size) > (uintptr_t)(a)))
+    (                                                                          \
+        (                                                                      \
+            ((uintptr_t)(a) <= (uintptr_t)(b))                                 \
+            && ((uintptr_t)(a) + (size) > (uintptr_t)(b))                      \
+        )                                                                      \
+        || (                                                                   \
+            ((uintptr_t)(b) <= (uintptr_t)(a))                                 \
+            && ((uintptr_t)(b) + (size) > (uintptr_t)(a))                      \
+        )                                                                      \
+    )
 
 #endif // UUKI_BASE_MACROS_H

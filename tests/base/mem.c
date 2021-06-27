@@ -26,7 +26,8 @@ RX_TEST_CASE(mem, linear_alloc)
 
     // Allocate 3 bytes with a 4096-byte alignment.
     status = w_linear_alloc_allocate(&linear_alloc, &ptr, 3, 4096);
-    for (i = 0; i < 3; ++i) {
+    for (i = 0; i < 3; ++i)
+    {
         ((unsigned char *)ptr)[i] = (unsigned char)i;
     }
 
@@ -46,7 +47,8 @@ RX_TEST_CASE(mem, linear_alloc)
     // Allocate 2 bytes with a 128-byte alignment.
     ptr = (void *)((uintptr_t)linear_alloc.buf + 3);
     status = w_linear_alloc_allocate(&linear_alloc, &ptr, 2, 128);
-    for (i = 0; i < 2; ++i) {
+    for (i = 0; i < 2; ++i)
+    {
         ((unsigned char *)ptr)[i] = (unsigned char)((i + 3) * 2);
     }
 
@@ -70,7 +72,8 @@ RX_TEST_CASE(mem, linear_alloc)
     // Reallocate the last block.
     ptr = (void *)((uintptr_t)linear_alloc.buf + 128);
     status = w_linear_alloc_reallocate(&linear_alloc, &ptr, 2, 5, 128);
-    for (i = 2; i < 5; ++i) {
+    for (i = 2; i < 5; ++i)
+    {
         ((unsigned char *)ptr)[i] = (unsigned char)((i + 3) * 2);
     }
 
@@ -97,7 +100,8 @@ RX_TEST_CASE(mem, linear_alloc)
     // Reallocate the first block.
     ptr = linear_alloc.buf;
     status = w_linear_alloc_reallocate(&linear_alloc, &ptr, 3, 6, 4096);
-    for (i = 3; i < 6; ++i) {
+    for (i = 3; i < 6; ++i)
+    {
         ((unsigned char *)ptr)[i] = (unsigned char)i;
     }
 
@@ -133,7 +137,8 @@ RX_TEST_CASE(mem, linear_alloc)
     // the universal allocator interface.
     w_linear_alloc_get_universal_alloc(&alloc, &linear_alloc);
     status = alloc.allocate(alloc.inst, &ptr, 5, 64);
-    for (i = 0; i < 5; ++i) {
+    for (i = 0; i < 5; ++i)
+    {
         ((unsigned char *)ptr)[i] = (unsigned char)((i + 5) * 3);
     }
 
@@ -176,8 +181,10 @@ RX_TEST_CASE(mem, linear_alloc)
 }
 
 int
-main(int argc,
-     const char **argv)
+main(
+    int argc,
+    const char **argv
+)
 {
     return rx_main(0, NULL, argc, argv) == RX_SUCCESS ? 0 : 1;
 }

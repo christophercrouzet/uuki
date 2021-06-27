@@ -19,9 +19,11 @@
     name##_alignment = W_ROUND_UP_POW2(sizeof(type));                          \
                                                                                \
     static enum w_status                                                       \
-    name##_create(struct w_alloc *alloc,                                       \
-                  struct name *array,                                          \
-                  size_t cap)                                                  \
+    name##_create(                                                             \
+        struct w_alloc *alloc,                                                 \
+        struct name *array,                                                    \
+        size_t cap                                                             \
+    )                                                                          \
     {                                                                          \
         W_ASSERT(alloc != NULL);                                               \
         W_ASSERT(array != NULL);                                               \
@@ -33,12 +35,15 @@
             (void **)&array->buf,                                              \
             &array->cap,                                                       \
             &array->count,                                                     \
-            cap);                                                              \
+            cap                                                                \
+        );                                                                     \
     }                                                                          \
                                                                                \
     static void                                                                \
-    name##_destroy(struct w_alloc *alloc,                                      \
-                   struct name *array)                                         \
+    name##_destroy(                                                            \
+        struct w_alloc *alloc,                                                 \
+        struct name *array                                                     \
+    )                                                                          \
     {                                                                          \
         W_ASSERT(alloc != NULL);                                               \
         W_ASSERT(array != NULL);                                               \
@@ -48,14 +53,17 @@
             sizeof(type),                                                      \
             name##_alignment,                                                  \
             (void *)array->buf,                                                \
-            array->cap);                                                       \
+            array->cap                                                         \
+        );                                                                     \
     }                                                                          \
                                                                                \
     static enum w_status                                                       \
-    name##_extend(struct w_alloc *alloc,                                       \
-                  type **slice,                                                \
-                  struct name *array,                                          \
-                  size_t count)                                                \
+    name##_extend(                                                             \
+        struct w_alloc *alloc,                                                 \
+        type **slice,                                                          \
+        struct name *array,                                                    \
+        size_t count                                                           \
+    )                                                                          \
     {                                                                          \
         W_ASSERT(alloc != NULL);                                               \
         W_ASSERT(slice != NULL);                                               \
@@ -70,7 +78,8 @@
             (void **)&array->buf,                                              \
             &array->cap,                                                       \
             &array->count,                                                     \
-            count);                                                            \
+            count                                                              \
+        );                                                                     \
     }                                                                          \
                                                                                \
     W_REQUIRE_SEMICOLON

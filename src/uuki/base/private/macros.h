@@ -19,7 +19,9 @@
     W__EXPAND(                                                                 \
         W__ARG(                                                                \
             __VA_ARGS__,                                                       \
-            8, 7, 6, 5, 4, 3, 2, 1, 0,))
+            8, 7, 6, 5, 4, 3, 2, 1, 0,                                         \
+        )                                                                      \
+    )
 
 #define W__UINT_IS_ADD_WRAPPING_1(max, x1, x2)                                 \
     ((x1) > (max) - (x2))

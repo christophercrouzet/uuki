@@ -9,7 +9,9 @@
 #include <stdint.h>
 
 uint32_t
-w_round_up_pow2_32(uint32_t x)
+w_round_up_pow2_32(
+    uint32_t x
+)
 {
     W_ASSERT(!W_IS_ROUND_UP_POW2_WRAPPING(UINT32_MAX, x));
 
@@ -19,7 +21,9 @@ w_round_up_pow2_32(uint32_t x)
 }
 
 uint64_t
-w_round_up_pow2_64(uint64_t x)
+w_round_up_pow2_64(
+    uint64_t x
+)
 {
     W_ASSERT(!W_IS_ROUND_UP_POW2_WRAPPING(UINT64_MAX, x));
 
@@ -29,7 +33,9 @@ w_round_up_pow2_64(uint64_t x)
 }
 
 size_t
-w_size_round_up_pow2(size_t x)
+w_size_round_up_pow2(
+    size_t x
+)
 {
     W_ASSERT(!W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, x));
 

@@ -59,33 +59,39 @@ w__logging_lvl_style_end[2] = {
 };
 
 void
-w_vlog(enum w_log_lvl lvl,
-       const char *file,
-       int line,
-       const char *fmt,
-       va_list args)
+w_vlog(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    const char *fmt,
+    va_list args
+)
 {
     W_ASSERT(w__logging_styling == 0 || w__logging_styling == 1);
     W_ASSERT(lvl >= W__LOGGING_LOG_LVL_FIRST && lvl <= W__LOGGING_LOG_LVL_LAST);
     W_ASSERT(file != NULL);
     W_ASSERT(fmt != NULL);
 
-    fprintf(stderr,
-            "%s:%d: %s%s%s: ",
-            file,
-            line,
-            w__logging_lvl_style_begin[w__logging_styling][lvl],
-            w__logging_lvl_name[lvl],
-            w__logging_lvl_style_end[w__logging_styling]);
+    fprintf(
+        stderr,
+        "%s:%d: %s%s%s: ",
+        file,
+        line,
+        w__logging_lvl_style_begin[w__logging_styling][lvl],
+        w__logging_lvl_name[lvl],
+        w__logging_lvl_style_end[w__logging_styling]
+    );
     vfprintf(stderr, fmt, args);
 }
 
 void
-w_log(enum w_log_lvl lvl,
-      const char *file,
-      int line,
-      const char *fmt,
-      ...)
+w_log(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    const char *fmt,
+    ...
+)
 {
     va_list args;
 
@@ -99,15 +105,20 @@ w_log(enum w_log_lvl lvl,
 }
 
 enum w_log_lvl
-w_get_log_lvl()
+w_get_log_lvl(
+    void
+)
 {
     return w__logging_lvl;
 }
 
 void
-w_set_log_lvl(enum w_log_lvl lvl)
+w_set_log_lvl(
+    enum w_log_lvl lvl
+)
 {
-    if (lvl < W__LOGGING_LOG_LVL_FIRST || lvl > W__LOGGING_LOG_LVL_LAST) {
+    if (lvl < W__LOGGING_LOG_LVL_FIRST || lvl > W__LOGGING_LOG_LVL_LAST)
+    {
         W_LOG_ERROR("level out of range\n");
         return;
     }
@@ -116,13 +127,17 @@ w_set_log_lvl(enum w_log_lvl lvl)
 }
 
 int
-w_get_log_styling()
+w_get_log_styling(
+    void
+)
 {
     return w__logging_styling;
 }
 
 void
-w_set_log_styling(int styling)
+w_set_log_styling(
+    int styling
+)
 {
     w__logging_styling = styling != 0;
 }

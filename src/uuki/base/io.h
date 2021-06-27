@@ -11,15 +11,21 @@ struct w_file {
 };
 
 enum w_status
-w_file_open(struct w_file *file,
-            const char *path);
+w_file_open(
+    struct w_file *file,
+    const char *path
+);
 
 enum w_status
-w_file_read(size_t *size,
-            void *buf,
-            struct w_file *file);
+w_file_read(
+    size_t *size,
+    void *buf,
+    struct w_file *file
+);
 
 enum w_status
-w_file_close(struct w_file *file);
+w_file_close(
+    struct w_file *file
+);
 
 #endif // UUKI_BASE_IO_H

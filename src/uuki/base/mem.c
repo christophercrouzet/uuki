@@ -15,8 +15,10 @@
         UINTPTR_MAX, (uintptr_t)(ptr), (uintptr_t)(alignment) - 1)
 
 #define W__MEM_ALIGN_UP(ptr, alignment)                                        \
-    (((uintptr_t)(ptr) + (uintptr_t)(alignment) - 1)                           \
-     & ~((uintptr_t)(alignment) - 1))
+    (                                                                          \
+        ((uintptr_t)(ptr) + (uintptr_t)(alignment) - 1)                        \
+        & ~((uintptr_t)(alignment) - 1)                                        \
+    )
 
 // Any power of two alignment that is greater or equal to this value
 // is guaranteed to be a multiple of `sizeof(void *)`, thus conforming to
@@ -25,8 +27,10 @@ static const size_t
 w__mem_min_alignment = sizeof(void *);
 
 static size_t
-w__mem_min(size_t a,
-           size_t b)
+w__mem_min(
+    size_t a,
+    size_t b
+)
 {
     return a < b ? a : b;
 }
@@ -41,10 +45,12 @@ w__mem_min(size_t a,
 #endif
 
 static enum w_status
-w__mem_sys_alloc_allocate(void *inst,
-                          void **ptr,
-                          size_t size,
-                          size_t alignment)
+w__mem_sys_alloc_allocate(
+    void *inst,
+    void **ptr,
+    size_t size,
+    size_t alignment
+)
 {
     void *buf;
 
@@ -54,7 +60,8 @@ w__mem_sys_alloc_allocate(void *inst,
     W_ASSERT(size == 0 || W_IS_POW2(alignment));
     W_ASSERT(alignment >= w__mem_min_alignment);
 
-    if (size == 0) {
+    if (size == 0)
+    {
         *ptr = NULL;
         return W_SUCCESS;
     }
@@ -62,13 +69,15 @@ w__mem_sys_alloc_allocate(void *inst,
 #if W_OS(WINDOWS)
     {
         buf = _aligned_malloc(size, alignment);
-        if (buf == NULL) {
+        if (buf == NULL)
+        {
             goto alloc_error;
         }
     }
 #else
     {
-        if (posix_memalign(&buf, alignment, size) != 0) {
+        if (posix_memalign(&buf, alignment, size) != 0)
+        {
             goto alloc_error;
         }
     }
@@ -81,15 +90,18 @@ alloc_error:
     W_LOG_ERROR(
         "failed to allocate %zu bytes with a %zu-byte alignment\n",
         size,
-        alignment);
+        alignment
+    );
     return W_ERROR_ALLOC_FAILED;
 }
 
 static void
-w__mem_sys_alloc_free(void *inst,
-                      const void *ptr,
-                      size_t size,
-                      size_t alignment)
+w__mem_sys_alloc_free(
+    void *inst,
+    const void *ptr,
+    size_t size,
+    size_t alignment
+)
 {
     W_UNUSED_PARAM(inst);
     W_UNUSED_PARAM(size);
@@ -113,11 +125,13 @@ w__mem_sys_alloc_free(void *inst,
 }
 
 static enum w_status
-w__mem_sys_alloc_reallocate(void *inst,
-                            void **ptr,
-                            size_t prev_size,
-                            size_t size,
-                            size_t alignment)
+w__mem_sys_alloc_reallocate(
+    void *inst,
+    void **ptr,
+    size_t prev_size,
+    size_t size,
+    size_t alignment
+)
 {
     void *buf;
 
@@ -127,29 +141,34 @@ w__mem_sys_alloc_reallocate(void *inst,
     W_ASSERT(size == 0 || W_IS_POW2(alignment));
     W_ASSERT(alignment >= w__mem_min_alignment);
 
-    if (*ptr == NULL) {
+    if (*ptr == NULL)
+    {
         return w__mem_sys_alloc_allocate(inst, ptr, size, alignment);
     }
 
-    if (size == 0) {
+    if (size == 0)
+    {
         w__mem_sys_alloc_free(inst, ptr, size, alignment);
         return W_SUCCESS;
     }
 
-    if (size <= prev_size) {
+    if (size <= prev_size)
+    {
         return W_SUCCESS;
     }
 
 #if W_OS(WINDOWS)
     {
         buf = _aligned_realloc(*ptr, size, alignment);
-        if (buf == NULL) {
+        if (buf == NULL)
+        {
             goto alloc_error;
         }
     }
 #else
     {
-        if (posix_memalign(&buf, alignment, size) != 0) {
+        if (posix_memalign(&buf, alignment, size) != 0)
+        {
             goto alloc_error;
         }
 
@@ -164,7 +183,8 @@ alloc_error:
     W_LOG_ERROR(
         "failed to allocate %zu bytes with a %zu-byte alignment\n",
         size,
-        alignment);
+        alignment
+    );
     return W_ERROR_ALLOC_FAILED;
 }
 
@@ -180,8 +200,10 @@ w__mem_sys_alloc = {
 // ---------------------------------------------------------------- //   O-(''Q)
 
 static enum w_status
-w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
-                             size_t size)
+w__mem_linear_alloc_allocate(
+    struct w_linear_alloc *alloc,
+    size_t size
+)
 {
     enum w_status status;
     void *buf;
@@ -189,20 +211,23 @@ w__mem_linear_alloc_allocate(struct w_linear_alloc *alloc,
 
     status = W_SUCCESS;
 
-    if (W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, size)) {
+    if (W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, size))
+    {
         W_LOG_ERROR("the size and/or alignment requested are too large\n");
         return W_ERROR_MAX_SIZE_EXCEEDED;
     }
 
     cap = alloc->used + size;
-    if (alloc->cap >= cap) {
+    if (alloc->cap >= cap)
+    {
         goto exit;
     }
 
     buf = alloc->buf;
     status = alloc->parent->reallocate(
         alloc->parent->inst, &buf, alloc->cap, cap, alloc->alignment);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         return status;
     }
 
@@ -217,27 +242,32 @@ exit:
 }
 
 enum w_status
-w_linear_alloc_create(struct w_linear_alloc *alloc,
-                      struct w_alloc *parent,
-                      size_t size,
-                      size_t alignment)
+w_linear_alloc_create(
+    struct w_linear_alloc *alloc,
+    struct w_alloc *parent,
+    size_t size,
+    size_t alignment
+)
 {
     enum w_status status;
     void *buf;
 
     W_ASSERT(alloc != NULL);
 
-    if (parent == NULL) {
+    if (parent == NULL)
+    {
         parent = &w__mem_sys_alloc;
     }
 
-    if (alignment < w__mem_min_alignment) {
+    if (alignment < w__mem_min_alignment)
+    {
         alignment = w__mem_min_alignment;
     }
 
     buf = NULL;
     status = parent->allocate(parent->inst, &buf, size, alignment);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         W_LOG_DEBUG("failed to create the linear allocator\n");
         return status;
     }
@@ -253,7 +283,9 @@ w_linear_alloc_create(struct w_linear_alloc *alloc,
 }
 
 void
-w_linear_alloc_destroy(struct w_linear_alloc *alloc)
+w_linear_alloc_destroy(
+    struct w_linear_alloc *alloc
+)
 {
     W_ASSERT(alloc != NULL);
 
@@ -262,10 +294,12 @@ w_linear_alloc_destroy(struct w_linear_alloc *alloc)
 }
 
 enum w_status
-w_linear_alloc_allocate(void *inst,
-                        void **ptr,
-                        size_t size,
-                        size_t alignment)
+w_linear_alloc_allocate(
+    void *inst,
+    void **ptr,
+    size_t size,
+    size_t alignment
+)
 {
     enum w_status status;
     struct w_linear_alloc *alloc;
@@ -280,12 +314,14 @@ w_linear_alloc_allocate(void *inst,
 
     alloc = (struct w_linear_alloc *)inst;
 
-    if (size == 0) {
+    if (size == 0)
+    {
         *ptr = NULL;
         return W_SUCCESS;
     }
 
-    if (alignment < w__mem_min_alignment) {
+    if (alignment < w__mem_min_alignment)
+    {
         alignment = w__mem_min_alignment;
     }
 
@@ -296,7 +332,8 @@ w_linear_alloc_allocate(void *inst,
     padding = (uintptr_t)W__MEM_ALIGN_UP(end, alignment) - end;
 
     status = w__mem_linear_alloc_allocate(alloc, size + padding);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         return status;
     }
 
@@ -307,10 +344,12 @@ w_linear_alloc_allocate(void *inst,
 }
 
 void
-w_linear_alloc_free(void *inst,
-                    const void *ptr,
-                    size_t size,
-                    size_t alignment)
+w_linear_alloc_free(
+    void *inst,
+    const void *ptr,
+    size_t size,
+    size_t alignment
+)
 {
     W_UNUSED_PARAM(inst);
     W_UNUSED_PARAM(ptr);
@@ -322,11 +361,13 @@ w_linear_alloc_free(void *inst,
 }
 
 enum w_status
-w_linear_alloc_reallocate(void *inst,
-                          void **ptr,
-                          size_t prev_size,
-                          size_t size,
-                          size_t alignment)
+w_linear_alloc_reallocate(
+    void *inst,
+    void **ptr,
+    size_t prev_size,
+    size_t size,
+    size_t alignment
+)
 {
     enum w_status status;
     struct w_linear_alloc *alloc;
@@ -343,16 +384,19 @@ w_linear_alloc_reallocate(void *inst,
 
     alloc = (struct w_linear_alloc *)inst;
 
-    if (*ptr == NULL) {
+    if (*ptr == NULL)
+    {
         return w_linear_alloc_allocate(inst, ptr, size, alignment);
     }
 
-    if (size == 0) {
+    if (size == 0)
+    {
         w_linear_alloc_free(inst, ptr, size, alignment);
         return W_SUCCESS;
     }
 
-    if (alignment < w__mem_min_alignment) {
+    if (alignment < w__mem_min_alignment)
+    {
         alignment = w__mem_min_alignment;
     }
 
@@ -364,21 +408,25 @@ w_linear_alloc_reallocate(void *inst,
     src_offset = (uintptr_t)*ptr - (uintptr_t)alloc->buf;
     dst_offset = alloc->used;
 
-    if ((uintptr_t)*ptr + prev_size == end) {
+    if ((uintptr_t)*ptr + prev_size == end)
+    {
         // The block to reallocate is the last one in the buffer.
 
-        if (size <= prev_size) {
+        if (size <= prev_size)
+        {
             // Shrink in-place.
             alloc->used -= prev_size - size;
             return W_SUCCESS;
         }
 
-        if (W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, size - prev_size)) {
+        if (W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, size - prev_size))
+        {
             W_LOG_ERROR("the size requested is too large\n");
             return W_ERROR_MAX_SIZE_EXCEEDED;
         }
 
-        if (alloc->cap >= alloc->used + size - prev_size) {
+        if (alloc->cap >= alloc->used + size - prev_size)
+        {
             // Grow in-place.
             alloc->used += size - prev_size;
             return W_SUCCESS;
@@ -396,20 +444,25 @@ w_linear_alloc_reallocate(void *inst,
     dst_offset += padding;
 
     status = w__mem_linear_alloc_allocate(alloc, size + padding);
-    if (status != W_SUCCESS) {
+    if (status != W_SUCCESS)
+    {
         return status;
     }
 
-    if (src_offset != dst_offset) {
+    if (src_offset != dst_offset)
+    {
         W_ASSERT(
             !W_ARE_BUFS_OVERLAPPING(
                 (void *)((uintptr_t)alloc->buf + dst_offset),
                 (void *)((uintptr_t)alloc->buf + src_offset),
-                w__mem_min(prev_size, size)));
+                w__mem_min(prev_size, size)
+            )
+        );
         memcpy(
             (void *)((uintptr_t)alloc->buf + dst_offset),
             (void *)((uintptr_t)alloc->buf + src_offset),
-            w__mem_min(prev_size, size));
+            w__mem_min(prev_size, size)
+        );
     }
 
     *ptr = (void *)((uintptr_t)alloc->buf + dst_offset);
@@ -419,8 +472,10 @@ w_linear_alloc_reallocate(void *inst,
 }
 
 void
-w_linear_alloc_get_universal_alloc(struct w_alloc *alloc,
-                                   struct w_linear_alloc *linear_alloc)
+w_linear_alloc_get_universal_alloc(
+    struct w_alloc *alloc,
+    struct w_linear_alloc *linear_alloc
+)
 {
     W_ASSERT(alloc != NULL);
     W_ASSERT(linear_alloc != NULL);
