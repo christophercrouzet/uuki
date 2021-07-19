@@ -37,8 +37,8 @@ enum w_log_lvl {
     W_LOG_LVL_DEBUG           = 5,
     W_LOG_LVL_ALL             = W_LOG_LVL_DEBUG,
 
-    W__LOGGING_LOG_LVL_FIRST  = W_LOG_LVL_NONE,
-    W__LOGGING_LOG_LVL_LAST   = W_LOG_LVL_ALL,
+    WP_LOGGING_LOG_LVL_FIRST  = W_LOG_LVL_NONE,
+    WP_LOGGING_LOG_LVL_LAST   = W_LOG_LVL_ALL,
 };
 
 void

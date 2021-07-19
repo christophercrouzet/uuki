@@ -14,7 +14,7 @@ W_PACKED_STRUCT(data) {
     int32_t b;
 };
 
-W_ARRAY_MAKE(w__data_array, struct data);
+W_ARRAY_MAKE(wp_data_array, struct data);
 
 RX_TEST_CASE(array, main)
 {
@@ -22,14 +22,14 @@ RX_TEST_CASE(array, main)
     int status;
     struct w_alloc alloc;
     struct w_linear_alloc linear_alloc;
-    struct w__data_array array;
+    struct wp_data_array array;
     struct data *slice;
 
     w_linear_alloc_create(&linear_alloc, NULL, 8, sizeof(struct data));
     w_linear_alloc_get_universal_alloc(&alloc, &linear_alloc);
 
     // Creation.
-    status = w__data_array_create(&alloc, &array, 4);
+    status = wp_data_array_create(&alloc, &array, 4);
 
     RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
     RX_REQUIRE(array.buf != NULL);
@@ -37,7 +37,7 @@ RX_TEST_CASE(array, main)
     RX_UINT_REQUIRE_EQUAL(array.cap, 4);
 
     // Extension without reallocation.
-    status = w__data_array_extend(&alloc, &slice, &array, 3);
+    status = wp_data_array_extend(&alloc, &slice, &array, 3);
     for (i = 0; i < 3; ++i)
     {
         slice[i] = (struct data) {
@@ -59,7 +59,7 @@ RX_TEST_CASE(array, main)
         memcmp(&array.buf[2], &(struct data){2, 4}, sizeof(struct data)), 0);
 
     // Extension with reallocation.
-    status = w__data_array_extend(&alloc, &slice, &array, 2);
+    status = wp_data_array_extend(&alloc, &slice, &array, 2);
     for (i = 0; i < 2; ++i)
     {
         slice[i] = (struct data) {
@@ -84,7 +84,7 @@ RX_TEST_CASE(array, main)
         memcmp(&array.buf[4], &(struct data){1, 64}, sizeof(struct data)), 0);
 
     // Destruction.
-    w__data_array_destroy(&alloc, &array);
+    wp_data_array_destroy(&alloc, &array);
 }
 
 int

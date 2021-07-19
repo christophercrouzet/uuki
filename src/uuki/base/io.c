@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 static void
-w__io_debug_error(
+wp_io_debug_error(
     int err_num
 )
 {
@@ -38,7 +38,7 @@ w_file_open(
 
     if (errno != 0)
     {
-        w__io_debug_error(errno);
+        wp_io_debug_error(errno);
     }
 
     W_LOG_ERROR("failed to open the file ‘%s’\n", path);
@@ -65,7 +65,7 @@ w_file_read(
         {
             if (errno != 0)
             {
-                w__io_debug_error(errno);
+                wp_io_debug_error(errno);
             }
 
             W_LOG_ERROR(
@@ -79,7 +79,7 @@ w_file_read(
         {
             if (errno != 0)
             {
-                w__io_debug_error(errno);
+                wp_io_debug_error(errno);
             }
 
             W_LOG_ERROR(
@@ -96,7 +96,7 @@ w_file_read(
     {
         if (errno != 0)
         {
-            w__io_debug_error(errno);
+            wp_io_debug_error(errno);
         }
 
         W_LOG_ERROR("failed to rewind the file ‘%s’\n", file->path);
@@ -108,7 +108,7 @@ w_file_read(
     {
         if (errno != 0)
         {
-            w__io_debug_error(errno);
+            wp_io_debug_error(errno);
         }
 
         W_LOG_ERROR("failed to read the file ‘%s’\n", file->path);
@@ -131,7 +131,7 @@ w_file_close(
     {
         if (errno != 0)
         {
-            w__io_debug_error(errno);
+            wp_io_debug_error(errno);
         }
 
         W_LOG_ERROR("failed to close the file ‘%s’\n", file->path);

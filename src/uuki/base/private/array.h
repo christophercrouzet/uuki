@@ -8,7 +8,7 @@
 struct w_alloc;
 
 enum w_status
-w__array_create(
+wp_array_create(
     struct w_alloc *alloc,
     size_t element_size,
     size_t alignment,
@@ -19,7 +19,7 @@ w__array_create(
 );
 
 void
-w__array_destroy(
+wp_array_destroy(
     struct w_alloc *alloc,
     size_t element_size,
     size_t alignment,
@@ -28,7 +28,7 @@ w__array_destroy(
 );
 
 enum w_status
-w__array_extend(
+wp_array_extend(
     struct w_alloc *alloc,
     size_t element_size,
     size_t alignment,

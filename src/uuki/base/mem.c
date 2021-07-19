@@ -10,11 +10,11 @@
 #include <stdint.h>
 #include <string.h>
 
-#define W__MEM_ALIGN_UP_IS_WRAPPING(ptr, alignment)                            \
+#define WP_MEM_ALIGN_UP_IS_WRAPPING(ptr, alignment)                            \
     W_UINT_IS_ADD_WRAPPING(                                                    \
         UINTPTR_MAX, (uintptr_t)(ptr), (uintptr_t)(alignment) - 1)
 
-#define W__MEM_ALIGN_UP(ptr, alignment)                                        \
+#define WP_MEM_ALIGN_UP(ptr, alignment)                                        \
     (                                                                          \
         ((uintptr_t)(ptr) + (uintptr_t)(alignment) - 1)                        \
         & ~((uintptr_t)(alignment) - 1)                                        \
@@ -24,10 +24,10 @@
 // is guaranteed to be a multiple of `sizeof(void *)`, thus conforming to
 // the requirement of `posix_memalign()`.
 static const size_t
-w__mem_min_alignment = sizeof(void *);
+wp_mem_min_alignment = sizeof(void *);
 
 static size_t
-w__mem_min(
+wp_mem_min(
     size_t a,
     size_t b
 )
@@ -45,7 +45,7 @@ w__mem_min(
 #endif
 
 static enum w_status
-w__mem_sys_alloc_allocate(
+wp_mem_sys_alloc_allocate(
     void *inst,
     void **ptr,
     size_t size,
@@ -58,7 +58,7 @@ w__mem_sys_alloc_allocate(
 
     W_ASSERT(ptr != NULL);
     W_ASSERT(size == 0 || W_IS_POW2(alignment));
-    W_ASSERT(alignment >= w__mem_min_alignment);
+    W_ASSERT(alignment >= wp_mem_min_alignment);
 
     if (size == 0)
     {
@@ -96,7 +96,7 @@ alloc_error:
 }
 
 static void
-w__mem_sys_alloc_free(
+wp_mem_sys_alloc_free(
     void *inst,
     const void *ptr,
     size_t size,
@@ -108,7 +108,7 @@ w__mem_sys_alloc_free(
     W_UNUSED_PARAM(alignment);
 
     W_ASSERT(size == 0 || W_IS_POW2(alignment));
-    W_ASSERT(alignment >= w__mem_min_alignment);
+    W_ASSERT(alignment >= wp_mem_min_alignment);
 
 #if W_OS(WINDOWS)
     _aligned_free((void *)ptr);
@@ -125,7 +125,7 @@ w__mem_sys_alloc_free(
 }
 
 static enum w_status
-w__mem_sys_alloc_reallocate(
+wp_mem_sys_alloc_reallocate(
     void *inst,
     void **ptr,
     size_t prev_size,
@@ -139,16 +139,16 @@ w__mem_sys_alloc_reallocate(
 
     W_ASSERT(ptr != NULL);
     W_ASSERT(size == 0 || W_IS_POW2(alignment));
-    W_ASSERT(alignment >= w__mem_min_alignment);
+    W_ASSERT(alignment >= wp_mem_min_alignment);
 
     if (*ptr == NULL)
     {
-        return w__mem_sys_alloc_allocate(inst, ptr, size, alignment);
+        return wp_mem_sys_alloc_allocate(inst, ptr, size, alignment);
     }
 
     if (size == 0)
     {
-        w__mem_sys_alloc_free(inst, ptr, size, alignment);
+        wp_mem_sys_alloc_free(inst, ptr, size, alignment);
         return W_SUCCESS;
     }
 
@@ -189,10 +189,10 @@ alloc_error:
 }
 
 static struct w_alloc
-w__mem_sys_alloc = {
-    w__mem_sys_alloc_allocate,
-    w__mem_sys_alloc_free,
-    w__mem_sys_alloc_reallocate,
+wp_mem_sys_alloc = {
+    wp_mem_sys_alloc_allocate,
+    wp_mem_sys_alloc_free,
+    wp_mem_sys_alloc_reallocate,
     NULL,
 };
 
@@ -200,7 +200,7 @@ w__mem_sys_alloc = {
 // ---------------------------------------------------------------- //   O-(''Q)
 
 static enum w_status
-w__mem_linear_alloc_allocate(
+wp_mem_linear_alloc_allocate(
     struct w_linear_alloc *alloc,
     size_t size
 )
@@ -256,12 +256,12 @@ w_linear_alloc_create(
 
     if (parent == NULL)
     {
-        parent = &w__mem_sys_alloc;
+        parent = &wp_mem_sys_alloc;
     }
 
-    if (alignment < w__mem_min_alignment)
+    if (alignment < wp_mem_min_alignment)
     {
-        alignment = w__mem_min_alignment;
+        alignment = wp_mem_min_alignment;
     }
 
     buf = NULL;
@@ -320,18 +320,18 @@ w_linear_alloc_allocate(
         return W_SUCCESS;
     }
 
-    if (alignment < w__mem_min_alignment)
+    if (alignment < wp_mem_min_alignment)
     {
-        alignment = w__mem_min_alignment;
+        alignment = wp_mem_min_alignment;
     }
 
     end = (uintptr_t)alloc->buf + alloc->used;
 
     // Compute the padding required to fulfill the requested alignment.
-    W_ASSERT(!W__MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
-    padding = (uintptr_t)W__MEM_ALIGN_UP(end, alignment) - end;
+    W_ASSERT(!WP_MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
+    padding = (uintptr_t)WP_MEM_ALIGN_UP(end, alignment) - end;
 
-    status = w__mem_linear_alloc_allocate(alloc, size + padding);
+    status = wp_mem_linear_alloc_allocate(alloc, size + padding);
     if (status != W_SUCCESS)
     {
         return status;
@@ -395,9 +395,9 @@ w_linear_alloc_reallocate(
         return W_SUCCESS;
     }
 
-    if (alignment < w__mem_min_alignment)
+    if (alignment < wp_mem_min_alignment)
     {
-        alignment = w__mem_min_alignment;
+        alignment = wp_mem_min_alignment;
     }
 
     end = (uintptr_t)alloc->buf + alloc->used;
@@ -438,12 +438,12 @@ w_linear_alloc_reallocate(
     }
 
     // Compute the padding required to fulfill the requested alignment.
-    W_ASSERT(!W__MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
-    padding = (uintptr_t)W__MEM_ALIGN_UP(end, alignment) - end;
+    W_ASSERT(!WP_MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
+    padding = (uintptr_t)WP_MEM_ALIGN_UP(end, alignment) - end;
 
     dst_offset += padding;
 
-    status = w__mem_linear_alloc_allocate(alloc, size + padding);
+    status = wp_mem_linear_alloc_allocate(alloc, size + padding);
     if (status != W_SUCCESS)
     {
         return status;
@@ -455,13 +455,13 @@ w_linear_alloc_reallocate(
             !W_ARE_BUFS_OVERLAPPING(
                 (void *)((uintptr_t)alloc->buf + dst_offset),
                 (void *)((uintptr_t)alloc->buf + src_offset),
-                w__mem_min(prev_size, size)
+                wp_mem_min(prev_size, size)
             )
         );
         memcpy(
             (void *)((uintptr_t)alloc->buf + dst_offset),
             (void *)((uintptr_t)alloc->buf + src_offset),
-            w__mem_min(prev_size, size)
+            wp_mem_min(prev_size, size)
         );
     }
 

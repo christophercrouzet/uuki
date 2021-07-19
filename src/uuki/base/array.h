@@ -28,7 +28,7 @@
         W_ASSERT(alloc != NULL);                                               \
         W_ASSERT(array != NULL);                                               \
                                                                                \
-        return w__array_create(                                                \
+        return wp_array_create(                                                \
             alloc,                                                             \
             sizeof(type),                                                      \
             name##_alignment,                                                  \
@@ -48,7 +48,7 @@
         W_ASSERT(alloc != NULL);                                               \
         W_ASSERT(array != NULL);                                               \
                                                                                \
-        w__array_destroy(                                                      \
+        wp_array_destroy(                                                      \
             alloc,                                                             \
             sizeof(type),                                                      \
             name##_alignment,                                                  \
@@ -70,7 +70,7 @@
         W_ASSERT(array != NULL);                                               \
         W_ASSERT(array->buf != NULL);                                          \
                                                                                \
-        return w__array_extend(                                                \
+        return wp_array_extend(                                                \
             alloc,                                                             \
             sizeof(type),                                                      \
             name##_alignment,                                                  \

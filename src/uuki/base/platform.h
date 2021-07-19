@@ -5,131 +5,131 @@
 #include <stddef.h>
 
 #define W_COMPILER(x)                                                          \
-    W__PLATFORM_COMPILER_##x()
+    WP_PLATFORM_COMPILER_##x()
 
 #if defined(_MSC_VER)
-    #define W__PLATFORM_COMPILER_MSVC()  1
-    #define W__PLATFORM_COMPILER_CLANG() 0
-    #define W__PLATFORM_COMPILER_INTEL() 0
-    #define W__PLATFORM_COMPILER_GCC()   0
+    #define WP_PLATFORM_COMPILER_MSVC()  1
+    #define WP_PLATFORM_COMPILER_CLANG() 0
+    #define WP_PLATFORM_COMPILER_INTEL() 0
+    #define WP_PLATFORM_COMPILER_GCC()   0
 #elif defined(__clang__)
-    #define W__PLATFORM_COMPILER_MSVC()  0
-    #define W__PLATFORM_COMPILER_CLANG() 1
-    #define W__PLATFORM_COMPILER_INTEL() 0
-    #define W__PLATFORM_COMPILER_GCC()   0
+    #define WP_PLATFORM_COMPILER_MSVC()  0
+    #define WP_PLATFORM_COMPILER_CLANG() 1
+    #define WP_PLATFORM_COMPILER_INTEL() 0
+    #define WP_PLATFORM_COMPILER_GCC()   0
 #elif defined(__INTEL_COMPILER)
-    #define W__PLATFORM_COMPILER_MSVC()  0
-    #define W__PLATFORM_COMPILER_CLANG() 0
-    #define W__PLATFORM_COMPILER_INTEL() 1
-    #define W__PLATFORM_COMPILER_GCC()   0
+    #define WP_PLATFORM_COMPILER_MSVC()  0
+    #define WP_PLATFORM_COMPILER_CLANG() 0
+    #define WP_PLATFORM_COMPILER_INTEL() 1
+    #define WP_PLATFORM_COMPILER_GCC()   0
 #elif defined(__GNUC__)
-    #define W__PLATFORM_COMPILER_MSVC()  0
-    #define W__PLATFORM_COMPILER_CLANG() 0
-    #define W__PLATFORM_COMPILER_INTEL() 0
-    #define W__PLATFORM_COMPILER_GCC()   1
+    #define WP_PLATFORM_COMPILER_MSVC()  0
+    #define WP_PLATFORM_COMPILER_CLANG() 0
+    #define WP_PLATFORM_COMPILER_INTEL() 0
+    #define WP_PLATFORM_COMPILER_GCC()   1
 #else
-    #define W__PLATFORM_COMPILER_MSVC()  0
-    #define W__PLATFORM_COMPILER_CLANG() 0
-    #define W__PLATFORM_COMPILER_INTEL() 0
-    #define W__PLATFORM_COMPILER_GCC()   0
+    #define WP_PLATFORM_COMPILER_MSVC()  0
+    #define WP_PLATFORM_COMPILER_CLANG() 0
+    #define WP_PLATFORM_COMPILER_INTEL() 0
+    #define WP_PLATFORM_COMPILER_GCC()   0
 #endif
 
 #if defined(__GNUC__)
-    #define W__PLATFORM_COMPILER_GNUC_COMPLIANT() 1
+    #define WP_PLATFORM_COMPILER_GNUC_COMPLIANT() 1
 #else
-    #define W__PLATFORM_COMPILER_GNUC_COMPLIANT() 0
+    #define WP_PLATFORM_COMPILER_GNUC_COMPLIANT() 0
 #endif
 
 #define W_OS(x)                                                                \
-    W__PLATFORM_OS_##x()
+    WP_PLATFORM_OS_##x()
 
 #if defined(_WIN32)
-    #define W__PLATFORM_OS_DARWIN()         0
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 0
-    #define W__PLATFORM_OS_FREE_BSD()       0
-    #define W__PLATFORM_OS_LINUX()          0
-    #define W__PLATFORM_OS_NET_BSD()        0
-    #define W__PLATFORM_OS_OPEN_BSD()       0
-    #define W__PLATFORM_OS_QNX()            0
-    #define W__PLATFORM_OS_WINDOWS()        1
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_WINDOWS()        1
 #elif defined(__linux__)
-    #define W__PLATFORM_OS_DARWIN()         0
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 0
-    #define W__PLATFORM_OS_FREE_BSD()       0
-    #define W__PLATFORM_OS_LINUX()          1
-    #define W__PLATFORM_OS_NET_BSD()        0
-    #define W__PLATFORM_OS_OPEN_BSD()       0
-    #define W__PLATFORM_OS_QNX()            0
-    #define W__PLATFORM_OS_WINDOWS()        0
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          1
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__APPLE__)
-    #define W__PLATFORM_OS_DARWIN()         1
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 0
-    #define W__PLATFORM_OS_FREE_BSD()       0
-    #define W__PLATFORM_OS_LINUX()          0
-    #define W__PLATFORM_OS_NET_BSD()        0
-    #define W__PLATFORM_OS_OPEN_BSD()       0
-    #define W__PLATFORM_OS_QNX()            0
-    #define W__PLATFORM_OS_WINDOWS()        0
+    #define WP_PLATFORM_OS_DARWIN()         1
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__DragonFly__)
-    #define W__PLATFORM_OS_DARWIN()         0
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 1
-    #define W__PLATFORM_OS_FREE_BSD()       0
-    #define W__PLATFORM_OS_LINUX()          0
-    #define W__PLATFORM_OS_NET_BSD()        0
-    #define W__PLATFORM_OS_OPEN_BSD()       0
-    #define W__PLATFORM_OS_QNX()            0
-    #define W__PLATFORM_OS_WINDOWS()        0
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 1
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__FreeBSD__)
-    #define W__PLATFORM_OS_DARWIN()         0
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 0
-    #define W__PLATFORM_OS_FREE_BSD()       1
-    #define W__PLATFORM_OS_LINUX()          0
-    #define W__PLATFORM_OS_NET_BSD()        0
-    #define W__PLATFORM_OS_OPEN_BSD()       0
-    #define W__PLATFORM_OS_QNX()            0
-    #define W__PLATFORM_OS_WINDOWS()        0
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       1
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__NetBSD__)
-    #define W__PLATFORM_OS_DARWIN()         0
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 0
-    #define W__PLATFORM_OS_FREE_BSD()       0
-    #define W__PLATFORM_OS_LINUX()          0
-    #define W__PLATFORM_OS_NET_BSD()        1
-    #define W__PLATFORM_OS_OPEN_BSD()       0
-    #define W__PLATFORM_OS_QNX()            0
-    #define W__PLATFORM_OS_WINDOWS()        0
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        1
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__OpenBSD__)
-    #define W__PLATFORM_OS_DARWIN()         0
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 0
-    #define W__PLATFORM_OS_FREE_BSD()       0
-    #define W__PLATFORM_OS_LINUX()          0
-    #define W__PLATFORM_OS_NET_BSD()        0
-    #define W__PLATFORM_OS_OPEN_BSD()       1
-    #define W__PLATFORM_OS_QNX()            0
-    #define W__PLATFORM_OS_WINDOWS()        0
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       1
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__QNX__) || defined(__QNXNTO__)
-    #define W__PLATFORM_OS_DARWIN()         0
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 0
-    #define W__PLATFORM_OS_FREE_BSD()       0
-    #define W__PLATFORM_OS_LINUX()          0
-    #define W__PLATFORM_OS_NET_BSD()        0
-    #define W__PLATFORM_OS_OPEN_BSD()       0
-    #define W__PLATFORM_OS_QNX()            1
-    #define W__PLATFORM_OS_WINDOWS()        0
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            1
+    #define WP_PLATFORM_OS_WINDOWS()        0
 #else
-    #define W__PLATFORM_OS_DARWIN()         0
-    #define W__PLATFORM_OS_DRAGON_FLY_BSD() 0
-    #define W__PLATFORM_OS_FREE_BSD()       0
-    #define W__PLATFORM_OS_LINUX()          0
-    #define W__PLATFORM_OS_NET_BSD()        0
-    #define W__PLATFORM_OS_OPEN_BSD()       0
-    #define W__PLATFORM_OS_QNX()            0
-    #define W__PLATFORM_OS_WINDOWS()        0
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_WINDOWS()        0
 #endif
 
 #if defined(__unix__)
-    #define W__PLATFORM_OS_UNIX() 1
+    #define WP_PLATFORM_OS_UNIX() 1
 #else
-    #define W__PLATFORM_OS_UNIX() 0
+    #define WP_PLATFORM_OS_UNIX() 0
 #endif
 
 // Some CPUs, such as the x86-64 processors, allow running code in 32-bit mode

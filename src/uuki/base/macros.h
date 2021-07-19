@@ -7,7 +7,7 @@
     (void)(x)
 
 #define W_REQUIRE_SEMICOLON                                                    \
-    void w__macros_dummy(void)
+    void wp_macros_dummy(void)
 
 #if defined(_MSC_VER)
     #define W_PACKED_STRUCT(name)                                              \
@@ -108,26 +108,26 @@
 // ---------------------------------------------------------------- //   O-(''Q)
 
 #define W_UINT_IS_ADD_WRAPPING(max, x, ...)                                    \
-    W__EXPAND(                                                                 \
-        W__CONCAT(                                                             \
-            W__UINT_IS_ADD_WRAPPING_,                                          \
-            W__COUNT_ARGS(__VA_ARGS__)                                         \
+    WP_EXPAND(                                                                 \
+        WP_CONCAT(                                                             \
+            WP_UINT_IS_ADD_WRAPPING_,                                          \
+            WP_COUNT_ARGS(__VA_ARGS__)                                         \
         )(max, x, __VA_ARGS__)                                                 \
     )
 
 #define W_UINT_IS_SUB_WRAPPING(max, x, ...)                                    \
-    W__EXPAND(                                                                 \
-        W__CONCAT(                                                             \
-            W__UINT_IS_SUB_WRAPPING_,                                          \
-            W__COUNT_ARGS(__VA_ARGS__)                                         \
+    WP_EXPAND(                                                                 \
+        WP_CONCAT(                                                             \
+            WP_UINT_IS_SUB_WRAPPING_,                                          \
+            WP_COUNT_ARGS(__VA_ARGS__)                                         \
         )(max, x, __VA_ARGS__)                                                 \
     )
 
 #define W_UINT_IS_MUL_WRAPPING(max, x, ...)                                    \
-    W__EXPAND(                                                                 \
-        W__CONCAT(                                                             \
-            W__UINT_IS_MUL_WRAPPING_,                                          \
-            W__COUNT_ARGS(__VA_ARGS__)                                         \
+    WP_EXPAND(                                                                 \
+        WP_CONCAT(                                                             \
+            WP_UINT_IS_MUL_WRAPPING_,                                          \
+            WP_COUNT_ARGS(__VA_ARGS__)                                         \
         )(max, x, __VA_ARGS__)                                                 \
     )
 

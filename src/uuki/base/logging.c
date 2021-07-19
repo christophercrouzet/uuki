@@ -6,22 +6,22 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define W__LOGGING_LVL_COUNT                                                   \
-    W__LOGGING_LOG_LVL_LAST - W__LOGGING_LOG_LVL_FIRST + 1
+#define WP_LOGGING_LVL_COUNT                                                   \
+    WP_LOGGING_LOG_LVL_LAST - WP_LOGGING_LOG_LVL_FIRST + 1
 
 #if W_DEBUGGING(ENABLED)
     static enum w_log_lvl
-    w__logging_lvl = W_LOG_LVL_DEBUG;
+    wp_logging_lvl = W_LOG_LVL_DEBUG;
 #else
     static enum w_log_lvl
-    w__logging_lvl = W_LOG_LVL_WARNING;
+    wp_logging_lvl = W_LOG_LVL_WARNING;
 #endif
 
 static int
-w__logging_styling = 0;
+wp_logging_styling = 0;
 
 static const char *
-w__logging_lvl_name[W__LOGGING_LVL_COUNT] = {
+wp_logging_lvl_name[WP_LOGGING_LVL_COUNT] = {
     "none",
     "fatal",
     "error",
@@ -31,7 +31,7 @@ w__logging_lvl_name[W__LOGGING_LVL_COUNT] = {
 };
 
 static const char *
-w__logging_lvl_style_begin[2][W__LOGGING_LVL_COUNT] = {
+wp_logging_lvl_style_begin[2][WP_LOGGING_LVL_COUNT] = {
     // styling == 0
     {
         "",
@@ -53,7 +53,7 @@ w__logging_lvl_style_begin[2][W__LOGGING_LVL_COUNT] = {
 };
 
 static const char *
-w__logging_lvl_style_end[2] = {
+wp_logging_lvl_style_end[2] = {
     "",         // styling == 0
     "\x1b[0m",  // styling == 1
 };
@@ -67,8 +67,8 @@ w_vlog(
     va_list args
 )
 {
-    W_ASSERT(w__logging_styling == 0 || w__logging_styling == 1);
-    W_ASSERT(lvl >= W__LOGGING_LOG_LVL_FIRST && lvl <= W__LOGGING_LOG_LVL_LAST);
+    W_ASSERT(wp_logging_styling == 0 || wp_logging_styling == 1);
+    W_ASSERT(lvl >= WP_LOGGING_LOG_LVL_FIRST && lvl <= WP_LOGGING_LOG_LVL_LAST);
     W_ASSERT(file != NULL);
     W_ASSERT(fmt != NULL);
 
@@ -77,9 +77,9 @@ w_vlog(
         "%s:%d: %s%s%s: ",
         file,
         line,
-        w__logging_lvl_style_begin[w__logging_styling][lvl],
-        w__logging_lvl_name[lvl],
-        w__logging_lvl_style_end[w__logging_styling]
+        wp_logging_lvl_style_begin[wp_logging_styling][lvl],
+        wp_logging_lvl_name[lvl],
+        wp_logging_lvl_style_end[wp_logging_styling]
     );
     vfprintf(stderr, fmt, args);
 }
@@ -95,7 +95,7 @@ w_log(
 {
     va_list args;
 
-    W_ASSERT(lvl >= W__LOGGING_LOG_LVL_FIRST && lvl <= W__LOGGING_LOG_LVL_LAST);
+    W_ASSERT(lvl >= WP_LOGGING_LOG_LVL_FIRST && lvl <= WP_LOGGING_LOG_LVL_LAST);
     W_ASSERT(file != NULL);
     W_ASSERT(fmt != NULL);
 
@@ -109,7 +109,7 @@ w_get_log_lvl(
     void
 )
 {
-    return w__logging_lvl;
+    return wp_logging_lvl;
 }
 
 void
@@ -117,13 +117,13 @@ w_set_log_lvl(
     enum w_log_lvl lvl
 )
 {
-    if (lvl < W__LOGGING_LOG_LVL_FIRST || lvl > W__LOGGING_LOG_LVL_LAST)
+    if (lvl < WP_LOGGING_LOG_LVL_FIRST || lvl > WP_LOGGING_LOG_LVL_LAST)
     {
         W_LOG_ERROR("level out of range\n");
         return;
     }
 
-    w__logging_lvl = lvl;
+    wp_logging_lvl = lvl;
 }
 
 int
@@ -131,7 +131,7 @@ w_get_log_styling(
     void
 )
 {
-    return w__logging_styling;
+    return wp_logging_styling;
 }
 
 void
@@ -139,5 +139,5 @@ w_set_log_styling(
     int styling
 )
 {
-    w__logging_styling = styling != 0;
+    wp_logging_styling = styling != 0;
 }
