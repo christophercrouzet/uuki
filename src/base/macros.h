@@ -1,7 +1,7 @@
 #ifndef UUKI_BASE_MACROS_H
 #define UUKI_BASE_MACROS_H
 
-#include <uuki/base/private/macros.h>
+#include "private/macros.h"
 
 #define W_UNUSED_PARAM(x)                                                      \
     (void)(x)

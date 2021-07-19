@@ -1,10 +1,11 @@
 #ifndef UUKI_BASE_ARRAY_H
 #define UUKI_BASE_ARRAY_H
 
+#include "private/array.h"
+
 #include <uuki/base/assert.h>
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
-#include <uuki/base/private/array.h>
 
 #include <stddef.h>
 

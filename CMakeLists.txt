@@ -31,7 +31,7 @@ endif()
 
 # ------------------------------------------------------------------------------
 
-set(W_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(W_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # ------------------------------------------------------------------------------
 
@@ -62,10 +62,10 @@ macro(w_add_library target)
             ARCHIVE_OUTPUT_DIRECTORY lib
             LIBRARY_OUTPUT_DIRECTORY lib
             ${W_ADD_LIBRARY_PROPERTIES}
-    )
+        )
     target_include_directories(
         ${target}
-        PUBLIC ${W_SOURCE_DIR}
+        PUBLIC ${W_INCLUDE_DIR}
         PRIVATE ${W_ADD_LIBRARY_INCLUDES}
     )
     target_link_libraries(
@@ -103,12 +103,12 @@ endmacro()
 w_add_library(
     base
     FILES
-        src/uuki/base/bit.c
-        src/uuki/base/io.c
-        src/uuki/base/logging.c
-        src/uuki/base/math.c
-        src/uuki/base/mem.c
-        src/uuki/base/private/array.c
+        src/base/bit.c
+        src/base/io.c
+        src/base/logging.c
+        src/base/math.c
+        src/base/mem.c
+        src/base/private/array.c
 )
 
 add_custom_target(
@@ -142,10 +142,10 @@ macro(w_add_binary target)
             LINKER_LANGUAGE C
             RUNTIME_OUTPUT_DIRECTORY bin
             ${W_ADD_BINARY_PROPERTIES}
-    )
+        )
     target_include_directories(
         ${target}
-        PUBLIC ${W_SOURCE_DIR}
+        PUBLIC ${W_INCLUDE_DIR}
         PRIVATE ${W_ADD_BINARY_INCLUDES}
     )
     target_link_libraries(
@@ -170,7 +170,7 @@ endmacro()
 w_add_binary(
     uuki
     FILES
-        src/uuki/cli/main.c
+        src/cli/main.c
     DEPENDS
         base
 )

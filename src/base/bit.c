@@ -4,9 +4,9 @@
 #include <uuki/base/platform.h>
 
 #if W_COMPILER(GNUC_COMPLIANT)
-    #include <uuki/base/private/bit_gnuc.inl>
+    #include "private/bit_gnuc.inl"
 #elif W_COMPILER(MSVC)
-    #include <uuki/base/private/bit_msvc.inl>
+    #include "private/bit_msvc.inl"
 #else
     #error "unsupported compiler"
 #endif
