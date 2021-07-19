@@ -1,7 +1,7 @@
 #include "io.h"
 
 #include <uuki/base/assert.h>
-#include <uuki/base/logging.h>
+#include <uuki/base/log.h>
 #include <uuki/base/status.h>
 
 #include <errno.h>

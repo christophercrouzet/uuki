@@ -105,7 +105,7 @@ w_add_library(
     FILES
         src/base/bit.c
         src/base/io.c
-        src/base/logging.c
+        src/base/log.c
         src/base/math.c
         src/base/mem.c
         src/base/private/array.c
@@ -251,8 +251,8 @@ w_add_test(
 )
 
 w_add_test(
-    NAME base-logging
-    FILES tests/base/logging.c
+    NAME base-log
+    FILES tests/base/log.c
     DEPENDS base
 )
 

@@ -1,7 +1,7 @@
 #include "array.h"
 
 #include <uuki/base/assert.h>
-#include <uuki/base/logging.h>
+#include <uuki/base/log.h>
 #include <uuki/base/macros.h>
 #include <uuki/base/math.h>
 #include <uuki/base/mem.h>

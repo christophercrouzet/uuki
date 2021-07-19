@@ -1,10 +1,10 @@
 #include <rexo.h>
 
-#include <uuki/base/logging.h>
+#include <uuki/base/log.h>
 
 #include <stddef.h>
 
-RX_TEST_CASE(logging, styling_off)
+RX_TEST_CASE(log, styling_off)
 {
     w_set_log_styling(0);
     W_LOG_FATAL("my unstyled fatal message\n");
@@ -14,7 +14,7 @@ RX_TEST_CASE(logging, styling_off)
     W_LOG_DEBUG("my unstyled debug message\n");
 }
 
-RX_TEST_CASE(logging, styling_on)
+RX_TEST_CASE(log, styling_on)
 {
     w_set_log_styling(1);
     W_LOG_FATAL("my styled fatal message\n");

@@ -1,7 +1,7 @@
 #include "mem.h"
 
 #include <uuki/base/assert.h>
-#include <uuki/base/logging.h>
+#include <uuki/base/log.h>
 #include <uuki/base/macros.h>
 #include <uuki/base/platform.h>
 #include <uuki/base/status.h>

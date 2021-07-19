@@ -1,6 +1,6 @@
 #include <uuki/base/assert.h>
 #include <uuki/base/io.h>
-#include <uuki/base/logging.h>
+#include <uuki/base/log.h>
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
 

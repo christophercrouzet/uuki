@@ -1,5 +1,5 @@
-#ifndef UUKI_BASE_LOGGING_H
-#define UUKI_BASE_LOGGING_H
+#ifndef UUKI_BASE_LOG_H
+#define UUKI_BASE_LOG_H
 
 #include <stdarg.h>
 
@@ -29,16 +29,16 @@
     W_LOG(W_LOG_LVL_DEBUG, __VA_ARGS__)
 
 enum w_log_lvl {
-    W_LOG_LVL_NONE            = 0,
-    W_LOG_LVL_FATAL           = 1,
-    W_LOG_LVL_ERROR           = 2,
-    W_LOG_LVL_WARNING         = 3,
-    W_LOG_LVL_INFO            = 4,
-    W_LOG_LVL_DEBUG           = 5,
-    W_LOG_LVL_ALL             = W_LOG_LVL_DEBUG,
+    W_LOG_LVL_NONE    = 0,
+    W_LOG_LVL_FATAL   = 1,
+    W_LOG_LVL_ERROR   = 2,
+    W_LOG_LVL_WARNING = 3,
+    W_LOG_LVL_INFO    = 4,
+    W_LOG_LVL_DEBUG   = 5,
+    W_LOG_LVL_ALL     = W_LOG_LVL_DEBUG,
 
-    WP_LOGGING_LOG_LVL_FIRST  = W_LOG_LVL_NONE,
-    WP_LOGGING_LOG_LVL_LAST   = W_LOG_LVL_ALL,
+    WP_LOG_LVL_FIRST  = W_LOG_LVL_NONE,
+    WP_LOG_LVL_LAST   = W_LOG_LVL_ALL,
 };
 
 void
@@ -79,4 +79,4 @@ w_set_log_styling(
     int styling
 );
 
-#endif // UUKI_BASE_LOGGING_H
+#endif // UUKI_BASE_LOG_H
