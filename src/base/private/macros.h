@@ -1,8 +1,6 @@
 #ifndef UUKI_BASE_PRIVATE_MACROS_H
 #define UUKI_BASE_PRIVATE_MACROS_H
 
-#include <uuki/base/platform.h>
-
 #define WP_EXPAND(x)                                                           \
     x
 
