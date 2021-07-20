@@ -1,6 +1,8 @@
 #ifndef UUKI_BASE_MACROS_H
 #define UUKI_BASE_MACROS_H
 
+#include <uuki/base/platform.h>
+
 #define W_REQUIRE_SEMICOLON                                                    \
     void wp_macros_dummy(void)
 
