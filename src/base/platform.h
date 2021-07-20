@@ -165,6 +165,9 @@
 static_assert(
     W_PTR_SIZE == sizeof(void *), "could not determine the pointer size");
 
+// Assume that the size of the ‘size_t’ and pointer types are the same.
+// Storing this size as a constant is useful in preprocessor conditions where
+// the ‘sizeof’ operator is not yet available.
 #define W_SIZE_T_SIZE W_PTR_SIZE
 
 static_assert(
