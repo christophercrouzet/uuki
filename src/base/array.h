@@ -1,8 +1,6 @@
 #ifndef UUKI_BASE_ARRAY_H
 #define UUKI_BASE_ARRAY_H
 
-#include "private/array.h"
-
 #include <uuki/base/assert.h>
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
@@ -84,5 +82,7 @@
     }                                                                          \
                                                                                \
     W_REQUIRE_SEMICOLON
+
+#include "private/array.h"
 
 #endif // UUKI_BASE_ARRAY_H

@@ -103,12 +103,12 @@ endmacro()
 w_add_library(
     base
     FILES
+        src/base/array.c
         src/base/bit.c
         src/base/io.c
         src/base/log.c
         src/base/math.c
         src/base/mem.c
-        src/base/private/array.c
 )
 
 add_custom_target(

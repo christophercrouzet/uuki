@@ -1,8 +1,6 @@
 #ifndef UUKI_BASE_MACROS_H
 #define UUKI_BASE_MACROS_H
 
-#include "private/macros.h"
-
 #define W_UNUSED_PARAM(x)                                                      \
     (void)(x)
 
@@ -148,5 +146,10 @@
             && ((uintptr_t)(b) + (size) > (uintptr_t)(a))                      \
         )                                                                      \
     )
+
+// Private API
+// ---------------------------------------------------------------- //   O-(''Q)
+
+#include "private/macros.h"
 
 #endif // UUKI_BASE_MACROS_H
