@@ -7,14 +7,17 @@
 #define W_DISMISS_ARG(x)                                                       \
     (void)(x)
 
-#if defined(_MSC_VER)
+#if W_COMPILER(GNUC_COMPLIANT)
+    #define W_PACKED_STRUCT(name)                                              \
+        struct __attribute__((packed)) name
+#elif W_COMPILER(MSVC)
     #define W_PACKED_STRUCT(name)                                              \
         __pragma(pack(push, 1))                                                \
         struct name                                                            \
         __pragma(pack(pop))
 #else
     #define W_PACKED_STRUCT(name)                                              \
-        struct __attribute__((packed)) name
+        struct name
 #endif
 
 // Math
