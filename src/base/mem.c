@@ -54,7 +54,7 @@ wp_mem_sys_alloc_allocate(
 {
     void *buf;
 
-    W_UNUSED_PARAM(inst);
+    W_DISMISS_ARG(inst);
 
     W_ASSERT(ptr != NULL);
     W_ASSERT(size == 0 || W_IS_POW2(alignment));
@@ -103,9 +103,9 @@ wp_mem_sys_alloc_free(
     size_t alignment
 )
 {
-    W_UNUSED_PARAM(inst);
-    W_UNUSED_PARAM(size);
-    W_UNUSED_PARAM(alignment);
+    W_DISMISS_ARG(inst);
+    W_DISMISS_ARG(size);
+    W_DISMISS_ARG(alignment);
 
     W_ASSERT(size == 0 || W_IS_POW2(alignment));
     W_ASSERT(alignment >= wp_mem_min_alignment);
@@ -135,7 +135,7 @@ wp_mem_sys_alloc_reallocate(
 {
     void *buf;
 
-    W_UNUSED_PARAM(inst);
+    W_DISMISS_ARG(inst);
 
     W_ASSERT(ptr != NULL);
     W_ASSERT(size == 0 || W_IS_POW2(alignment));
@@ -351,10 +351,10 @@ w_linear_alloc_free(
     size_t alignment
 )
 {
-    W_UNUSED_PARAM(inst);
-    W_UNUSED_PARAM(ptr);
-    W_UNUSED_PARAM(size);
-    W_UNUSED_PARAM(alignment);
+    W_DISMISS_ARG(inst);
+    W_DISMISS_ARG(ptr);
+    W_DISMISS_ARG(size);
+    W_DISMISS_ARG(alignment);
 
     W_ASSERT(inst != NULL);
     W_ASSERT(W_IS_POW2(alignment));

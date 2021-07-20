@@ -1,11 +1,11 @@
 #ifndef UUKI_BASE_MACROS_H
 #define UUKI_BASE_MACROS_H
 
-#define W_UNUSED_PARAM(x)                                                      \
-    (void)(x)
-
 #define W_REQUIRE_SEMICOLON                                                    \
     void wp_macros_dummy(void)
+
+#define W_DISMISS_ARG(x)                                                       \
+    (void)(x)
 
 #if defined(_MSC_VER)
     #define W_PACKED_STRUCT(name)                                              \
