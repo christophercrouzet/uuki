@@ -452,8 +452,9 @@ w_linear_alloc_reallocate(
     if (src_offset != dst_offset)
     {
         W_ASSERT(
-            !W_ARE_BUFS_OVERLAPPING(
+            !W_ARE_REGIONS_OVERLAPPING(
                 (void *)((uintptr_t)alloc->buf + dst_offset),
+                wp_mem_min(prev_size, size),
                 (void *)((uintptr_t)alloc->buf + src_offset),
                 wp_mem_min(prev_size, size)
             )

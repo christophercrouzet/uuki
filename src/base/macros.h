@@ -140,15 +140,15 @@
 // Memory
 // ---------------------------------------------------------------- //   O-(''Q)
 
-#define W_ARE_BUFS_OVERLAPPING(a, b, size)                                     \
+#define W_ARE_REGIONS_OVERLAPPING(a, a_size, b, b_size)                        \
     (                                                                          \
         (                                                                      \
             ((uintptr_t)(a) <= (uintptr_t)(b))                                 \
-            && ((uintptr_t)(a) + (size) > (uintptr_t)(b))                      \
+            && ((uintptr_t)(a) + (a_size) > (uintptr_t)(b))                    \
         )                                                                      \
         || (                                                                   \
             ((uintptr_t)(b) <= (uintptr_t)(a))                                 \
-            && ((uintptr_t)(b) + (size) > (uintptr_t)(a))                      \
+            && ((uintptr_t)(b) + (b_size) > (uintptr_t)(a))                    \
         )                                                                      \
     )
 
