@@ -20,12 +20,13 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 if(MSVC)
-    add_compile_options(/W4)
+    add_compile_options(/W4 /utf-8)
 else()
     add_compile_options(
         -Wpedantic -Wall -Wextra -Waggregate-return -Wcast-align -Wcast-qual
         -Wconversion -Wfloat-equal -Wpointer-arith -Wshadow -Wstrict-overflow=5
         -Wswitch -Wswitch-default -Wundef -Wunreachable-code -Wwrite-strings
+        -Wformat-nonliteral
     )
 endif()
 
@@ -109,6 +110,7 @@ w_add_library(
         src/base/log.c
         src/base/math.c
         src/base/mem.c
+        src/base/platform.c
 )
 
 add_custom_target(
@@ -265,6 +267,12 @@ w_add_test(
 w_add_test(
     NAME base-mem
     FILES tests/base/mem.c
+    DEPENDS base
+)
+
+w_add_test(
+    NAME base-platform
+    FILES tests/base/platform.c
     DEPENDS base
 )
 

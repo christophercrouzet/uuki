@@ -3,6 +3,7 @@
 #include <uuki/base/array.h>
 #include <uuki/base/macros.h>
 #include <uuki/base/mem.h>
+#include <uuki/base/platform.h>
 #include <uuki/base/status.h>
 
 #include <stddef.h>

@@ -1,26 +1,11 @@
 #ifndef UUKI_BASE_MACROS_H
 #define UUKI_BASE_MACROS_H
 
-#include <uuki/base/platform.h>
-
 #define W_REQUIRE_SEMICOLON                                                    \
     void wp_macros_dummy(void)
 
 #define W_DISMISS_ARG(x)                                                       \
     (void)(x)
-
-#if W_COMPILER(GNUC_COMPLIANT)
-    #define W_PACKED_STRUCT(name)                                              \
-        struct __attribute__((packed)) name
-#elif W_COMPILER(MSVC)
-    #define W_PACKED_STRUCT(name)                                              \
-        __pragma(pack(push, 1))                                                \
-        struct name                                                            \
-        __pragma(pack(pop))
-#else
-    #define W_PACKED_STRUCT(name)                                              \
-        struct name
-#endif
 
 // Math
 // ---------------------------------------------------------------- //   O-(''Q)

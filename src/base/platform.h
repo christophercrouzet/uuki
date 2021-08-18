@@ -1,7 +1,9 @@
 #ifndef UUKI_BASE_PLATFORM_H
 #define UUKI_BASE_PLATFORM_H
 
+#include <stdarg.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #define W_COMPILER(x)                                                          \
     WP_PLATFORM_COMPILER_##x()
@@ -131,6 +133,14 @@
     #define WP_PLATFORM_OS_UNIX() 0
 #endif
 
+// Platform-specific headers.
+#if W_OS(UNIX)
+    #include <pthread.h>
+    #include <stdio.h>
+#elif W_OS(WINDOWS)
+    #include <windows.h>
+#endif
+
 // Some CPUs, such as the x86-64 processors, allow running code in 32-bit mode
 // if compiled using the -m32 or -mx32 compiler switches, in which case
 // the macro `W_PTR_SIZE` is set to 32.
@@ -151,7 +161,6 @@
         #error "could not determine the pointer size"
     #endif
 #else
-    #include <stdint.h>
     #if UINTPTR_MAX == UINT64_MAX
         #define W_PTR_SIZE 8
     #elif UINTPTR_MAX == UINT32_MAX
@@ -171,5 +180,117 @@ wp_invalid_ptr_size[W_PTR_SIZE == sizeof(void *) ? 1 : -1];
 
 typedef char
 wp_invalid_size_t_size[W_SIZE_T_SIZE == sizeof(size_t) ? 1 : -1];
+
+// Struct padding removal.
+#if W_COMPILER(GNUC_COMPLIANT)
+    #define W_PACKED_STRUCT(name)                                              \
+        struct __attribute__((packed)) name
+#elif W_COMPILER(MSVC)
+    #define W_PACKED_STRUCT(name)                                              \
+        __pragma(pack(push, 1))                                                \
+        struct name                                                            \
+        __pragma(pack(pop))
+#else
+    #error "not implemented"
+#endif
+
+// Checks for printf-like functions.
+#if W_COMPILER(GNUC_COMPLIANT)
+    #define W_PRINTF_CHECK(fmt, args)                                          \
+        __attribute__((format (printf, (fmt), (args))))
+#else
+    #define W_PRINTF_CHECK(fmt, args)
+#endif
+
+// I/O streams.
+#if W_OS(UNIX)
+    #define W_STD_IN                                                           \
+        (stdin)
+    #define W_STD_OUT                                                          \
+        (stdout)
+    #define W_STD_ERR                                                          \
+        (stderr)
+
+    typedef FILE * w_stream;
+#elif W_OS(WINDOWS)
+    #define W_STD_IN                                                           \
+        (GetStdHandle(STD_INPUT_HANDLE))
+    #define W_STD_OUT                                                          \
+        (GetStdHandle(STD_OUTPUT_HANDLE))
+    #define W_STD_ERR                                                          \
+        (GetStdHandle(STD_ERROR_HANDLE))
+
+    typedef HANDLE w_stream;
+#else
+    #error "not implemented"
+#endif
+
+// Mutexes.
+#if W_OS(UNIX)
+    #define W_MTX_INTIALIZE(mtx)                                               \
+        static pthread_mutex_t                                                 \
+        mtx = PTHREAD_MUTEX_INITIALIZER
+
+    typedef pthread_mutex_t w_mtx;
+#elif W_OS(WINDOWS)
+    #define W_MTX_INTIALIZE(mtx)                                               \
+        static HANDLE                                                          \
+        mtx = NULL
+
+    typedef HANDLE w_mtx;
+#else
+    #error "not implemented"
+#endif
+
+void
+w_abort(
+    int status
+);
+
+int
+w_mtx_lock(
+    w_mtx *mtx
+);
+
+int
+w_mtx_unlock(
+    w_mtx *mtx
+);
+
+int
+w_is_console(
+    w_stream stream
+);
+
+int
+w_print(
+    w_stream stream,
+    const char *msg
+);
+
+int
+w_format_msg(
+    char *msg,
+    size_t msg_len,
+    const char *fmt,
+    ...
+)
+W_PRINTF_CHECK(3, 4);
+
+int
+w_format_msg_va(
+    char *msg,
+    size_t msg_len,
+    const char *fmt,
+    va_list args
+)
+W_PRINTF_CHECK(3, 0);
+
+int
+w_format_system_error(
+    char *msg,
+    size_t msg_len,
+    int error
+);
 
 #endif // UUKI_BASE_PLATFORM_H
