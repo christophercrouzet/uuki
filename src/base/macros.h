@@ -83,7 +83,10 @@
     (((x) != 0) && (((x) & ((x) - 1)) == 0))
 
 #define W_ROUND_DOWN_POW2(x)                                                   \
-    (1ULL << W_ILOG2(x))
+    (                                                                          \
+        (x) == 0 ? 0 :                                                         \
+        (1ULL << W_ILOG2(x))                                                   \
+    )
 
 #define W_ROUND_UP_POW2(x)                                                     \
     (                                                                          \

@@ -52,7 +52,7 @@
     )
 
 #define WP_UINT_IS_MUL_WRAPPING_1(max, x1, x2)                                 \
-    ((x1) > (max) / (x2))
+    ((x1) != 0 && (x2) != 0 && ((x1) > (max) / (x2)))
 
 #define WP_UINT_IS_MUL_WRAPPING_2(max, x1, x2, x3)                             \
     (                                                                          \
