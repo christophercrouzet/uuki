@@ -105,6 +105,7 @@ w_add_library(
     base
     FILES
         src/base/array.c
+        src/base/assert.c
         src/base/bit.c
         src/base/io.c
         src/base/log.c
