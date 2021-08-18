@@ -1,27 +1,69 @@
-#include <rexo.h>
-
+#include <uuki/base/assert.h>
 #include <uuki/base/log.h>
+#include <uuki/base/platform.h>
+#include <uuki/base/status.h>
+
+#include <rexo.h>
 
 #include <stddef.h>
 
-RX_TEST_CASE(log, styling_off)
+RX_SET_UP(log_set_up)
 {
-    w_set_log_styling(0);
-    W_LOG_FATAL("my unstyled fatal message\n");
-    W_LOG_ERROR("my unstyled error message\n");
-    W_LOG_WARNING("my unstyled warning message\n");
-    W_LOG_INFO("my unstyled info message\n");
-    W_LOG_DEBUG("my unstyled debug message\n");
+    W_ASSERT(w_logger_deregister_all() == W_SUCCESS);
+    return RX_SUCCESS;
 }
 
-RX_TEST_CASE(log, styling_on)
+RX_VOID_FIXTURE(log_fixture, .set_up = log_set_up);
+
+RX_TEST_SUITE(log, .fixture = log_fixture);
+
+RX_TEST_CASE(log, logger_registration)
 {
-    w_set_log_styling(1);
-    W_LOG_FATAL("my styled fatal message\n");
-    W_LOG_ERROR("my styled error message\n");
-    W_LOG_WARNING("my styled warning message\n");
-    W_LOG_INFO("my unstyled info message\n");
-    W_LOG_DEBUG("my styled debug message\n");
+    enum w_status status;
+    struct w_logger default_logger;
+    struct w_logger logger;
+
+    w_get_default_logger(&default_logger);
+
+    status = w_logger_register(
+        &logger, W_STD_ERR, W_LOG_LVL_ALL, W_LOG_FMT_PLAIN
+    );
+    RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
+    RX_UINT_REQUIRE_NOT_EQUAL(logger.id, default_logger.id);
+}
+
+RX_TEST_CASE(log, plain_logging)
+{
+    enum w_status status;
+    struct w_logger logger;
+
+    status = w_logger_register(
+        &logger, W_STD_ERR, W_LOG_LVL_ALL, W_LOG_FMT_PLAIN
+    );
+    RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
+
+    W_LOG_FATAL("fatal message\n");
+    W_LOG_ERROR("error message\n");
+    W_LOG_WARNING("warning message\n");
+    W_LOG_INFO("info message\n");
+    W_LOG_DEBUG("debug message\n");
+}
+
+RX_TEST_CASE(log, plain_stylized_logging)
+{
+    enum w_status status;
+    struct w_logger logger;
+
+    status = w_logger_register(
+        &logger, W_STD_ERR, W_LOG_LVL_ALL, W_LOG_FMT_PLAIN_STYLIZED
+    );
+    RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
+
+    W_LOG_FATAL("fatal message\n");
+    W_LOG_ERROR("error message\n");
+    W_LOG_WARNING("warning message\n");
+    W_LOG_INFO("info message\n");
+    W_LOG_DEBUG("debug message\n");
 }
 
 int
@@ -30,6 +72,5 @@ main(
     const char **argv
 )
 {
-    w_set_log_lvl(W_LOG_LVL_ALL);
     return rx_main(0, NULL, argc, argv) == RX_SUCCESS ? 0 : 1;
 }

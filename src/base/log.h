@@ -1,15 +1,16 @@
 #ifndef UUKI_BASE_LOG_H
 #define UUKI_BASE_LOG_H
 
+#include <uuki/base/platform.h>
+#include <uuki/base/status.h>
+
 #include <stdarg.h>
+#include <stdint.h>
 
 #define W_LOG(lvl, ...)                                                        \
     do                                                                         \
     {                                                                          \
-        if ((lvl) <= w_get_log_lvl())                                          \
-        {                                                                      \
-            w_log((lvl), __FILE__, __LINE__, __VA_ARGS__);                     \
-        }                                                                      \
+        w_log((lvl), __FILE__, __LINE__, __VA_ARGS__);                         \
     }                                                                          \
     while (0)
 
@@ -41,42 +42,59 @@ enum w_log_lvl {
     WP_LOG_LVL_LAST   = W_LOG_LVL_ALL,
 };
 
-void
-w_vlog(
-    enum w_log_lvl lvl,
-    const char *file,
-    int line,
-    const char *fmt,
-    va_list args
-);
+enum w_log_fmt {
+    W_LOG_FMT_PLAIN          = 0,
+    W_LOG_FMT_PLAIN_STYLIZED = 1,
+
+    WP_LOG_FMT_FIRST         = W_LOG_FMT_PLAIN,
+    WP_LOG_FMT_LAST          = W_LOG_FMT_PLAIN_STYLIZED,
+};
+
+struct w_logger {
+    uint32_t id;
+};
 
 void
+w_get_default_logger(
+    struct w_logger *logger
+);
+
+enum w_status
+w_logger_register(
+    struct w_logger *logger,
+    w_stream stream,
+    enum w_log_lvl lvl,
+    enum w_log_fmt fmt
+);
+
+enum w_status
+w_logger_deregister(
+    struct w_logger logger
+);
+
+enum w_status
+w_logger_deregister_all(
+    void
+);
+
+enum w_status
 w_log(
     enum w_log_lvl lvl,
     const char *file,
     int line,
-    const char *fmt,
+    const char *msg,
     ...
-);
+)
+W_PRINTF_CHECK(4, 5);
 
-enum w_log_lvl
-w_get_log_lvl(
-    void
-);
-
-void
-w_set_log_lvl(
-    enum w_log_lvl lvl
-);
-
-int
-w_get_log_styling(
-    void
-);
-
-void
-w_set_log_styling(
-    int styling
-);
+enum w_status
+w_log_va(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    const char *msg,
+    va_list args
+)
+W_PRINTF_CHECK(4, 0);
 
 #endif // UUKI_BASE_LOG_H
