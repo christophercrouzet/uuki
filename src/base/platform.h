@@ -1,7 +1,6 @@
 #ifndef UUKI_BASE_PLATFORM_H
 #define UUKI_BASE_PLATFORM_H
 
-#include <assert.h>
 #include <stddef.h>
 
 #define W_COMPILER(x)                                                          \
@@ -162,15 +161,15 @@
     #endif
 #endif
 
-static_assert(
-    W_PTR_SIZE == sizeof(void *), "could not determine the pointer size");
+typedef char
+wp_invalid_ptr_size[W_PTR_SIZE == sizeof(void *) ? 1 : -1];
 
 // Assume that the size of the ‘size_t’ and pointer types are the same.
 // Storing this size as a constant is useful in preprocessor conditions where
 // the ‘sizeof’ operator is not yet available.
 #define W_SIZE_T_SIZE W_PTR_SIZE
 
-static_assert(
-    W_SIZE_T_SIZE == sizeof(size_t), "could not determine the size_t size");
+typedef char
+wp_invalid_size_t_size[W_SIZE_T_SIZE == sizeof(size_t) ? 1 : -1];
 
 #endif // UUKI_BASE_PLATFORM_H
