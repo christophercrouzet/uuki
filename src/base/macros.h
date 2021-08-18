@@ -7,6 +7,9 @@
 #define W_DISMISS_ARG(x)                                                       \
     (void)(x)
 
+#define W_GET_ARRAY_LEN(x)                                                     \
+    (sizeof (x) / sizeof *(x))
+
 // Math
 // ---------------------------------------------------------------- //   O-(''Q)
 
