@@ -52,6 +52,7 @@
     #define WP_PLATFORM_OS_NET_BSD()        0
     #define WP_PLATFORM_OS_OPEN_BSD()       0
     #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           0
     #define WP_PLATFORM_OS_WINDOWS()        1
 #elif defined(__linux__)
     #define WP_PLATFORM_OS_DARWIN()         0
@@ -61,6 +62,7 @@
     #define WP_PLATFORM_OS_NET_BSD()        0
     #define WP_PLATFORM_OS_OPEN_BSD()       0
     #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           1
     #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__APPLE__)
     #define WP_PLATFORM_OS_DARWIN()         1
@@ -70,6 +72,7 @@
     #define WP_PLATFORM_OS_NET_BSD()        0
     #define WP_PLATFORM_OS_OPEN_BSD()       0
     #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           1
     #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__DragonFly__)
     #define WP_PLATFORM_OS_DARWIN()         0
@@ -79,6 +82,7 @@
     #define WP_PLATFORM_OS_NET_BSD()        0
     #define WP_PLATFORM_OS_OPEN_BSD()       0
     #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           1
     #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__FreeBSD__)
     #define WP_PLATFORM_OS_DARWIN()         0
@@ -88,6 +92,7 @@
     #define WP_PLATFORM_OS_NET_BSD()        0
     #define WP_PLATFORM_OS_OPEN_BSD()       0
     #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           1
     #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__NetBSD__)
     #define WP_PLATFORM_OS_DARWIN()         0
@@ -97,6 +102,7 @@
     #define WP_PLATFORM_OS_NET_BSD()        1
     #define WP_PLATFORM_OS_OPEN_BSD()       0
     #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           1
     #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__OpenBSD__)
     #define WP_PLATFORM_OS_DARWIN()         0
@@ -106,6 +112,7 @@
     #define WP_PLATFORM_OS_NET_BSD()        0
     #define WP_PLATFORM_OS_OPEN_BSD()       1
     #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           1
     #define WP_PLATFORM_OS_WINDOWS()        0
 #elif defined(__QNX__) || defined(__QNXNTO__)
     #define WP_PLATFORM_OS_DARWIN()         0
@@ -115,6 +122,17 @@
     #define WP_PLATFORM_OS_NET_BSD()        0
     #define WP_PLATFORM_OS_OPEN_BSD()       0
     #define WP_PLATFORM_OS_QNX()            1
+    #define WP_PLATFORM_OS_UNIX()           1
+    #define WP_PLATFORM_OS_WINDOWS()        0
+#elif defined(__unix__)
+    #define WP_PLATFORM_OS_DARWIN()         0
+    #define WP_PLATFORM_OS_DRAGON_FLY_BSD() 0
+    #define WP_PLATFORM_OS_FREE_BSD()       0
+    #define WP_PLATFORM_OS_LINUX()          0
+    #define WP_PLATFORM_OS_NET_BSD()        0
+    #define WP_PLATFORM_OS_OPEN_BSD()       0
+    #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           1
     #define WP_PLATFORM_OS_WINDOWS()        0
 #else
     #define WP_PLATFORM_OS_DARWIN()         0
@@ -124,13 +142,8 @@
     #define WP_PLATFORM_OS_NET_BSD()        0
     #define WP_PLATFORM_OS_OPEN_BSD()       0
     #define WP_PLATFORM_OS_QNX()            0
+    #define WP_PLATFORM_OS_UNIX()           0
     #define WP_PLATFORM_OS_WINDOWS()        0
-#endif
-
-#if defined(__unix__)
-    #define WP_PLATFORM_OS_UNIX() 1
-#else
-    #define WP_PLATFORM_OS_UNIX() 0
 #endif
 
 // Platform-specific headers.
