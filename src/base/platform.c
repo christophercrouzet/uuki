@@ -88,6 +88,14 @@ w_format_msg(
     return result;
 }
 
+#if W_COMPILER(GNUC_COMPLIANT)
+    #include "platform_gnuc.c"
+#elif W_COMPILER(MSVC)
+    #include "platform_msvc.c"
+#else
+    #error "not implemented"
+#endif
+
 #if W_OS(UNIX)
     #include "platform_unix.c"
 #elif W_OS(WINDOWS)

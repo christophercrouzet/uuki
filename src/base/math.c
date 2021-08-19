@@ -1,7 +1,6 @@
 #include "math.h"
 
 #include <uuki/base/assert.h>
-#include <uuki/base/bit.h>
 #include <uuki/base/macros.h>
 #include <uuki/base/platform.h>
 

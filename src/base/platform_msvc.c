@@ -1,6 +1,7 @@
 #include <intrin.h>
 
-#include <stdint.h>
+// Public API
+// ---------------------------------------------------------------- //   O-(''Q)
 
 uint32_t
 w_count_leading_zero_bits_32(
