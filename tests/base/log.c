@@ -29,7 +29,7 @@ RX_TEST_CASE(log, logger_registration)
         &logger, W_STD_ERR, W_LOG_LVL_ALL, W_LOG_FMT_PLAIN
     );
     RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
-    RX_UINT_REQUIRE_NOT_EQUAL(logger.id, default_logger.id);
+    RX_UINT_REQUIRE_NOT_EQUAL(logger.handle, default_logger.handle);
 }
 
 RX_TEST_CASE(log, plain_logging)

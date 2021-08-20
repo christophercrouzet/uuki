@@ -51,7 +51,7 @@ enum w_log_fmt {
 };
 
 struct w_logger {
-    uint32_t id;
+    uint32_t handle;
 };
 
 void

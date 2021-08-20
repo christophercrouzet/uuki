@@ -8,6 +8,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define WP_LOG_GET_HANDLE_IDX(x)                                               \
+    ((x) & 0xFFFF)
+
+#define WP_LOG_GET_HANDLE_ID(x)                                                \
+    (((x) >> 16) & 0xFFFF)
+
+#define WP_LOG_SET_HANDLE(idx, id)                                             \
+    (uint32_t)(idx | (id << 16))
+
 #define WP_LOG_LVL_STYLE_NONE                                                  \
     ""
 
@@ -40,11 +49,14 @@
 #define WP_LOG_DEFAULT_LOGGER_ID                                               \
     0
 
+#define WP_LOG_DEFAULT_LOGGER_HANDLE                                           \
+    WP_LOG_SET_HANDLE(0, WP_LOG_DEFAULT_LOGGER_ID)
+
 struct wp_log_logger {
-    uint32_t id;
     w_stream stream;
     enum w_log_lvl lvl;
     enum w_log_fmt fmt;
+    uint16_t id;
     int valid;
 };
 
@@ -84,7 +96,7 @@ wp_log_lvl_style_end[2] = {
     [1] = "\x1b[0m",
 };
 
-static uint32_t
+static uint16_t
 wp_log_logger_last_id = WP_LOG_DEFAULT_LOGGER_ID;
 
 static struct wp_log_logger
@@ -103,23 +115,21 @@ W_MTX_INTIALIZE(wp_log_mtx);
 static enum w_status
 wp_log_logger_find(
     struct wp_log_logger **logger,
-    uint32_t id
+    uint32_t handle
 )
 {
-    size_t i;
-
     W_ASSERT(logger != NULL);
+    W_ASSERT(
+        WP_LOG_GET_HANDLE_IDX(handle) < W_GET_ARRAY_LEN(wp_log_logger_pool)
+    );
 
-    for (i = 0; i < W_GET_ARRAY_LEN(wp_log_logger_pool); ++i)
+    *logger = &wp_log_logger_pool[WP_LOG_GET_HANDLE_IDX(handle)];
+    if (!(*logger)->valid || (*logger)->id != WP_LOG_GET_HANDLE_ID(handle))
     {
-        *logger = &wp_log_logger_pool[i];
-        if ((*logger)->valid && (*logger)->id == id)
-        {
-            return W_SUCCESS;
-        }
+        return W_ERROR_NOT_FOUND;
     }
 
-    return W_ERROR_NOT_FOUND;
+    return W_SUCCESS;
 }
 
 W_PRINTF_CHECK(6, 0)
@@ -189,7 +199,7 @@ w_get_default_logger(
 {
     W_ASSERT(logger_handle != NULL);
 
-    logger_handle->id = WP_LOG_DEFAULT_LOGGER_ID;
+    logger_handle->handle = WP_LOG_DEFAULT_LOGGER_HANDLE;
 }
 
 enum w_status
@@ -201,7 +211,7 @@ w_logger_register(
 )
 {
     enum w_status status;
-    size_t i;
+    uint16_t i;
 
     W_ASSERT(logger_handle != NULL);
     W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
@@ -212,7 +222,7 @@ w_logger_register(
         return W_ERROR_LOCK_FAILED;
     }
 
-    if (W_UINT_IS_ADD_WRAPPING(UINT32_MAX, wp_log_logger_last_id, 1))
+    if (W_UINT_IS_ADD_WRAPPING(UINT16_MAX, wp_log_logger_last_id, 1))
     {
         status = W_ERROR_MAX_ID_EXCEEDED;
         goto exit;
@@ -236,7 +246,7 @@ w_logger_register(
             logger->fmt = fmt;
             logger->valid = 1;
 
-            logger_handle->id = wp_log_logger_last_id;
+            logger_handle->handle = WP_LOG_SET_HANDLE(i, logger->id);
             status = W_SUCCESS;
             goto exit;
         }
@@ -262,7 +272,7 @@ w_logger_deregister(
         return W_ERROR_LOCK_FAILED;
     }
 
-    status = wp_log_logger_find(&logger, logger_handle.id);
+    status = wp_log_logger_find(&logger, logger_handle.handle);
     if (status == W_SUCCESS)
     {
         logger->valid = 0;
@@ -277,7 +287,7 @@ w_logger_deregister_all(
     void
 )
 {
-    size_t i;
+    uint16_t i;
 
     if (w_mtx_lock(&wp_log_mtx) != 0)
     {
@@ -326,7 +336,7 @@ w_log_va(
     static int32_t default_logger_initialized = 0;
 
     enum w_status status;
-    size_t i;
+    uint16_t i;
 
     W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
     W_ASSERT(file != NULL);
@@ -341,7 +351,7 @@ w_log_va(
     {
         struct wp_log_logger *logger;
 
-        status = wp_log_logger_find(&logger, WP_LOG_DEFAULT_LOGGER_ID);
+        status = wp_log_logger_find(&logger, WP_LOG_DEFAULT_LOGGER_HANDLE);
         if (status == W_SUCCESS)
         {
             logger->stream = W_STD_ERR;
