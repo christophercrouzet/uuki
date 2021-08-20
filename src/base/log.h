@@ -54,11 +54,6 @@ struct w_logger {
     uint32_t handle;
 };
 
-void
-w_get_default_logger(
-    struct w_logger *logger
-);
-
 enum w_status
 w_logger_register(
     struct w_logger *logger,

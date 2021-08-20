@@ -46,12 +46,6 @@
         W_LOG_LVL_WARNING
 #endif
 
-#define WP_LOG_DEFAULT_LOGGER_ID                                               \
-    0
-
-#define WP_LOG_DEFAULT_LOGGER_HANDLE                                           \
-    WP_LOG_SET_HANDLE(0, WP_LOG_DEFAULT_LOGGER_ID)
-
 struct wp_log_logger {
     w_stream stream;
     enum w_log_lvl lvl;
@@ -97,15 +91,13 @@ wp_log_lvl_style_end[2] = {
 };
 
 static uint16_t
-wp_log_logger_last_id = WP_LOG_DEFAULT_LOGGER_ID;
+wp_log_logger_last_id = 0;
 
 static struct wp_log_logger
-wp_log_logger_pool[8] = {
-    {
-        .id = WP_LOG_DEFAULT_LOGGER_ID,
-        .valid = 1
-    }
-};
+wp_log_logger_pool[8];
+
+static int
+wp_log_is_std_err_console;
 
 W_MTX_INTIALIZE(wp_log_mtx);
 
@@ -192,16 +184,6 @@ wp_log_fmt_plain(
 // Public API
 // ---------------------------------------------------------------- //   O-(''Q)
 
-void
-w_get_default_logger(
-    struct w_logger *logger_handle
-)
-{
-    W_ASSERT(logger_handle != NULL);
-
-    logger_handle->handle = WP_LOG_DEFAULT_LOGGER_HANDLE;
-}
-
 enum w_status
 w_logger_register(
     struct w_logger *logger_handle,
@@ -234,9 +216,8 @@ w_logger_register(
 
         logger = &wp_log_logger_pool[i];
 
-        // Replace the default logger, which should be on the first slot,
-        // or find the first slot available with no valid logger assigned to it.
-        if (!logger->valid || logger->id == WP_LOG_DEFAULT_LOGGER_ID)
+        // Find the first slot available with no valid logger assigned to it.
+        if (!logger->valid)
         {
             ++wp_log_logger_last_id;
 
@@ -333,7 +314,7 @@ w_log_va(
     va_list args
 )
 {
-    static int32_t default_logger_initialized = 0;
+    static int32_t initialized = 0;
 
     enum w_status status;
     uint16_t i;
@@ -347,21 +328,10 @@ w_log_va(
         return W_ERROR_LOCK_FAILED;
     }
 
-    if (!default_logger_initialized)
+    if (!initialized)
     {
-        struct wp_log_logger *logger;
-
-        status = wp_log_logger_find(&logger, WP_LOG_DEFAULT_LOGGER_HANDLE);
-        if (status == W_SUCCESS)
-        {
-            logger->stream = W_STD_ERR;
-            logger->lvl = WP_LOG_DEFAULT_LEVEL;
-            logger->fmt = w_is_console(W_STD_ERR)
-                ? W_LOG_FMT_PLAIN_STYLIZED
-                : W_LOG_FMT_PLAIN;
-        }
-
-        default_logger_initialized = 1;
+        wp_log_is_std_err_console = w_is_console(W_STD_ERR);
+        initialized = 1;
     }
 
     for (i = 0; i < W_GET_ARRAY_LEN(wp_log_logger_pool); ++i)
@@ -390,6 +360,20 @@ w_log_va(
             default:
                 W_ASSERT(0);
         }
+    }
+
+    // Fallback to a default logger if none was explicitly registered.
+    if (i == 0)
+    {
+        status = wp_log_fmt_plain(
+            W_STD_ERR,
+            lvl,
+            file,
+            line,
+            wp_log_is_std_err_console,
+            msg,
+            args
+        );
     }
 
     w_mtx_unlock(&wp_log_mtx);

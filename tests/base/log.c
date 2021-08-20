@@ -17,21 +17,6 @@ RX_VOID_FIXTURE(log_fixture, .set_up = log_set_up);
 
 RX_TEST_SUITE(log, .fixture = log_fixture);
 
-RX_TEST_CASE(log, logger_registration)
-{
-    enum w_status status;
-    struct w_logger default_logger;
-    struct w_logger logger;
-
-    w_get_default_logger(&default_logger);
-
-    status = w_logger_register(
-        &logger, W_STD_ERR, W_LOG_LVL_ALL, W_LOG_FMT_PLAIN
-    );
-    RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
-    RX_UINT_REQUIRE_NOT_EQUAL(logger.handle, default_logger.handle);
-}
-
 RX_TEST_CASE(log, plain_logging)
 {
     enum w_status status;
