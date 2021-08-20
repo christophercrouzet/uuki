@@ -90,11 +90,8 @@ wp_log_lvl_style_end[2] = {
     [1] = "\x1b[0m",
 };
 
-static uint16_t
-wp_log_logger_last_id = 0;
-
 static struct wp_log_logger
-wp_log_logger_pool[8];
+wp_log_logger_pool[8] = { 0 };
 
 static int
 wp_log_is_std_err_console;
@@ -204,12 +201,6 @@ w_logger_register(
         return W_ERROR_LOCK_FAILED;
     }
 
-    if (W_UINT_IS_ADD_WRAPPING(UINT16_MAX, wp_log_logger_last_id, 1))
-    {
-        status = W_ERROR_MAX_ID_EXCEEDED;
-        goto exit;
-    }
-
     for (i = 0; i < W_GET_ARRAY_LEN(wp_log_logger_pool); ++i)
     {
         struct wp_log_logger *logger;
@@ -217,11 +208,12 @@ w_logger_register(
         logger = &wp_log_logger_pool[i];
 
         // Find the first slot available with no valid logger assigned to it.
-        if (!logger->valid)
+        if (
+            !logger->valid
+            && !W_UINT_IS_ADD_WRAPPING(UINT16_MAX, logger->id, 1)
+        )
         {
-            ++wp_log_logger_last_id;
-
-            logger->id = wp_log_logger_last_id;
+            logger->id += 1;
             logger->stream = stream;
             logger->lvl = lvl;
             logger->fmt = fmt;
