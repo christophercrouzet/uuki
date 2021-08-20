@@ -522,3 +522,15 @@ w_format_system_error(
 
     return 0;
 }
+
+void
+w_get_str_len(
+    size_t *len,
+    const char *str
+)
+{
+    WP_PLATFORM_ASSERT(len != NULL);
+    WP_PLATFORM_ASSERT(str != NULL);
+
+    StringCchLengthA(str, STRSAFE_MAX_CCH, len);
+}

@@ -316,4 +316,10 @@ w_count_leading_zero_bits_64(
     uint64_t x
 );
 
+void
+w_get_str_len(
+    size_t *len,
+    const char *str
+);
+
 #endif // UUKI_BASE_PLATFORM_H

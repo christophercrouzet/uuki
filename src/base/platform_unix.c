@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <stdarg.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -171,4 +172,16 @@ w_format_system_error(
 #endif
 
     return 0;
+}
+
+void
+w_get_str_len(
+    size_t *len,
+    const char *str
+)
+{
+    WP_PLATFORM_ASSERT(len != NULL);
+    WP_PLATFORM_ASSERT(str != NULL);
+
+    *len = strlen(str);
 }

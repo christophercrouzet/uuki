@@ -97,15 +97,6 @@ wp_log_logger_pool[8] = {
 
 W_MTX_INTIALIZE(wp_log_mtx);
 
-// Forward Declarations
-// ---------------------------------------------------------------- //   O-(''Q)
-
-static void
-wp_log_get_str_len(
-    size_t *len,
-    const char *str
-);
-
 // Helpers
 // ---------------------------------------------------------------- //   O-(''Q)
 
@@ -167,7 +158,7 @@ wp_log_fmt_plain(
         return W_ERROR_STR_FORMATTING_FAILED;
     }
 
-    wp_log_get_str_len(&len, buf);
+    w_get_str_len(&len, buf);
 
     // Format the body.
     if (
@@ -394,11 +385,3 @@ w_log_va(
     w_mtx_unlock(&wp_log_mtx);
     return status;
 }
-
-#if W_OS(UNIX)
-    #include "log_unix.c"
-#elif W_OS(WINDOWS)
-    #include "log_windows.c"
-#else
-    #error "not implemented"
-#endif
