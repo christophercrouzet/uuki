@@ -96,7 +96,7 @@ wp_log_logger_pool[8] = { 0 };
 static int
 wp_log_is_std_err_console;
 
-W_MTX_INTIALIZE(wp_log_mtx);
+W_MTX_INTIALIZE_STATIC(wp_log_mtx);
 
 // Helpers
 // ---------------------------------------------------------------- //   O-(''Q)

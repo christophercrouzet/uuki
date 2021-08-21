@@ -240,13 +240,13 @@ wp_invalid_size_t_size[W_SIZE_T_SIZE == sizeof(size_t) ? 1 : -1];
 
 // Mutexes.
 #if W_OS(UNIX)
-    #define W_MTX_INTIALIZE(mtx)                                               \
+    #define W_MTX_INTIALIZE_STATIC(mtx)                                        \
         static pthread_mutex_t                                                 \
         mtx = PTHREAD_MUTEX_INITIALIZER
 
     typedef pthread_mutex_t w_mtx;
 #elif W_OS(WINDOWS)
-    #define W_MTX_INTIALIZE(mtx)                                               \
+    #define W_MTX_INTIALIZE_STATIC(mtx)                                        \
         static HANDLE                                                          \
         mtx = NULL
 
