@@ -49,7 +49,7 @@ w_mtx_lock(
     error = pthread_mutex_lock(mtx);
     if (error != 0)
     {
-        return wp_platform_enforce_error(error);
+        return error;
     }
 
     return 0;
@@ -67,7 +67,7 @@ w_mtx_unlock(
     error = pthread_mutex_unlock(mtx);
     if (error != 0)
     {
-        return wp_platform_enforce_error(error);
+        return error;
     }
 
     return 0;
