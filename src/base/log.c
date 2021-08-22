@@ -133,6 +133,8 @@ wp_log_fmt_plain(
     va_list args
 )
 {
+    enum w_status status;
+    va_list copied_args;
     char buf[1024];
     size_t len;
 
@@ -160,22 +162,29 @@ wp_log_fmt_plain(
     w_get_str_len(&len, buf);
 
     // Format the body.
+    va_copy(copied_args, args);
     if (
         w_format_msg_va(
-            &buf[len], W_GET_ARRAY_LEN(buf) - len, msg, args
+            &buf[len], W_GET_ARRAY_LEN(buf) - len, msg, copied_args
         )
         != 0)
     {
-        return W_ERROR_STR_FORMATTING_FAILED;
+        status = W_ERROR_STR_FORMATTING_FAILED;
+        goto exit;
     }
 
     // Print the result.
     if (w_print(stream, buf) != 0)
     {
-        return W_ERROR_IO_FAILED;
+        status = W_ERROR_IO_FAILED;
+        goto exit;
     }
 
-    return W_SUCCESS;
+    status = W_SUCCESS;
+
+exit:
+    va_end(copied_args);
+    return status;
 }
 
 // Public API
@@ -310,6 +319,7 @@ w_log_va(
 
     enum w_status status;
     uint16_t i;
+    int has_registered_logger;
 
     W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
     W_ASSERT(file != NULL);
@@ -326,6 +336,7 @@ w_log_va(
         initialized = 1;
     }
 
+    has_registered_logger = 0;
     for (i = 0; i < W_GET_ARRAY_LEN(wp_log_logger_pool); ++i)
     {
         struct wp_log_logger *logger;
@@ -336,7 +347,7 @@ w_log_va(
             continue;
         }
 
-        status = W_SUCCESS;
+        has_registered_logger = 1;
         switch (logger->fmt)
         {
             case W_LOG_FMT_PLAIN:
@@ -352,10 +363,15 @@ w_log_va(
             default:
                 W_ASSERT(0);
         }
+
+        if (status != W_SUCCESS)
+        {
+            goto exit;
+        }
     }
 
     // Fallback to a default logger if none was explicitly registered.
-    if (i == 0)
+    if (!has_registered_logger)
     {
         status = wp_log_fmt_plain(
             W_STD_ERR,
@@ -366,8 +382,14 @@ w_log_va(
             msg,
             args
         );
+
+        if (status != W_SUCCESS)
+        {
+            goto exit;
+        }
     }
 
+exit:
     w_mtx_unlock(&wp_log_mtx);
     return status;
 }
