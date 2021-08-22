@@ -254,7 +254,7 @@ w_mtx_lock(
     {
         HANDLE handle;
 
-        handle = CreateMutex(NULL, 0, NULL);
+        handle = CreateMutexW(NULL, 0, NULL);
         if (handle == NULL)
         {
             return wp_platform_enforce_error(GetLastError());
