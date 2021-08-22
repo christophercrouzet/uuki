@@ -29,6 +29,13 @@
 #define W_LOG_DEBUG(...)                                                       \
     W_LOG(W_LOG_LVL_DEBUG, __VA_ARGS__)
 
+#define W_LOG_SYSTEM_ERROR(lvl, error)                                         \
+    do                                                                         \
+    {                                                                          \
+        w_log_system_error((lvl), __FILE__, __LINE__, error);                  \
+    }                                                                          \
+    while (0)
+
 enum w_log_lvl {
     W_LOG_LVL_NONE    = 0,
     W_LOG_LVL_FATAL   = 1,
@@ -91,5 +98,13 @@ w_log_va(
     va_list args
 )
 W_PRINTF_CHECK(4, 0);
+
+enum w_status
+w_log_system_error(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    int error
+);
 
 #endif // UUKI_BASE_LOG_H

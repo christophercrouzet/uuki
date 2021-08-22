@@ -393,3 +393,24 @@ exit:
     w_mtx_unlock(&wp_log_mtx);
     return status;
 }
+
+enum w_status
+w_log_system_error(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    int error
+)
+{
+    char msg[512];
+
+    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
+    W_ASSERT(file != NULL);
+
+    if (w_format_system_error(msg, W_GET_ARRAY_LEN(msg), error) != 0)
+    {
+        return W_ERROR;
+    }
+
+    return w_log(lvl, file, line, "system error %d: %s\n", error, msg);
+}

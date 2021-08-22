@@ -5,6 +5,7 @@
 
 #include <rexo.h>
 
+#include <errno.h>
 #include <stddef.h>
 
 RX_SET_UP(log_set_up)
@@ -49,6 +50,11 @@ RX_TEST_CASE(log, plain_stylized_logging)
     W_LOG_WARNING("warning message\n");
     W_LOG_INFO("info message\n");
     W_LOG_DEBUG("debug message\n");
+}
+
+RX_TEST_CASE(log, system_error_logging)
+{
+    W_LOG_SYSTEM_ERROR(W_LOG_LVL_DEBUG, ENOENT);
 }
 
 int
