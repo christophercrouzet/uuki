@@ -268,7 +268,7 @@ w_mtx_lock(
         )
         {
             // Another thread already initialized the mutex.
-            if (CloseHandle(handle) != 0)
+            if (CloseHandle(handle) == 0)
             {
                 return wp_platform_enforce_error(GetLastError());
             }
