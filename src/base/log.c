@@ -5,6 +5,7 @@
 #include <uuki/base/macros.h>
 #include <uuki/base/platform.h>
 
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -187,6 +188,139 @@ exit:
     return status;
 }
 
+// Private API
+// ---------------------------------------------------------------- //   O-(''Q)
+
+enum w_status
+wp_log(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    const char *msg,
+    ...
+)
+{
+    enum w_status status;
+    va_list args;
+
+    W_ASSERT(file != NULL);
+    W_ASSERT(msg != NULL);
+
+    va_start(args, msg);
+    status = wp_log_va(lvl, file, line, msg, args);
+    va_end(args);
+    return status;
+}
+
+enum w_status
+wp_log_va(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    const char *msg,
+    va_list args
+)
+{
+    static int32_t initialized = 0;
+
+    enum w_status status;
+    uint16_t i;
+    int has_registered_logger;
+
+    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
+    W_ASSERT(file != NULL);
+    W_ASSERT(msg != NULL);
+
+    if (w_mtx_lock(&wp_log_mtx) != 0)
+    {
+        return W_ERROR_LOCK_FAILED;
+    }
+
+    if (!initialized)
+    {
+        wp_log_is_std_err_console = w_is_console(W_STD_ERR);
+        initialized = 1;
+    }
+
+    has_registered_logger = 0;
+    for (i = 0; i < W_GET_ARRAY_LEN(wp_log_logger_pool); ++i)
+    {
+        struct wp_log_logger *logger;
+
+        logger = &wp_log_logger_pool[i];
+        if (!logger->valid || (logger->lvl < lvl))
+        {
+            continue;
+        }
+
+        has_registered_logger = 1;
+        switch (logger->fmt)
+        {
+            case W_LOG_FMT_PLAIN:
+                status = wp_log_fmt_plain(
+                    logger->stream, lvl, file, line, 0, msg, args
+                );
+                break;
+            case W_LOG_FMT_PLAIN_STYLIZED:
+                status = wp_log_fmt_plain(
+                    logger->stream, lvl, file, line, 1, msg, args
+                );
+                break;
+            default:
+                W_ASSERT(0);
+        }
+
+        if (status != W_SUCCESS)
+        {
+            goto exit;
+        }
+    }
+
+    // Fallback to a default logger if none was explicitly registered.
+    if (!has_registered_logger)
+    {
+        status = wp_log_fmt_plain(
+            W_STD_ERR,
+            lvl,
+            file,
+            line,
+            wp_log_is_std_err_console,
+            msg,
+            args
+        );
+
+        if (status != W_SUCCESS)
+        {
+            goto exit;
+        }
+    }
+
+exit:
+    w_mtx_unlock(&wp_log_mtx);
+    return status;
+}
+
+enum w_status
+wp_log_system_error(
+    enum w_log_lvl lvl,
+    const char *file,
+    int line,
+    int error
+)
+{
+    char msg[512];
+
+    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
+    W_ASSERT(file != NULL);
+
+    if (w_format_system_error(msg, W_GET_ARRAY_LEN(msg), error) != 0)
+    {
+        return W_ERROR;
+    }
+
+    return wp_log(lvl, file, line, "system error %d: %s\n", error, msg);
+}
+
 // Public API
 // ---------------------------------------------------------------- //   O-(''Q)
 
@@ -283,134 +417,4 @@ w_logger_deregister_all(
 
     w_mtx_unlock(&wp_log_mtx);
     return W_SUCCESS;
-}
-
-enum w_status
-w_log(
-    enum w_log_lvl lvl,
-    const char *file,
-    int line,
-    const char *msg,
-    ...
-)
-{
-    enum w_status status;
-    va_list args;
-
-    W_ASSERT(file != NULL);
-    W_ASSERT(msg != NULL);
-
-    va_start(args, msg);
-    status = w_log_va(lvl, file, line, msg, args);
-    va_end(args);
-    return status;
-}
-
-enum w_status
-w_log_va(
-    enum w_log_lvl lvl,
-    const char *file,
-    int line,
-    const char *msg,
-    va_list args
-)
-{
-    static int32_t initialized = 0;
-
-    enum w_status status;
-    uint16_t i;
-    int has_registered_logger;
-
-    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
-    W_ASSERT(file != NULL);
-    W_ASSERT(msg != NULL);
-
-    if (w_mtx_lock(&wp_log_mtx) != 0)
-    {
-        return W_ERROR_LOCK_FAILED;
-    }
-
-    if (!initialized)
-    {
-        wp_log_is_std_err_console = w_is_console(W_STD_ERR);
-        initialized = 1;
-    }
-
-    has_registered_logger = 0;
-    for (i = 0; i < W_GET_ARRAY_LEN(wp_log_logger_pool); ++i)
-    {
-        struct wp_log_logger *logger;
-
-        logger = &wp_log_logger_pool[i];
-        if (!logger->valid || (logger->lvl < lvl))
-        {
-            continue;
-        }
-
-        has_registered_logger = 1;
-        switch (logger->fmt)
-        {
-            case W_LOG_FMT_PLAIN:
-                status = wp_log_fmt_plain(
-                    logger->stream, lvl, file, line, 0, msg, args
-                );
-                break;
-            case W_LOG_FMT_PLAIN_STYLIZED:
-                status = wp_log_fmt_plain(
-                    logger->stream, lvl, file, line, 1, msg, args
-                );
-                break;
-            default:
-                W_ASSERT(0);
-        }
-
-        if (status != W_SUCCESS)
-        {
-            goto exit;
-        }
-    }
-
-    // Fallback to a default logger if none was explicitly registered.
-    if (!has_registered_logger)
-    {
-        status = wp_log_fmt_plain(
-            W_STD_ERR,
-            lvl,
-            file,
-            line,
-            wp_log_is_std_err_console,
-            msg,
-            args
-        );
-
-        if (status != W_SUCCESS)
-        {
-            goto exit;
-        }
-    }
-
-exit:
-    w_mtx_unlock(&wp_log_mtx);
-    return status;
-}
-
-enum w_status
-w_log_system_error(
-    enum w_log_lvl lvl,
-    const char *file,
-    int line,
-    int error
-)
-{
-    char msg[512];
-
-    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
-    W_ASSERT(file != NULL);
-
-    if (w_format_system_error(msg, W_GET_ARRAY_LEN(msg), error) != 0)
-    {
-        return W_ERROR;
-    }
-
-    return w_log(lvl, file, line, "system error %d: %s\n", error, msg);
 }

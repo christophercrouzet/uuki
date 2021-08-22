@@ -4,13 +4,12 @@
 #include <uuki/base/platform.h>
 #include <uuki/base/status.h>
 
-#include <stdarg.h>
 #include <stdint.h>
 
 #define W_LOG(lvl, ...)                                                        \
     do                                                                         \
     {                                                                          \
-        w_log((lvl), __FILE__, __LINE__, __VA_ARGS__);                         \
+        wp_log((lvl), __FILE__, __LINE__, __VA_ARGS__);                        \
     }                                                                          \
     while (0)
 
@@ -32,7 +31,7 @@
 #define W_LOG_SYSTEM_ERROR(lvl, error)                                         \
     do                                                                         \
     {                                                                          \
-        w_log_system_error((lvl), __FILE__, __LINE__, error);                  \
+        wp_log_system_error((lvl), __FILE__, __LINE__, error);                 \
     }                                                                          \
     while (0)
 
@@ -79,32 +78,6 @@ w_logger_deregister_all(
     void
 );
 
-enum w_status
-w_log(
-    enum w_log_lvl lvl,
-    const char *file,
-    int line,
-    const char *msg,
-    ...
-)
-W_PRINTF_CHECK(4, 5);
-
-enum w_status
-w_log_va(
-    enum w_log_lvl lvl,
-    const char *file,
-    int line,
-    const char *msg,
-    va_list args
-)
-W_PRINTF_CHECK(4, 0);
-
-enum w_status
-w_log_system_error(
-    enum w_log_lvl lvl,
-    const char *file,
-    int line,
-    int error
-);
+#include "private/log.h"
 
 #endif // UUKI_BASE_LOG_H
