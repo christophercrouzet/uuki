@@ -111,6 +111,7 @@ w_add_library(
         src/base/math.c
         src/base/mem.c
         src/base/platform.c
+        src/base/trace.c
 )
 
 add_custom_target(
@@ -273,6 +274,12 @@ w_add_test(
 w_add_test(
     NAME base-platform
     FILES tests/base/platform.c
+    DEPENDS base
+)
+
+w_add_test(
+    NAME base-trace
+    FILES tests/base/trace.c
     DEPENDS base
 )
 
