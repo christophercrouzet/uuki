@@ -417,7 +417,6 @@ w_print(
     // so if that buffer is not large enough then the write operation is done
     // across multiple calls, in which case we want to avoid interleaved output
     // coming from multiple threads trying to write at the same time.
-    
 
     i = 0;
     status = 0;
