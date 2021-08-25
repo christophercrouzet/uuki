@@ -368,7 +368,7 @@ w_logger_register(
         }
     }
 
-    status = W_ERROR_BUF_SIZE_EXCEEDED;
+    status = W_ERROR_BUF_FULL;
 
 exit:
     w_mtx_unlock(&wp_log_mtx);
