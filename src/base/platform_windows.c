@@ -524,6 +524,32 @@ w_format_system_error(
 }
 
 void
+w_copy_mem(
+    void *dst,
+    const void *src,
+    size_t size
+)
+{
+    WP_PLATFORM_ASSERT(dst != NULL);
+    WP_PLATFORM_ASSERT(src != NULL);
+
+    CopyMemory(dst, src, size);
+}
+
+void
+w_move_mem(
+    void *dst,
+    const void *src,
+    size_t size
+)
+{
+    WP_PLATFORM_ASSERT(dst != NULL);
+    WP_PLATFORM_ASSERT(src != NULL);
+
+    MoveMemory(dst, src, size);
+}
+
+void
 w_get_str_len(
     size_t *len,
     const char *str

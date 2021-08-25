@@ -317,6 +317,20 @@ w_count_leading_zero_bits_64(
 );
 
 void
+w_copy_mem(
+    void *dst,
+    const void *src,
+    size_t size
+);
+
+void
+w_move_mem(
+    void *dst,
+    const void *src,
+    size_t size
+);
+
+void
 w_get_str_len(
     size_t *len,
     const char *str
