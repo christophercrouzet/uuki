@@ -371,6 +371,7 @@ w_print(
 
     size_t i;
     int status;
+    int tmp_status;
     wp_write_fn write_fn;
 
     status = w_mtx_lock(&wp_platform_print_mtx);
@@ -469,7 +470,12 @@ w_print(
     }
 
 exit:
-    w_mtx_unlock(&wp_platform_print_mtx);
+    tmp_status = w_mtx_unlock(&wp_platform_print_mtx);
+    if (tmp_status != 0)
+    {
+        return tmp_status;
+    }
+
     return status;
 }
 

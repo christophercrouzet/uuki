@@ -296,7 +296,11 @@ wp_log_va(
     }
 
 exit:
-    w_mtx_unlock(&wp_log_mtx);
+    if (w_mtx_unlock(&wp_log_mtx) != 0)
+    {
+        status = W_ERROR_UNLOCK_FAILED;
+    }
+
     return status;
 }
 
@@ -371,7 +375,11 @@ w_logger_register(
     status = W_ERROR_BUF_FULL;
 
 exit:
-    w_mtx_unlock(&wp_log_mtx);
+    if (w_mtx_unlock(&wp_log_mtx) != 0)
+    {
+        status = W_ERROR_UNLOCK_FAILED;
+    }
+
     return status;
 }
 
@@ -394,7 +402,11 @@ w_logger_deregister(
         logger->valid = 0;
     }
 
-    w_mtx_unlock(&wp_log_mtx);
+    if (w_mtx_unlock(&wp_log_mtx) != 0)
+    {
+        status = W_ERROR_UNLOCK_FAILED;
+    }
+
     return status;
 }
 
@@ -415,6 +427,10 @@ w_logger_deregister_all(
         wp_log_logger_pool[i].valid = 0;
     }
 
-    w_mtx_unlock(&wp_log_mtx);
+    if (w_mtx_unlock(&wp_log_mtx) != 0)
+    {
+        return W_ERROR_UNLOCK_FAILED;
+    }
+
     return W_SUCCESS;
 }
