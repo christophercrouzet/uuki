@@ -244,6 +244,42 @@ w_abort(
 }
 
 int
+w_mtx_create(
+    HANDLE *mtx
+)
+{
+    WP_PLATFORM_ASSERT(mtx != NULL);
+
+    *mtx = CreateMutexW(NULL, 0, NULL);
+    if (*mtx == NULL)
+    {
+        return wp_platform_enforce_error(GetLastError());
+    }
+
+    return 0;
+}
+
+int
+w_mtx_destroy(
+    HANDLE *mtx
+)
+{
+    WP_PLATFORM_ASSERT(mtx != NULL);
+
+    if (ReleaseMutex(*mtx) == 0)
+    {
+        return wp_platform_enforce_error(GetLastError());
+    }
+
+    if (CloseHandle(*mtx) == 0)
+    {
+        return wp_platform_enforce_error(GetLastError());
+    }
+
+    return 0;
+}
+
+int
 w_mtx_lock(
     HANDLE *mtx
 )

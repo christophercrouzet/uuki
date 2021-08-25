@@ -38,6 +38,42 @@ w_abort(
 }
 
 int
+w_mtx_create(
+    pthread_mutex_t *mtx
+)
+{
+    int error;
+
+    WP_PLATFORM_ASSERT(mtx != NULL);
+
+    error = pthread_mutex_init(mtx, NULL);
+    if (error != 0)
+    {
+        return error;
+    }
+
+    return 0;
+}
+
+int
+w_mtx_destroy(
+    pthread_mutex_t *mtx
+)
+{
+    int error;
+
+    WP_PLATFORM_ASSERT(mtx != NULL);
+
+    error = pthread_mutex_destroy(mtx);
+    if (error != 0)
+    {
+        return error;
+    }
+
+    return 0;
+}
+
+int
 w_mtx_lock(
     pthread_mutex_t *mtx
 )

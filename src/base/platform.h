@@ -261,6 +261,16 @@ w_abort(
 );
 
 int
+w_mtx_create(
+    w_mtx *mtx
+);
+
+int
+w_mtx_destroy(
+    w_mtx *mtx
+);
+
+int
 w_mtx_lock(
     w_mtx *mtx
 );
