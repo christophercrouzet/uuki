@@ -16,8 +16,8 @@
 
 #define WP_MEM_ALIGN_UP(ptr, alignment)                                        \
     (                                                                          \
-        ((uintptr_t)(ptr) + (uintptr_t)(alignment) - 1)                        \
-        & ~((uintptr_t)(alignment) - 1)                                        \
+        ((uintptr_t)(ptr) + ((uintptr_t)(alignment) - 1))                      \
+        & -(uintptr_t)(alignment)                                              \
     )
 
 // Any power of two alignment that is greater or equal to this value

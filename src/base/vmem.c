@@ -32,8 +32,8 @@ w_round_up_alloc_size(
 {
     size_t out;
 
-    out = (size + w_get_alloc_granularity() - 1)
-        & ~(w_get_alloc_granularity() - 1);
+    out = (size + (w_get_alloc_granularity() - 1))
+        & -w_get_alloc_granularity();
 
     W_ASSERT((size == 0 && out == 0) || (size > 0 && out > 0));
     return out;
@@ -46,8 +46,8 @@ w_round_up_commit_size(
 {
     size_t out;
 
-    out = (size + w_get_commit_granularity() - 1)
-        & ~(w_get_commit_granularity() - 1);
+    out = (size + (w_get_commit_granularity() - 1))
+        & -w_get_commit_granularity();
 
     W_ASSERT((size == 0 && out == 0) || (size > 0 && out > 0));
     return out;
