@@ -10,7 +10,7 @@ struct dummy_trace_data {
     int count;
 };
 
-W_TRACER_INTIALIZE(dummy_tracer, struct dummy, struct dummy_trace_data, 128);
+W_TRACER_INTIALIZE(dummy_tracer, struct dummy_trace_data, 128);
 
 RX_TEST_CASE(trace, main)
 {

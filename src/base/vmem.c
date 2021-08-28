@@ -17,9 +17,7 @@
         size_t size;
     };
 
-    W_TRACER_INTIALIZE(
-        wp_vmem_tracer, struct w_vmem, struct wp_vmem_trace_data, 1024
-    );
+    W_TRACER_INTIALIZE(wp_vmem_tracer, struct wp_vmem_trace_data, 1024);
 #endif
 
 // Public API

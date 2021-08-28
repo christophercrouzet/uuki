@@ -20,7 +20,7 @@ struct wp_trace_idx {
     int valid;
 };
 
-#define W_TRACER_INTIALIZE(name, obj_type, data_type, pool_cap)                \
+#define W_TRACER_INTIALIZE(name, data_type, pool_cap)                          \
     struct name {                                                              \
         struct wp_trace_idx idx_pool[pool_cap];                                \
         data_type data_pool[pool_cap];                                         \
