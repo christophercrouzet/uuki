@@ -7,7 +7,6 @@
 #define W_TRACING(x)                                                           \
     WP_TRACE_TRACING_##x()
 
-#define W_ENABLE_TRACING
 #if defined(W_ENABLE_TRACING) && !defined(W_DISABLE_TRACING)
     #define WP_TRACE_TRACING_ENABLED()  1
     #define WP_TRACE_TRACING_DISABLED() 0
