@@ -107,7 +107,7 @@ w_vmem_destroy(
     {
         struct wp_vmem_trace_data *trace_data;
 
-        W_TRACER_GET_DATA_PTR(wp_vmem_tracer, &trace_data, mem);
+        W_TRACER_FIND_DATA(wp_vmem_tracer, &trace_data, mem);
         W_ASSERT(size == trace_data->size);
     }
 #endif
@@ -144,7 +144,7 @@ w_vmem_commit(
     {
         struct wp_vmem_trace_data *trace_data;
 
-        W_TRACER_GET_DATA_PTR(wp_vmem_tracer, &trace_data, mem);
+        W_TRACER_FIND_DATA(wp_vmem_tracer, &trace_data, mem);
         W_ASSERT(
             (uintptr_t)addr >= (uintptr_t)mem->addr
         );
@@ -184,7 +184,7 @@ w_vmem_uncommit(
     {
         struct wp_vmem_trace_data *trace_data;
 
-        W_TRACER_GET_DATA_PTR(wp_vmem_tracer, &trace_data, mem);
+        W_TRACER_FIND_DATA(wp_vmem_tracer, &trace_data, mem);
         W_ASSERT(
             (uintptr_t)addr >= (uintptr_t)mem->addr
         );

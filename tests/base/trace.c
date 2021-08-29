@@ -37,10 +37,10 @@ RX_TEST_CASE(trace, main)
         )
     );
 
-    W_TRACER_GET_DATA_PTR(dummy_tracer, &trace_data, &dummy_1);
+    W_TRACER_FIND_DATA(dummy_tracer, &trace_data, &dummy_1);
     RX_INT_REQUIRE_EQUAL(trace_data->count, 123);
 
-    W_TRACER_GET_DATA_PTR(dummy_tracer, &trace_data, &dummy_2);
+    W_TRACER_FIND_DATA(dummy_tracer, &trace_data, &dummy_2);
     RX_INT_REQUIRE_EQUAL(trace_data->count, 234);
 
     W_TRACER_DETACH_DATA(dummy_tracer, &dummy_1);

@@ -5,34 +5,36 @@
 
 #include <stddef.h>
 
+struct wp_trace_idx {
+    const void *key;
+    int valid;
+};
+
 void
-wp_trace_attach_data(
+wp_trace_pool_insert_data(
     struct wp_trace_idx *idx_pool,
     void *data_pool,
     size_t pool_cap,
     size_t data_size,
-    const void *obj,
-    const void *data,
-    w_mtx *mtx
+    const void *key,
+    const void *data
 );
 
 void
-wp_trace_detach_data(
+wp_trace_pool_remove_data(
     struct wp_trace_idx *idx_pool,
     size_t pool_cap,
-    const void *obj,
-    w_mtx *mtx
+    const void *key
 );
 
 void
-wp_trace_get_data_ptr(
+wp_trace_pool_find_data(
     void **data,
     const struct wp_trace_idx *idx_pool,
     void *data_pool,
     size_t pool_cap,
     size_t data_size,
-    const void *obj,
-    w_mtx *mtx
+    const void *key
 );
 
 #endif // UUKI_BASE_PRIVATE_TRACE_H
