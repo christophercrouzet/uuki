@@ -74,8 +74,7 @@ main(
         return EXIT_SUCCESS;
     }
 
-    status = w_linear_alloc_create(
-        &linear_alloc, NULL, 4096, W_DEFAULT_ALIGNMENT);
+    status = w_linear_alloc_create(&linear_alloc, 4096);
     if (status != W_SUCCESS)
     {
         goto exit;
