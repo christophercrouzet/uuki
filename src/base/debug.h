@@ -5,12 +5,12 @@
     WP_DEBUG_DEBUGGING_##x()
 
 #if (                                                                          \
-        defined(W_ENABLE_DEBUGGING)                                            \
-        || (                                                                   \
-            !defined(W_DISABLE_DEBUGGING)                                      \
-            && (defined(DEBUG) || !defined(NDEBUG))                            \
-        )                                                                      \
-    )
+    defined(W_ENABLE_DEBUGGING)                                                \
+    || (                                                                       \
+        !defined(W_DISABLE_DEBUGGING)                                          \
+        && (defined(DEBUG) || !defined(NDEBUG))                                \
+    )                                                                          \
+)
     #define WP_DEBUG_DEBUGGING_ENABLED()  1
     #define WP_DEBUG_DEBUGGING_DISABLED() 0
 #else
