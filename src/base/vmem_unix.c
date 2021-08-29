@@ -57,18 +57,6 @@ w_vmem_create(
     size_t size
 )
 {
-#if W_TRACING(ENABLED)
-    W_TRACER_ATTACH_DATA(
-        wp_vmem_tracer,
-        mem,
-        (
-            &(struct wp_vmem_trace_data) {
-                .size = size,
-            }
-        )
-    );
-#endif
-
     int flags;
     void *alloc;
 
@@ -113,6 +101,21 @@ w_vmem_create(
     }
 
     mem->addr = alloc;
+
+#if W_TRACING(ENABLED)
+    {
+        W_TRACER_ATTACH_DATA(
+            wp_vmem_tracer,
+            mem,
+            (
+                &(struct wp_vmem_trace_data) {
+                    .size = size,
+                }
+            )
+        );
+    }
+#endif
+
     return W_SUCCESS;
 }
 
@@ -123,7 +126,12 @@ w_vmem_destroy(
 )
 {
 #if W_TRACING(ENABLED)
-    W_TRACER_DETACH_DATA(wp_vmem_tracer, mem);
+    {
+        struct wp_vmem_trace_data *trace_data;
+
+        W_TRACER_GET_DATA_PTR(wp_vmem_tracer, &trace_data, mem);
+        W_ASSERT(size == trace_data->size);
+    }
 #endif
 
     W_ASSERT(mem != NULL);
@@ -139,6 +147,12 @@ w_vmem_destroy(
         W_LOG_WARNING(WP_VMEM_GET_ERROR_MSG("release"), size, mem->addr);
         W_LOG_SYSTEM_ERROR(W_LOG_LVL_DEBUG, error);
     }
+
+#if W_TRACING(ENABLED)
+    {
+        W_TRACER_DETACH_DATA(wp_vmem_tracer, mem);
+    }
+#endif
 }
 
 enum w_status
