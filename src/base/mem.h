@@ -2,10 +2,12 @@
 #define UUKI_BASE_MEM_H
 
 #include <uuki/base/status.h>
+#include <uuki/base/vmem.h>
 
 #include <stddef.h>
 
-#define W_DEFAULT_ALIGNMENT sizeof(void *)
+#define W_DEFAULT_ALIGNMENT                                                    \
+    sizeof(void *)
 
 #define W_ALLOCATE(alloc, ptr, size)                                           \
     (                                                                          \
@@ -43,6 +45,9 @@
             (alloc)->inst, (ptr), (prev_size), (size), (alignment))            \
     )
 
+// Universal Allocator
+// ---------------------------------------------------------------- //   O-(''Q)
+
 typedef enum w_status
 (*w_allocate_fn)(
     void *inst,
@@ -75,20 +80,20 @@ struct w_alloc {
     void *inst;
 };
 
+// Linear Allocator
+// ---------------------------------------------------------------- //   O-(''Q)
+
 struct w_linear_alloc {
-    struct w_alloc *parent;
-    void *buf;
-    size_t cap;
+    struct w_vmem mem;
+    size_t reserved;
+    size_t committed;
     size_t used;
-    size_t alignment;
 };
 
 enum w_status
 w_linear_alloc_create(
     struct w_linear_alloc *alloc,
-    struct w_alloc *parent,
-    size_t size,
-    size_t alignment
+    size_t size
 );
 
 void
@@ -116,8 +121,8 @@ enum w_status
 w_linear_alloc_reallocate(
     void *inst,
     void **ptr,
-    size_t prev_size,
-    size_t size,
+    size_t old_size,
+    size_t new_size,
     size_t alignment
 );
 

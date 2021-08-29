@@ -26,7 +26,7 @@ RX_TEST_CASE(array, main)
     struct wp_data_array array;
     struct data *slice;
 
-    w_linear_alloc_create(&linear_alloc, NULL, 8, sizeof(struct data));
+    w_linear_alloc_create(&linear_alloc, 8);
     w_linear_alloc_get_universal_alloc(&alloc, &linear_alloc);
 
     // Creation.

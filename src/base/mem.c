@@ -5,10 +5,14 @@
 #include <uuki/base/macros.h>
 #include <uuki/base/platform.h>
 #include <uuki/base/status.h>
+#include <uuki/base/trace.h>
+#include <uuki/base/vmem.h>
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
+
+#define WP_MEM_GROW_FACTOR                                                     \
+    2
 
 #define WP_MEM_ALIGN_UP_IS_WRAPPING(ptr, alignment)                            \
     W_UINT_IS_ADD_WRAPPING(                                                    \
@@ -23,262 +27,188 @@
 // Any power of two alignment that is greater or equal to this value
 // is guaranteed to be a multiple of `sizeof(void *)`, thus conforming to
 // the requirement of `posix_memalign()`.
-static const size_t
-wp_mem_min_alignment = sizeof(void *);
+#define WP_MEM_MIN_ALIGNMENT                                                   \
+    sizeof(void *)
+
+// Helpers
+// ---------------------------------------------------------------- //   O-(''Q)
 
 static size_t
-wp_mem_min(
+wp_mem_max(
     size_t a,
     size_t b
 )
 {
-    return a < b ? a : b;
+    return a > b ? a : b;
 }
 
-// System Allocator: Definitions
+static size_t
+wp_mem_grow_reserved_size(
+    size_t reserved,
+    size_t requested
+)
+{
+    W_ASSERT(!W_UINT_IS_MUL_WRAPPING(SIZE_MAX, reserved, WP_MEM_GROW_FACTOR));
+    return wp_mem_max(reserved * WP_MEM_GROW_FACTOR, requested);
+}
+
+static enum w_status
+wp_mem_realloc(
+    struct w_vmem *mem,
+    size_t old_reserved,
+    size_t new_reserved,
+    size_t old_used,
+    size_t new_committed
+)
+{
+    enum w_status status;
+    struct w_vmem mem_buf;
+
+    status = w_vmem_create(&mem_buf, NULL, new_reserved);
+    if (status != W_SUCCESS)
+    {
+        W_LOG_DEBUG("failed to reserve more space\n");
+        return status;
+    }
+
+    status = w_vmem_commit(&mem_buf, mem_buf.addr, new_committed);
+    if (status != W_SUCCESS)
+    {
+        W_LOG_DEBUG("failed to commit more space\n");
+        goto undo_creation;
+    }
+
+    w_copy_mem(mem_buf.addr, mem->addr, old_used);
+    w_vmem_destroy(mem, old_reserved);
+    *mem = mem_buf;
+
+    W_ASSERT(status == W_SUCCESS);
+    return status;
+
+undo_creation:
+    w_vmem_destroy(&mem_buf, new_reserved);
+    return status;
+}
+
+// Helpers: Linear Allocator
 // ---------------------------------------------------------------- //   O-(''Q)
 
-#if W_OS(WINDOWS)
-    #include <malloc.h>
-#else
-    #include <stdlib.h>
-#endif
+#if W_TRACING(ENABLED)
+    struct wp_mem_linear_alloc_ptr_data {
+        size_t size;
+        size_t alignment;
+    };
 
-static enum w_status
-wp_mem_sys_alloc_allocate(
-    void *inst,
-    void **ptr,
-    size_t size,
-    size_t alignment
-)
-{
-    void *buf;
-
-    W_DISMISS_ARG(inst);
-
-    W_ASSERT(ptr != NULL);
-    W_ASSERT(size == 0 || W_IS_POW2(alignment));
-    W_ASSERT(alignment >= wp_mem_min_alignment);
-
-    if (size == 0)
-    {
-        *ptr = NULL;
-        return W_SUCCESS;
-    }
-
-#if W_OS(WINDOWS)
-    {
-        buf = _aligned_malloc(size, alignment);
-        if (buf == NULL)
-        {
-            goto alloc_error;
-        }
-    }
-#else
-    {
-        if (posix_memalign(&buf, alignment, size) != 0)
-        {
-            goto alloc_error;
-        }
-    }
-#endif
-
-    *ptr = buf;
-    return W_SUCCESS;
-
-alloc_error:
-    W_LOG_ERROR(
-        "failed to allocate %zu bytes with a %zu-byte alignment\n",
-        size,
-        alignment
+    W_TRACE_POOL_DECLARE(
+        wp_mem_linear_alloc_ptr_pool,
+        struct wp_mem_linear_alloc_ptr_data,
+        128
     );
-    return W_ERROR_ALLOC_FAILED;
-}
 
-static void
-wp_mem_sys_alloc_free(
-    void *inst,
-    const void *ptr,
-    size_t size,
-    size_t alignment
-)
-{
-    W_DISMISS_ARG(inst);
-    W_DISMISS_ARG(size);
-    W_DISMISS_ARG(alignment);
+    struct wp_mem_linear_alloc_trace_data {
+        struct wp_mem_linear_alloc_ptr_pool ptr_pool;
+    };
 
-    W_ASSERT(size == 0 || W_IS_POW2(alignment));
-    W_ASSERT(alignment >= wp_mem_min_alignment);
-
-#if W_OS(WINDOWS)
-    _aligned_free((void *)ptr);
-#else
-    #if defined(__GNUC__)
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wcast-qual"
-    #endif
-    free((void *)ptr);
-    #if defined(__GNUC__)
-        #pragma GCC diagnostic pop
-    #endif
-#endif
-}
-
-static enum w_status
-wp_mem_sys_alloc_reallocate(
-    void *inst,
-    void **ptr,
-    size_t prev_size,
-    size_t size,
-    size_t alignment
-)
-{
-    void *buf;
-
-    W_DISMISS_ARG(inst);
-
-    W_ASSERT(ptr != NULL);
-    W_ASSERT(size == 0 || W_IS_POW2(alignment));
-    W_ASSERT(alignment >= wp_mem_min_alignment);
-
-    if (*ptr == NULL)
-    {
-        return wp_mem_sys_alloc_allocate(inst, ptr, size, alignment);
-    }
-
-    if (size == 0)
-    {
-        wp_mem_sys_alloc_free(inst, ptr, size, alignment);
-        return W_SUCCESS;
-    }
-
-    if (size <= prev_size)
-    {
-        return W_SUCCESS;
-    }
-
-#if W_OS(WINDOWS)
-    {
-        buf = _aligned_realloc(*ptr, size, alignment);
-        if (buf == NULL)
-        {
-            goto alloc_error;
-        }
-    }
-#else
-    {
-        if (posix_memalign(&buf, alignment, size) != 0)
-        {
-            goto alloc_error;
-        }
-
-        memcpy(buf, *ptr, prev_size);
-    }
-#endif
-
-    *ptr = buf;
-    return W_SUCCESS;
-
-alloc_error:
-    W_LOG_ERROR(
-        "failed to allocate %zu bytes with a %zu-byte alignment\n",
-        size,
-        alignment
+    W_TRACER_INTIALIZE(
+        wp_mem_linear_alloc_tracer,
+        struct wp_mem_linear_alloc_trace_data,
+        64
     );
-    return W_ERROR_ALLOC_FAILED;
+#endif
+
+enum w_status
+wp_mem_linear_alloc_ensure_has_enough_space(
+    struct w_linear_alloc *alloc,
+    size_t used
+)
+{
+    if (used > alloc->reserved)
+    {
+        enum w_status status;
+        size_t reserved;
+        size_t committed;
+
+        reserved = w_round_up_alloc_size(
+            wp_mem_grow_reserved_size(alloc->reserved, used)
+        );
+        committed = w_round_up_commit_size(used);
+        status = wp_mem_realloc(
+            &alloc->mem,
+            alloc->reserved,
+            reserved,
+            alloc->used,
+            committed
+        );
+        if (status != W_SUCCESS)
+        {
+            W_LOG_DEBUG("failed to reallocate the virtual memory\n");
+            return status;
+        }
+
+        alloc->reserved = reserved;
+        alloc->committed = committed;
+
+        W_LOG_WARNING("consider increasing the initial reserved size\n");
+    }
+    else if (used > alloc->committed)
+    {
+        enum w_status status;
+        size_t committed;
+
+        committed = w_round_up_commit_size(used);
+        status = w_vmem_commit(&alloc->mem, alloc->mem.addr, committed);
+        if (status != W_SUCCESS)
+        {
+            W_LOG_DEBUG("failed to commit more space\n");
+            return status;
+        }
+
+        alloc->committed = committed;
+    }
+
+    return W_SUCCESS;
 }
 
-static struct w_alloc
-wp_mem_sys_alloc = {
-    wp_mem_sys_alloc_allocate,
-    wp_mem_sys_alloc_free,
-    wp_mem_sys_alloc_reallocate,
-    NULL,
-};
-
-// Linear Allocator
+// Public API: Linear Allocator
 // ---------------------------------------------------------------- //   O-(''Q)
 
-static enum w_status
-wp_mem_linear_alloc_allocate(
+enum w_status
+w_linear_alloc_create(
     struct w_linear_alloc *alloc,
     size_t size
 )
 {
     enum w_status status;
-    void *buf;
-    size_t cap;
-
-    status = W_SUCCESS;
-
-    if (W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, size))
-    {
-        W_LOG_ERROR("the size and/or alignment requested are too large\n");
-        return W_ERROR_MAX_SIZE_EXCEEDED;
-    }
-
-    cap = alloc->used + size;
-    if (alloc->cap >= cap)
-    {
-        goto exit;
-    }
-
-    buf = alloc->buf;
-    status = alloc->parent->reallocate(
-        alloc->parent->inst, &buf, alloc->cap, cap, alloc->alignment);
-    if (status != W_SUCCESS)
-    {
-        return status;
-    }
-
-    alloc->buf = buf;
-    alloc->cap = cap;
-
-exit:
-    alloc->used = cap;
-
-    W_ASSERT(status == W_SUCCESS);
-    return status;
-}
-
-enum w_status
-w_linear_alloc_create(
-    struct w_linear_alloc *alloc,
-    struct w_alloc *parent,
-    size_t size,
-    size_t alignment
-)
-{
-    enum w_status status;
-    void *buf;
 
     W_ASSERT(alloc != NULL);
+    W_ASSERT(size > 0);
 
-    if (parent == NULL)
-    {
-        parent = &wp_mem_sys_alloc;
-    }
-
-    if (alignment < wp_mem_min_alignment)
-    {
-        alignment = wp_mem_min_alignment;
-    }
-
-    buf = NULL;
-    status = parent->allocate(parent->inst, &buf, size, alignment);
+    size = w_round_up_alloc_size(size);
+    status = w_vmem_create(&alloc->mem, NULL, size);
     if (status != W_SUCCESS)
     {
         W_LOG_DEBUG("failed to create the linear allocator\n");
         return status;
     }
 
-    alloc->parent = parent;
-    alloc->buf = buf;
-    alloc->cap = size;
+    alloc->reserved = size;
+    alloc->committed = 0;
     alloc->used = 0;
-    alloc->alignment = alignment;
 
-    W_ASSERT(status == W_SUCCESS);
+#if W_TRACING(ENABLED)
+    {
+        W_TRACER_ATTACH_DATA(
+            wp_mem_linear_alloc_tracer,
+            alloc,
+            (
+                &(struct wp_mem_linear_alloc_trace_data) {
+                    .ptr_pool = { 0 },
+                }
+            )
+        );
+    }
+#endif
+
     return status;
 }
 
@@ -289,9 +219,17 @@ w_linear_alloc_destroy(
 {
     W_ASSERT(alloc != NULL);
 
-    alloc->parent->free(
-        alloc->parent->inst, alloc->buf, alloc->cap, alloc->alignment);
+    w_vmem_destroy(&alloc->mem, alloc->reserved);
+
+#if W_TRACING(ENABLED)
+    {
+        W_TRACER_DETACH_DATA(wp_mem_linear_alloc_tracer, alloc);
+    }
+#endif
 }
+
+// Public API: Linear Allocator (Universal Allocator API)
+// ---------------------------------------------------------------- //   O-(''Q)
 
 enum w_status
 w_linear_alloc_allocate(
@@ -303,14 +241,14 @@ w_linear_alloc_allocate(
 {
     enum w_status status;
     struct w_linear_alloc *alloc;
-    size_t padding;
     size_t end;
+    size_t padding;
+    size_t used;
 
     W_ASSERT(inst != NULL);
     W_ASSERT(ptr != NULL);
-    W_ASSERT(size == 0 || W_IS_POW2(alignment));
-
-    status = W_SUCCESS;
+    W_ASSERT(W_IS_POW2(alignment));
+    W_ASSERT(alignment >= WP_MEM_MIN_ALIGNMENT);
 
     alloc = (struct w_linear_alloc *)inst;
 
@@ -320,27 +258,45 @@ w_linear_alloc_allocate(
         return W_SUCCESS;
     }
 
-    if (alignment < wp_mem_min_alignment)
-    {
-        alignment = wp_mem_min_alignment;
-    }
-
-    end = (uintptr_t)alloc->buf + alloc->used;
+    // The new block is to be appended at the end of the used space.
+    end = (uintptr_t)alloc->mem.addr + alloc->used;
 
     // Compute the padding required to fulfill the requested alignment.
     W_ASSERT(!WP_MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
     padding = (uintptr_t)WP_MEM_ALIGN_UP(end, alignment) - end;
 
-    status = wp_mem_linear_alloc_allocate(alloc, size + padding);
+    // Compute the total size about to be used.
+    W_ASSERT(!W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, padding, size));
+    used = alloc->used + padding + size;
+
+    status = wp_mem_linear_alloc_ensure_has_enough_space(alloc, used);
     if (status != W_SUCCESS)
     {
         return status;
     }
 
-    *ptr = (void *)((uintptr_t)alloc->buf + alloc->used - size);
+    alloc->used = used;
+    *ptr = (void *)((uintptr_t)alloc->mem.addr + used - size);
 
-    W_ASSERT(status == W_SUCCESS);
-    return status;
+#if W_TRACING(ENABLED)
+    {
+        struct wp_mem_linear_alloc_trace_data *trace_data;
+
+        W_TRACER_FIND_DATA(wp_mem_linear_alloc_tracer, &trace_data, inst);
+        W_TRACE_POOL_INSERT_DATA(
+            trace_data->ptr_pool,
+            *ptr,
+            (
+                &(struct wp_mem_linear_alloc_ptr_data) {
+                    .size = size,
+                    .alignment = alignment,
+                }
+            )
+        );
+    }
+#endif
+
+    return W_SUCCESS;
 }
 
 void
@@ -358,118 +314,130 @@ w_linear_alloc_free(
 
     W_ASSERT(inst != NULL);
     W_ASSERT(W_IS_POW2(alignment));
+    W_ASSERT(alignment >= WP_MEM_MIN_ALIGNMENT);
+
+#if W_TRACING(ENABLED)
+    {
+        struct wp_mem_linear_alloc_trace_data *trace_data;
+
+        W_TRACER_FIND_DATA(wp_mem_linear_alloc_tracer, &trace_data, inst);
+        W_TRACE_POOL_REMOVE_DATA(trace_data->ptr_pool, ptr);
+    }
+#endif
 }
 
 enum w_status
 w_linear_alloc_reallocate(
     void *inst,
     void **ptr,
-    size_t prev_size,
-    size_t size,
+    size_t old_size,
+    size_t new_size,
     size_t alignment
 )
 {
+#if W_TRACING(ENABLED)
+    if (*ptr != NULL)
+    {
+        struct wp_mem_linear_alloc_trace_data *trace_data;
+        struct wp_mem_linear_alloc_ptr_data *ptr_data;
+
+        W_TRACER_FIND_DATA(wp_mem_linear_alloc_tracer, &trace_data, inst);
+        W_TRACE_POOL_FIND_DATA(trace_data->ptr_pool, &ptr_data, *ptr);
+        W_ASSERT(old_size == ptr_data->size);
+        W_ASSERT(alignment == ptr_data->alignment);
+    }
+#endif
+
     enum w_status status;
     struct w_linear_alloc *alloc;
-    size_t padding;
+    size_t ptr_offset;
     size_t end;
-    size_t src_offset;
-    size_t dst_offset;
+    size_t used;
+    int is_last_block;
+    void *old_ptr;
+    void *new_ptr;
 
     W_ASSERT(inst != NULL);
     W_ASSERT(ptr != NULL);
-    W_ASSERT(size == 0 || W_IS_POW2(alignment));
-
-    status = W_SUCCESS;
+    W_ASSERT(W_IS_POW2(alignment));
+    W_ASSERT(alignment >= WP_MEM_MIN_ALIGNMENT);
 
     alloc = (struct w_linear_alloc *)inst;
 
     if (*ptr == NULL)
     {
-        return w_linear_alloc_allocate(inst, ptr, size, alignment);
+        return w_linear_alloc_allocate(inst, ptr, new_size, alignment);
     }
 
-    if (size == 0)
+    if (new_size == 0)
     {
-        w_linear_alloc_free(inst, ptr, size, alignment);
+        w_linear_alloc_free(inst, ptr, new_size, alignment);
         return W_SUCCESS;
     }
 
-    if (alignment < wp_mem_min_alignment)
+    ptr_offset = (uintptr_t)*ptr - (uintptr_t)alloc->mem.addr;
+    end = (uintptr_t)alloc->mem.addr + alloc->used;
+    is_last_block = (uintptr_t)*ptr + old_size == end;
+
+    // Compute the total size about to be used.
+    if (is_last_block)
     {
-        alignment = wp_mem_min_alignment;
+        W_ASSERT(
+            !W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, new_size - old_size)
+        );
+        used = alloc->used + (new_size - old_size);
+    }
+    else
+    {
+        size_t padding;
+
+        // Compute the padding required to fulfill the requested alignment.
+        W_ASSERT(!WP_MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
+        padding = (uintptr_t)WP_MEM_ALIGN_UP(end, alignment) - end;
+
+        W_ASSERT(!W_UINT_IS_ADD_WRAPPING(
+            SIZE_MAX, alloc->used, padding, new_size)
+        );
+        used = alloc->used + padding + new_size;
     }
 
-    end = (uintptr_t)alloc->buf + alloc->used;
-
-    // The pointers might get invalidated after reallocating the buffer,
-    // so we need to store their position relative to the beginning of
-    // the buffer so that we can then recover their updated location.
-    src_offset = (uintptr_t)*ptr - (uintptr_t)alloc->buf;
-    dst_offset = alloc->used;
-
-    if ((uintptr_t)*ptr + prev_size == end)
-    {
-        // The block to reallocate is the last one in the buffer.
-
-        if (size <= prev_size)
-        {
-            // Shrink in-place.
-            alloc->used -= prev_size - size;
-            return W_SUCCESS;
-        }
-
-        if (W_UINT_IS_ADD_WRAPPING(SIZE_MAX, alloc->used, size - prev_size))
-        {
-            W_LOG_ERROR("the size requested is too large\n");
-            return W_ERROR_MAX_SIZE_EXCEEDED;
-        }
-
-        if (alloc->cap >= alloc->used + size - prev_size)
-        {
-            // Grow in-place.
-            alloc->used += size - prev_size;
-            return W_SUCCESS;
-        }
-
-        size -= prev_size;
-        end -= prev_size;
-        dst_offset -= prev_size;
-    }
-
-    // Compute the padding required to fulfill the requested alignment.
-    W_ASSERT(!WP_MEM_ALIGN_UP_IS_WRAPPING(end, alignment));
-    padding = (uintptr_t)WP_MEM_ALIGN_UP(end, alignment) - end;
-
-    dst_offset += padding;
-
-    status = wp_mem_linear_alloc_allocate(alloc, size + padding);
+    status = wp_mem_linear_alloc_ensure_has_enough_space(alloc, used);
     if (status != W_SUCCESS)
     {
         return status;
     }
 
-    if (src_offset != dst_offset)
+    old_ptr = (void *)((uintptr_t)alloc->mem.addr + ptr_offset);
+    new_ptr = (void *)((uintptr_t)alloc->mem.addr + used - new_size);
+
+    if (!is_last_block)
     {
-        W_ASSERT(
-            !W_ARE_REGIONS_OVERLAPPING(
-                (void *)((uintptr_t)alloc->buf + dst_offset),
-                wp_mem_min(prev_size, size),
-                (void *)((uintptr_t)alloc->buf + src_offset),
-                wp_mem_min(prev_size, size)
-            )
-        );
-        memcpy(
-            (void *)((uintptr_t)alloc->buf + dst_offset),
-            (void *)((uintptr_t)alloc->buf + src_offset),
-            wp_mem_min(prev_size, size)
-        );
+        w_copy_mem(new_ptr, old_ptr, old_size);
     }
 
-    *ptr = (void *)((uintptr_t)alloc->buf + dst_offset);
+#if W_TRACING(ENABLED)
+    if (*ptr != new_ptr)
+    {
+        struct wp_mem_linear_alloc_trace_data *trace_data;
 
-    W_ASSERT(status == W_SUCCESS);
-    return status;
+        W_TRACER_FIND_DATA(wp_mem_linear_alloc_tracer, &trace_data, inst);
+        W_TRACE_POOL_REMOVE_DATA(trace_data->ptr_pool, *ptr);
+        W_TRACE_POOL_INSERT_DATA(
+            trace_data->ptr_pool,
+            new_ptr,
+            (
+                &(struct wp_mem_linear_alloc_ptr_data) {
+                    .size = new_size,
+                    .alignment = alignment,
+                }
+            )
+        );
+    }
+#endif
+
+    *ptr = new_ptr;
+    alloc->used = used;
+    return W_SUCCESS;
 }
 
 void
