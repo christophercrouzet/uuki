@@ -1,6 +1,7 @@
 #ifndef UUKI_BASE_TRACE_H
 #define UUKI_BASE_TRACE_H
 
+#include <uuki/base/debug.h>
 #include <uuki/base/macros.h>
 #include <uuki/base/platform.h>
 #include <uuki/base/status.h>
@@ -8,7 +9,10 @@
 #define W_TRACING(x)                                                           \
     WP_TRACE_TRACING_##x()
 
-#if defined(W_ENABLE_TRACING) && !defined(W_DISABLE_TRACING)
+#if (                                                                          \
+    (defined(W_ENABLE_TRACING) || W_DEBUGGING(ENABLED))                        \
+    && !defined(W_DISABLE_TRACING)                                             \
+)
     #define WP_TRACE_TRACING_ENABLED()  1
     #define WP_TRACE_TRACING_DISABLED() 0
 #else
