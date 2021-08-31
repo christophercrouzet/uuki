@@ -1,14 +1,14 @@
 #include <rexo.h>
 
-#include <uuki/base/io.h>
+#include <uuki/base/fs.h>
 
 #include <stddef.h>
 
 #define SIZE 13
 #define BUF "hello, world!\0"
-#define FILE_PATH "tests/base/data/io.txt"
+#define FILE_PATH "tests/base/data/fs.txt"
 
-RX_TEST_CASE(io, main)
+RX_TEST_CASE(fs, main)
 {
     struct w_file file;
     size_t size;
@@ -17,9 +17,9 @@ RX_TEST_CASE(io, main)
     buf[SIZE] = '\0';
 
     RX_INT_REQUIRE_EQUAL(w_file_open(&file, FILE_PATH), 0);
-    RX_INT_REQUIRE_EQUAL(w_file_read(&size, NULL, &file), 0);
+    RX_INT_REQUIRE_EQUAL(w_file_read(&file, NULL, &size), 0);
     RX_UINT_REQUIRE_EQUAL(size, SIZE);
-    RX_INT_REQUIRE_EQUAL(w_file_read(&size, buf, &file), 0);
+    RX_INT_REQUIRE_EQUAL(w_file_read(&file, buf, &size), 0);
     RX_STR_REQUIRE_EQUAL(buf, BUF);
     RX_INT_REQUIRE_EQUAL(w_file_close(&file), 0);
 }

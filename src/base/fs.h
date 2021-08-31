@@ -1,5 +1,5 @@
-#ifndef UUKI_BASE_IO_H
-#define UUKI_BASE_IO_H
+#ifndef UUKI_BASE_FS_H
+#define UUKI_BASE_FS_H
 
 #include <uuki/base/status.h>
 
@@ -18,9 +18,9 @@ w_file_open(
 
 enum w_status
 w_file_read(
-    size_t *size,
+    struct w_file *file,
     void *buf,
-    struct w_file *file
+    size_t *size
 );
 
 enum w_status
@@ -28,4 +28,4 @@ w_file_close(
     struct w_file *file
 );
 
-#endif // UUKI_BASE_IO_H
+#endif // UUKI_BASE_FS_H

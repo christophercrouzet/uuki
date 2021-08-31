@@ -106,7 +106,7 @@ w_add_library(
     FILES
         src/base/array.c
         src/base/assert.c
-        src/base/io.c
+        src/base/fs.c
         src/base/log.c
         src/base/math.c
         src/base/mem.c
@@ -249,8 +249,8 @@ w_add_test(
 )
 
 w_add_test(
-    NAME base-io
-    FILES tests/base/io.c
+    NAME base-fs
+    FILES tests/base/fs.c
     DEPENDS base
 )
 

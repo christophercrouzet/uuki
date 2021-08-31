@@ -1,5 +1,5 @@
 #include <uuki/base/assert.h>
-#include <uuki/base/io.h>
+#include <uuki/base/fs.h>
 #include <uuki/base/log.h>
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
@@ -27,7 +27,7 @@ w_run(
         goto exit;
     }
 
-    status = w_file_read(&size, NULL, &file);
+    status = w_file_read(&file, NULL, &size);
     if (status != W_SUCCESS)
     {
         goto exit;
@@ -39,7 +39,7 @@ w_run(
         goto exit;
     }
 
-    status = w_file_read(&size, buf, &file);
+    status = w_file_read(&file, buf, &size);
     if (status != W_SUCCESS)
     {
         goto buf_cleanup;

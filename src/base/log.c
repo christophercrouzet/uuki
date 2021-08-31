@@ -317,6 +317,11 @@ wp_log_system_error(
     W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
     W_ASSERT(file != NULL);
 
+    if (error == 0)
+    {
+        return W_SUCCESS;
+    }
+
     if (w_format_system_error(msg, W_GET_ARRAY_LEN(msg), error) != 0)
     {
         return W_ERROR;
