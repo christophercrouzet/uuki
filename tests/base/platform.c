@@ -8,6 +8,13 @@ RX_TEST_CASE(platform, printing)
 {
     int status;
 
+    if (!w_is_console(W_STD_OUT))
+    {
+        // Skip printing to the console if we don't have a valid one, which
+        // might be the case when running this test through ctest.
+        return;
+    }
+
     status = w_print(
         W_STD_OUT,
         "\x1b[1;34mhéllo\x1b[0m … \x1b[1;31mwörld\x1b[0m!\n"
