@@ -25,27 +25,30 @@ wp_array_max(
 static void
 wp_array_grow_cap(
     size_t *cap,
-    size_t req,
+    size_t requested,
     size_t element_size
 )
 {
-    req = wp_array_max(*cap * 2, req);
+    requested = wp_array_max(*cap * 2, requested);
 
-    W_ASSERT(!W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, req));
+    W_ASSERT(!W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, requested));
     W_ASSERT(
-        !W_UINT_IS_MUL_WRAPPING(SIZE_MAX, W_ROUND_UP_POW2(req), element_size));
+        !W_UINT_IS_MUL_WRAPPING(
+            SIZE_MAX, W_ROUND_UP_POW2(requested), element_size
+        )
+    );
 
-    *cap = w_size_round_up_pow2(req);
+    *cap = w_size_round_up_pow2(requested);
 }
 
 static enum w_status
 wp_array_realloc(
+    void **buf,
+    size_t *cap,
     struct w_alloc *alloc,
     size_t element_size,
     size_t alignment,
-    void **buf,
-    size_t *cap,
-    size_t req
+    size_t requested
 )
 {
     enum w_status status;
@@ -54,11 +57,11 @@ wp_array_realloc(
     W_ASSERT(alloc != NULL);
     W_ASSERT(buf != NULL);
     W_ASSERT(cap != NULL);
-    W_ASSERT(req <= WP_ARRAY_GET_MAX_CAP(element_size));
-    W_ASSERT(*buf == NULL || req > *cap);
+    W_ASSERT(requested <= WP_ARRAY_GET_MAX_CAP(element_size));
+    W_ASSERT(*buf == NULL || requested > *cap);
 
     new_cap = *cap;
-    wp_array_grow_cap(&new_cap, req, element_size);
+    wp_array_grow_cap(&new_cap, requested, element_size);
     W_ASSERT(new_cap > *cap);
 
     status = W_REALLOCATE_ALIGNED(
@@ -82,12 +85,12 @@ wp_array_realloc(
 
 enum w_status
 wp_array_create(
-    struct w_alloc *alloc,
-    size_t element_size,
-    size_t alignment,
     void **array_buf,
     size_t *array_cap,
     size_t *array_count,
+    struct w_alloc *alloc,
+    size_t element_size,
+    size_t alignment,
     size_t cap
 )
 {
@@ -95,10 +98,10 @@ wp_array_create(
     void *buf;
     size_t new_cap;
 
-    W_ASSERT(alloc != NULL);
     W_ASSERT(array_buf != NULL);
     W_ASSERT(array_cap != NULL);
     W_ASSERT(array_count != NULL);
+    W_ASSERT(alloc != NULL);
 
     if (cap > WP_ARRAY_GET_MAX_CAP(element_size))
     {
@@ -109,7 +112,7 @@ wp_array_create(
     buf = NULL;
     new_cap = 0;
     status = wp_array_realloc(
-        alloc, element_size, alignment, &buf, &new_cap, cap);
+        &buf, &new_cap, alloc, element_size, alignment, cap);
     if (status != W_SUCCESS)
     {
         W_LOG_DEBUG("failed to create the array\n");
@@ -126,15 +129,15 @@ wp_array_create(
 
 void
 wp_array_destroy(
+    void *array_buf,
+    size_t array_cap,
     struct w_alloc *alloc,
     size_t element_size,
-    size_t alignment,
-    void *array_buf,
-    size_t array_cap
+    size_t alignment
 )
 {
-    W_ASSERT(alloc != NULL);
     W_ASSERT(array_buf != NULL);
+    W_ASSERT(alloc != NULL);
 
     W_FREE_ALIGNED(
         alloc,
@@ -146,13 +149,13 @@ wp_array_destroy(
 
 enum w_status
 wp_array_extend(
+    void **array_buf,
+    size_t *array_cap,
+    size_t *array_count,
     struct w_alloc *alloc,
     size_t element_size,
     size_t alignment,
     void **slice,
-    void **array_buf,
-    size_t *array_cap,
-    size_t *array_count,
     size_t count
 )
 {
@@ -160,12 +163,12 @@ wp_array_extend(
     size_t cap;
     void *buf;
 
-    W_ASSERT(alloc != NULL);
-    W_ASSERT(slice != NULL);
     W_ASSERT(array_buf != NULL);
+    W_ASSERT(*array_buf != NULL);
     W_ASSERT(array_cap != NULL);
     W_ASSERT(array_count != NULL);
-    W_ASSERT(*array_buf != NULL);
+    W_ASSERT(alloc != NULL);
+    W_ASSERT(slice != NULL);
 
     status = W_SUCCESS;
 
@@ -185,7 +188,7 @@ wp_array_extend(
     buf = *array_buf;
     cap = *array_cap;
     status = wp_array_realloc(
-        alloc, element_size, alignment, &buf, &cap, count);
+        &buf, &cap, alloc, element_size, alignment, count);
     if (status != W_SUCCESS)
     {
         W_LOG_DEBUG("failed to extend the array\n");

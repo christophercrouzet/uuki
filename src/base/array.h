@@ -19,64 +19,64 @@
                                                                                \
     static enum w_status                                                       \
     name##_create(                                                             \
-        struct w_alloc *alloc,                                                 \
         struct name *array,                                                    \
+        struct w_alloc *alloc,                                                 \
         size_t cap                                                             \
     )                                                                          \
     {                                                                          \
-        W_ASSERT(alloc != NULL);                                               \
         W_ASSERT(array != NULL);                                               \
+        W_ASSERT(alloc != NULL);                                               \
                                                                                \
         return wp_array_create(                                                \
-            alloc,                                                             \
-            sizeof(type),                                                      \
-            name##_alignment,                                                  \
             (void **)&array->buf,                                              \
             &array->cap,                                                       \
             &array->count,                                                     \
+            alloc,                                                             \
+            sizeof(type),                                                      \
+            name##_alignment,                                                  \
             cap                                                                \
         );                                                                     \
     }                                                                          \
                                                                                \
     static void                                                                \
     name##_destroy(                                                            \
-        struct w_alloc *alloc,                                                 \
-        struct name *array                                                     \
+        struct name *array,                                                    \
+        struct w_alloc *alloc                                                  \
     )                                                                          \
     {                                                                          \
-        W_ASSERT(alloc != NULL);                                               \
         W_ASSERT(array != NULL);                                               \
+        W_ASSERT(alloc != NULL);                                               \
                                                                                \
         wp_array_destroy(                                                      \
+            (void *)array->buf,                                                \
+            array->cap,                                                        \
             alloc,                                                             \
             sizeof(type),                                                      \
-            name##_alignment,                                                  \
-            (void *)array->buf,                                                \
-            array->cap                                                         \
+            name##_alignment                                                   \
         );                                                                     \
     }                                                                          \
                                                                                \
     static enum w_status                                                       \
     name##_extend(                                                             \
+        struct name *array,                                                    \
         struct w_alloc *alloc,                                                 \
         type **slice,                                                          \
-        struct name *array,                                                    \
         size_t count                                                           \
     )                                                                          \
     {                                                                          \
-        W_ASSERT(alloc != NULL);                                               \
-        W_ASSERT(slice != NULL);                                               \
         W_ASSERT(array != NULL);                                               \
         W_ASSERT(array->buf != NULL);                                          \
+        W_ASSERT(alloc != NULL);                                               \
+        W_ASSERT(slice != NULL);                                               \
                                                                                \
         return wp_array_extend(                                                \
+            (void **)&array->buf,                                              \
+            &array->cap,                                                       \
+            &array->count,                                                     \
             alloc,                                                             \
             sizeof(type),                                                      \
             name##_alignment,                                                  \
             (void **)slice,                                                    \
-            (void **)&array->buf,                                              \
-            &array->cap,                                                       \
-            &array->count,                                                     \
             count                                                              \
         );                                                                     \
     }                                                                          \

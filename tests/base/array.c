@@ -30,7 +30,7 @@ RX_TEST_CASE(array, main)
     w_linear_alloc_get_universal_alloc(&alloc, &linear_alloc);
 
     // Creation.
-    status = wp_data_array_create(&alloc, &array, 4);
+    status = wp_data_array_create(&array, &alloc, 4);
 
     RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
     RX_REQUIRE(array.buf != NULL);
@@ -38,7 +38,7 @@ RX_TEST_CASE(array, main)
     RX_UINT_REQUIRE_EQUAL(array.cap, 4);
 
     // Extension without reallocation.
-    status = wp_data_array_extend(&alloc, &slice, &array, 3);
+    status = wp_data_array_extend(&array, &alloc, &slice, 3);
     for (i = 0; i < 3; ++i)
     {
         slice[i] = (struct data) {
@@ -60,7 +60,7 @@ RX_TEST_CASE(array, main)
         memcmp(&array.buf[2], &(struct data){2, 4}, sizeof(struct data)), 0);
 
     // Extension with reallocation.
-    status = wp_data_array_extend(&alloc, &slice, &array, 2);
+    status = wp_data_array_extend(&array, &alloc, &slice, 2);
     for (i = 0; i < 2; ++i)
     {
         slice[i] = (struct data) {
@@ -85,7 +85,7 @@ RX_TEST_CASE(array, main)
         memcmp(&array.buf[4], &(struct data){1, 64}, sizeof(struct data)), 0);
 
     // Destruction.
-    wp_data_array_destroy(&alloc, &array);
+    wp_data_array_destroy(&array, &alloc);
 }
 
 int
