@@ -13,6 +13,9 @@
 #define WP_ARRAY_GET_MAX_CAP(element_size)                                     \
     (SIZE_MAX / (element_size))
 
+// Helpers
+// ---------------------------------------------------------------- //   O-(''Q)
+
 static size_t
 wp_array_max(
     size_t a,
@@ -23,13 +26,13 @@ wp_array_max(
 }
 
 static void
-wp_array_grow_cap(
-    size_t *cap,
+wp_array_grow_capacity(
+    size_t *capacity,
     size_t requested,
     size_t element_size
 )
 {
-    requested = wp_array_max(*cap * 2, requested);
+    requested = wp_array_max(*capacity * 2, requested);
 
     W_ASSERT(!W_IS_ROUND_UP_POW2_WRAPPING(SIZE_MAX, requested));
     W_ASSERT(
@@ -38,37 +41,37 @@ wp_array_grow_cap(
         )
     );
 
-    *cap = w_size_round_up_pow2(requested);
+    *capacity = w_size_round_up_pow2(requested);
 }
 
 static enum w_status
 wp_array_realloc(
     void **buf,
-    size_t *cap,
+    size_t *capacity,
     struct w_alloc *alloc,
-    size_t element_size,
     size_t alignment,
+    size_t element_size,
     size_t requested
 )
 {
     enum w_status status;
-    size_t new_cap;
+    size_t new_capacity;
 
-    W_ASSERT(alloc != NULL);
     W_ASSERT(buf != NULL);
-    W_ASSERT(cap != NULL);
+    W_ASSERT(capacity != NULL);
+    W_ASSERT(alloc != NULL);
     W_ASSERT(requested <= WP_ARRAY_GET_MAX_CAP(element_size));
-    W_ASSERT(*buf == NULL || requested > *cap);
+    W_ASSERT(*buf == NULL || requested > *capacity);
 
-    new_cap = *cap;
-    wp_array_grow_cap(&new_cap, requested, element_size);
-    W_ASSERT(new_cap > *cap);
+    new_capacity = *capacity;
+    wp_array_grow_capacity(&new_capacity, requested, element_size);
+    W_ASSERT(new_capacity > *capacity);
 
     status = W_REALLOCATE_ALIGNED(
         alloc,
         buf,
-        element_size * (*cap),
-        element_size * new_cap,
+        element_size * (*capacity),
+        element_size * new_capacity,
         alignment
     );
     if (status != W_SUCCESS)
@@ -77,42 +80,45 @@ wp_array_realloc(
         return status;
     }
 
-    *cap = new_cap;
+    *capacity = new_capacity;
 
     W_ASSERT(status == W_SUCCESS);
     return status;
 }
 
+// Private API
+// ---------------------------------------------------------------- //   O-(''Q)
+
 enum w_status
 wp_array_create(
     void **array_buf,
-    size_t *array_cap,
-    size_t *array_count,
+    size_t *array_capacity,
+    size_t *array_len,
     struct w_alloc *alloc,
-    size_t element_size,
     size_t alignment,
-    size_t cap
+    size_t element_size,
+    size_t capacity
 )
 {
     enum w_status status;
     void *buf;
-    size_t new_cap;
+    size_t new_capacity;
 
     W_ASSERT(array_buf != NULL);
-    W_ASSERT(array_cap != NULL);
-    W_ASSERT(array_count != NULL);
+    W_ASSERT(array_capacity != NULL);
+    W_ASSERT(array_len != NULL);
     W_ASSERT(alloc != NULL);
 
-    if (cap > WP_ARRAY_GET_MAX_CAP(element_size))
+    if (capacity > WP_ARRAY_GET_MAX_CAP(element_size))
     {
         W_LOG_ERROR("the requested capacity is too large\n");
         return W_ERROR_MAX_SIZE_EXCEEDED;
     }
 
     buf = NULL;
-    new_cap = 0;
+    new_capacity = 0;
     status = wp_array_realloc(
-        &buf, &new_cap, alloc, element_size, alignment, cap);
+        &buf, &new_capacity, alloc, alignment, element_size, capacity);
     if (status != W_SUCCESS)
     {
         W_LOG_DEBUG("failed to create the array\n");
@@ -120,8 +126,8 @@ wp_array_create(
     }
 
     *array_buf = buf;
-    *array_cap = new_cap;
-    *array_count = 0;
+    *array_capacity = new_capacity;
+    *array_len = 0;
 
     W_ASSERT(status == W_SUCCESS);
     return status;
@@ -130,10 +136,10 @@ wp_array_create(
 void
 wp_array_destroy(
     void *array_buf,
-    size_t array_cap,
+    size_t array_capacity,
     struct w_alloc *alloc,
-    size_t element_size,
-    size_t alignment
+    size_t alignment,
+    size_t element_size
 )
 {
     W_ASSERT(array_buf != NULL);
@@ -142,7 +148,7 @@ wp_array_destroy(
     W_FREE_ALIGNED(
         alloc,
         array_buf,
-        element_size * array_cap,
+        element_size * array_capacity,
         alignment
     );
 }
@@ -150,45 +156,45 @@ wp_array_destroy(
 enum w_status
 wp_array_extend(
     void **array_buf,
-    size_t *array_cap,
-    size_t *array_count,
+    size_t *array_capacity,
+    size_t *array_len,
     struct w_alloc *alloc,
-    size_t element_size,
-    size_t alignment,
     void **slice,
-    size_t count
+    size_t alignment,
+    size_t element_size,
+    size_t len
 )
 {
     enum w_status status;
-    size_t cap;
+    size_t capacity;
     void *buf;
 
     W_ASSERT(array_buf != NULL);
     W_ASSERT(*array_buf != NULL);
-    W_ASSERT(array_cap != NULL);
-    W_ASSERT(array_count != NULL);
+    W_ASSERT(array_capacity != NULL);
+    W_ASSERT(array_len != NULL);
     W_ASSERT(alloc != NULL);
     W_ASSERT(slice != NULL);
 
     status = W_SUCCESS;
 
-    if (count > WP_ARRAY_GET_MAX_CAP(element_size)
-        || *array_count > WP_ARRAY_GET_MAX_CAP(element_size) - count)
+    if (len > WP_ARRAY_GET_MAX_CAP(element_size)
+        || *array_len > WP_ARRAY_GET_MAX_CAP(element_size) - len)
     {
         W_LOG_ERROR("the requested capacity is too large\n");
         return W_ERROR_MAX_SIZE_EXCEEDED;
     }
 
-    count += *array_count;
-    if (*array_cap >= count)
+    len += *array_len;
+    if (*array_capacity >= len)
     {
         goto exit;
     }
 
     buf = *array_buf;
-    cap = *array_cap;
+    capacity = *array_capacity;
     status = wp_array_realloc(
-        &buf, &cap, alloc, element_size, alignment, count);
+        &buf, &capacity, alloc, alignment, element_size, len);
     if (status != W_SUCCESS)
     {
         W_LOG_DEBUG("failed to extend the array\n");
@@ -196,11 +202,11 @@ wp_array_extend(
     }
 
     *array_buf = buf;
-    *array_cap = cap;
+    *array_capacity = capacity;
 
 exit:
-    *slice = (void*)((uintptr_t)*array_buf + element_size * (*array_count));
-    *array_count = count;
+    *slice = (void*)((uintptr_t)*array_buf + element_size * (*array_len));
+    *array_len = len;
 
     W_ASSERT(status == W_SUCCESS);
     return status;

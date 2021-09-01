@@ -23,10 +23,10 @@
 // Pool Handling
 // ---------------------------------------------------------------- //   O-(''Q)
 
-#define W_TRACE_POOL_DECLARE(name, data_type, pool_cap)                        \
+#define W_TRACE_POOL_DECLARE(name, type, pool_capacity)                        \
     struct name {                                                              \
-        struct wp_trace_idx idx_pool[pool_cap];                                \
-        data_type data_pool[pool_cap];                                         \
+        struct wp_trace_idx idx_pool[pool_capacity];                           \
+        type data_pool[pool_capacity];                                         \
     }
 
 #define W_TRACE_POOL_INSERT_DATA(name, key, data)                              \
@@ -72,8 +72,8 @@
 // Tracer
 // ---------------------------------------------------------------- //   O-(''Q)
 
-#define W_TRACER_INTIALIZE(name, data_type, pool_cap)                          \
-    W_TRACE_POOL_DECLARE(name, data_type, pool_cap);                           \
+#define W_TRACER_INTIALIZE(name, type, pool_capacity)                          \
+    W_TRACE_POOL_DECLARE(name, type, pool_capacity);                           \
                                                                                \
     static struct name                                                         \
     name##_inst = { 0 };                                                       \

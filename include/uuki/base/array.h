@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
-#define W_ARRAY_MAKE(name, type)                                               \
+#define W_ARRAY_DECLARE(name, type)                                            \
     struct name {                                                              \
         type *buf;                                                             \
-        size_t cap;                                                            \
-        size_t count;                                                          \
+        size_t capacity;                                                       \
+        size_t len;                                                            \
     };                                                                         \
                                                                                \
     static const size_t                                                        \
@@ -21,7 +21,7 @@
     name##_create(                                                             \
         struct name *array,                                                    \
         struct w_alloc *alloc,                                                 \
-        size_t cap                                                             \
+        size_t capacity                                                        \
     )                                                                          \
     {                                                                          \
         W_ASSERT(array != NULL);                                               \
@@ -29,12 +29,12 @@
                                                                                \
         return wp_array_create(                                                \
             (void **)&array->buf,                                              \
-            &array->cap,                                                       \
-            &array->count,                                                     \
+            &array->capacity,                                                  \
+            &array->len,                                                       \
             alloc,                                                             \
-            sizeof(type),                                                      \
             name##_alignment,                                                  \
-            cap                                                                \
+            sizeof(type),                                                      \
+            capacity                                                           \
         );                                                                     \
     }                                                                          \
                                                                                \
@@ -49,10 +49,10 @@
                                                                                \
         wp_array_destroy(                                                      \
             (void *)array->buf,                                                \
-            array->cap,                                                        \
+            array->capacity,                                                   \
             alloc,                                                             \
-            sizeof(type),                                                      \
-            name##_alignment                                                   \
+            name##_alignment,                                                  \
+            sizeof(type)                                                       \
         );                                                                     \
     }                                                                          \
                                                                                \
@@ -61,7 +61,7 @@
         struct name *array,                                                    \
         struct w_alloc *alloc,                                                 \
         type **slice,                                                          \
-        size_t count                                                           \
+        size_t len                                                             \
     )                                                                          \
     {                                                                          \
         W_ASSERT(array != NULL);                                               \
@@ -71,13 +71,13 @@
                                                                                \
         return wp_array_extend(                                                \
             (void **)&array->buf,                                              \
-            &array->cap,                                                       \
-            &array->count,                                                     \
+            &array->capacity,                                                  \
+            &array->len,                                                       \
             alloc,                                                             \
-            sizeof(type),                                                      \
-            name##_alignment,                                                  \
             (void **)slice,                                                    \
-            count                                                              \
+            name##_alignment,                                                  \
+            sizeof(type),                                                      \
+            len                                                                \
         );                                                                     \
     }                                                                          \
                                                                                \

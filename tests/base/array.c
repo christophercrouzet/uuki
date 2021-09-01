@@ -15,7 +15,7 @@ W_PACKED_STRUCT(data) {
     int32_t b;
 };
 
-W_ARRAY_MAKE(wp_data_array, struct data);
+W_ARRAY_DECLARE(wp_data_array, struct data);
 
 RX_TEST_CASE(array, main)
 {
@@ -34,8 +34,8 @@ RX_TEST_CASE(array, main)
 
     RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
     RX_REQUIRE(array.buf != NULL);
-    RX_UINT_REQUIRE_EQUAL(array.count, 0);
-    RX_UINT_REQUIRE_EQUAL(array.cap, 4);
+    RX_UINT_REQUIRE_EQUAL(array.len, 0);
+    RX_UINT_REQUIRE_EQUAL(array.capacity, 4);
 
     // Extension without reallocation.
     status = wp_data_array_extend(&array, &alloc, &slice, 3);
@@ -49,8 +49,8 @@ RX_TEST_CASE(array, main)
 
     RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
     RX_REQUIRE(array.buf != NULL);
-    RX_UINT_REQUIRE_EQUAL(array.count, 3);
-    RX_UINT_REQUIRE_EQUAL(array.cap, 4);
+    RX_UINT_REQUIRE_EQUAL(array.len, 3);
+    RX_UINT_REQUIRE_EQUAL(array.capacity, 4);
 
     RX_INT_REQUIRE_EQUAL(
         memcmp(&array.buf[0], &(struct data){0, 0}, sizeof(struct data)), 0);
@@ -71,8 +71,8 @@ RX_TEST_CASE(array, main)
 
     RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
     RX_REQUIRE(array.buf != NULL);
-    RX_UINT_REQUIRE_EQUAL(array.count, 5);
-    RX_UINT_REQUIRE_EQUAL(array.cap, 8);
+    RX_UINT_REQUIRE_EQUAL(array.len, 5);
+    RX_UINT_REQUIRE_EQUAL(array.capacity, 8);
     RX_INT_REQUIRE_EQUAL(
         memcmp(&array.buf[0], &(struct data){0, 0}, sizeof(struct data)), 0);
     RX_INT_REQUIRE_EQUAL(

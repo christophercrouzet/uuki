@@ -14,7 +14,7 @@ void
 wp_trace_pool_insert_data(
     struct wp_trace_idx *idx_pool,
     void *data_pool,
-    size_t pool_cap,
+    size_t pool_capacity,
     size_t data_size,
     const void *key,
     const void *data
@@ -23,7 +23,7 @@ wp_trace_pool_insert_data(
 void
 wp_trace_pool_remove_data(
     struct wp_trace_idx *idx_pool,
-    size_t pool_cap,
+    size_t pool_capacity,
     const void *key
 );
 
@@ -32,7 +32,7 @@ wp_trace_pool_find_data(
     void **data,
     const struct wp_trace_idx *idx_pool,
     void *data_pool,
-    size_t pool_cap,
+    size_t pool_capacity,
     size_t data_size,
     const void *key
 );
