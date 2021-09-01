@@ -1,4 +1,4 @@
-#include "vmem.h"
+#include <uuki/base/vmem.h>
 
 #include <uuki/base/assert.h>
 #include <uuki/base/platform.h>

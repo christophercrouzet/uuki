@@ -1,4 +1,4 @@
-#include "array.h"
+#include <uuki/base/array.h>
 
 #include <uuki/base/assert.h>
 #include <uuki/base/log.h>

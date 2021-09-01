@@ -1,4 +1,4 @@
-#include "math.h"
+#include <uuki/base/math.h>
 
 #include <uuki/base/assert.h>
 #include <uuki/base/macros.h>
