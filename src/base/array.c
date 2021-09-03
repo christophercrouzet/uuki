@@ -8,7 +8,6 @@
 #include <uuki/base/status.h>
 
 #include <stddef.h>
-#include <stdint.h>
 
 #define WP_ARRAY_GET_MAX_CAP(element_size)                                     \
     (SIZE_MAX / (element_size))
@@ -154,58 +153,52 @@ wp_array_destroy(
 }
 
 enum w_status
-wp_array_extend(
+wp_array_resize(
     void **array_buf,
     size_t *array_capacity,
     size_t *array_len,
     struct w_alloc *alloc,
-    void **slice,
     size_t alignment,
     size_t element_size,
     size_t len
 )
 {
     enum w_status status;
-    size_t capacity;
     void *buf;
+    size_t capacity;
 
     W_ASSERT(array_buf != NULL);
     W_ASSERT(*array_buf != NULL);
     W_ASSERT(array_capacity != NULL);
     W_ASSERT(array_len != NULL);
     W_ASSERT(alloc != NULL);
-    W_ASSERT(slice != NULL);
 
-    status = W_SUCCESS;
+    if (len <= *array_capacity)
+    {
+        *array_len = len;
+        return W_SUCCESS;
+    }
 
     if (len > WP_ARRAY_GET_MAX_CAP(element_size)
         || *array_len > WP_ARRAY_GET_MAX_CAP(element_size) - len)
     {
-        W_LOG_ERROR("the requested capacity is too large\n");
+        W_LOG_ERROR("the requested length is too large\n");
         return W_ERROR_MAX_SIZE_EXCEEDED;
-    }
-
-    len += *array_len;
-    if (*array_capacity >= len)
-    {
-        goto exit;
     }
 
     buf = *array_buf;
     capacity = *array_capacity;
     status = wp_array_realloc(
-        &buf, &capacity, alloc, alignment, element_size, len);
+        &buf, &capacity, alloc, alignment, element_size, len
+    );
     if (status != W_SUCCESS)
     {
-        W_LOG_DEBUG("failed to extend the array\n");
+        W_LOG_DEBUG("failed to resize the array\n");
         return status;
     }
 
     *array_buf = buf;
     *array_capacity = capacity;
-
-exit:
-    *slice = (void*)((uintptr_t)*array_buf + element_size * (*array_len));
     *array_len = len;
 
     W_ASSERT(status == W_SUCCESS);

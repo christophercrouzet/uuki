@@ -2,10 +2,12 @@
 #define UUKI_BASE_ARRAY_H
 
 #include <uuki/base/assert.h>
+#include <uuki/base/macros.h>
 #include <uuki/base/mem.h>
 #include <uuki/base/status.h>
 
 #include <stddef.h>
+#include <stdint.h>
 
 #define W_ARRAY_DECLARE(name, type)                                            \
     struct name {                                                              \
@@ -64,21 +66,34 @@
         size_t len                                                             \
     )                                                                          \
     {                                                                          \
+        enum w_status status;                                                  \
+                                                                               \
         W_ASSERT(array != NULL);                                               \
         W_ASSERT(array->buf != NULL);                                          \
         W_ASSERT(alloc != NULL);                                               \
-        W_ASSERT(slice != NULL);                                               \
+        W_ASSERT(!W_UINT_IS_ADD_WRAPPING(SIZE_MAX, array->len, len));          \
                                                                                \
-        return wp_array_extend(                                                \
+        status = wp_array_resize(                                              \
             (void **)&array->buf,                                              \
             &array->capacity,                                                  \
             &array->len,                                                       \
             alloc,                                                             \
-            (void **)slice,                                                    \
             name##_alignment,                                                  \
             sizeof(type),                                                      \
-            len                                                                \
+            array->len + len                                                   \
         );                                                                     \
+        if (status != W_SUCCESS)                                               \
+        {                                                                      \
+            return status;                                                     \
+        }                                                                      \
+                                                                               \
+        if (slice != NULL)                                                     \
+        {                                                                      \
+            *slice = &array->buf[array->len - len];                            \
+        }                                                                      \
+                                                                               \
+        W_ASSERT(status == W_SUCCESS);                                         \
+        return status;                                                         \
     }                                                                          \
                                                                                \
     W_REQUIRE_SEMICOLON

@@ -28,12 +28,11 @@ wp_array_destroy(
 );
 
 enum w_status
-wp_array_extend(
+wp_array_resize(
     void **array_buf,
     size_t *array_capacity,
     size_t *array_len,
     struct w_alloc *alloc,
-    void **slice,
     size_t alignment,
     size_t element_size,
     size_t len
