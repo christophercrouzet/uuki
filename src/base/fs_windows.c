@@ -46,13 +46,12 @@ w_file_open(
     );
     if (handle == INVALID_HANDLE_VALUE)
     {
-        W_LOG_ERROR("failed to open the file ‘%s’\n", path);
+        W_LOG_ERROR("failed to open the file\n");
         W_LOG_SYSTEM_ERROR(W_LOG_LVL_DEBUG, GetLastError());
         return W_ERROR_FILE_OPEN_FAILED;
     }
 
     file->handle = handle;
-    file->path = path;
     return W_SUCCESS;
 }
 
@@ -67,7 +66,6 @@ w_file_read(
 
     W_ASSERT(file != NULL);
     W_ASSERT(file->handle != NULL);
-    W_ASSERT(file->path != NULL);
     W_ASSERT(size != NULL);
 
     if (buf == NULL)
@@ -91,7 +89,7 @@ w_file_read(
             )
             == 0)
         {
-            W_LOG_ERROR("failed to read the file ‘%s’\n", file->path);
+            W_LOG_ERROR("failed to read the file\n");
             W_LOG_SYSTEM_ERROR(W_LOG_LVL_DEBUG, GetLastError());
             return W_ERROR_FILE_READ_FAILED;
         }
@@ -109,11 +107,10 @@ w_file_close(
 {
     W_ASSERT(file != NULL);
     W_ASSERT(file->handle != NULL);
-    W_ASSERT(file->path != NULL);
 
     if (CloseHandle(file->handle) == 0)
     {
-        W_LOG_ERROR("failed to close the file ‘%s’\n", file->path);
+        W_LOG_ERROR("failed to close the file\n");
         W_LOG_SYSTEM_ERROR(W_LOG_LVL_DEBUG, GetLastError());
         return W_ERROR_FILE_CLOSE_FAILED;
     }

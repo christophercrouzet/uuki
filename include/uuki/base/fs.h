@@ -7,7 +7,6 @@
 
 struct w_file {
     void *handle;
-    const char *path;
 };
 
 enum w_status
