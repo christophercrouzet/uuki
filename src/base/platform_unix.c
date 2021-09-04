@@ -247,3 +247,16 @@ w_get_str_len(
 
     *len = strlen(str);
 }
+
+void
+w_copy_str(
+    char *dst,
+    size_t len,
+    const char *src
+)
+{
+    WP_PLATFORM_ASSERT(dst != NULL);
+    WP_PLATFORM_ASSERT(src != NULL);
+
+    strncpy(dst, src, len);
+}

@@ -601,3 +601,16 @@ w_get_str_len(
 
     StringCchLengthA(str, STRSAFE_MAX_CCH, len);
 }
+
+void
+w_copy_str(
+    char *dst,
+    size_t len,
+    const char *src
+)
+{
+    WP_PLATFORM_ASSERT(dst != NULL);
+    WP_PLATFORM_ASSERT(src != NULL);
+
+    StringCchCopyA(dst, len, src);
+}
