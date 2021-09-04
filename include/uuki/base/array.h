@@ -59,6 +59,56 @@
     }                                                                          \
                                                                                \
     static enum w_status                                                       \
+    name##_push(                                                               \
+        struct name *array,                                                    \
+        struct w_alloc *alloc,                                                 \
+        type value                                                             \
+    )                                                                          \
+    {                                                                          \
+        enum w_status status;                                                  \
+                                                                               \
+        W_ASSERT(array != NULL);                                               \
+        W_ASSERT(array->buf != NULL);                                          \
+        W_ASSERT(alloc != NULL);                                               \
+                                                                               \
+        W_ASSERT(!W_UINT_IS_ADD_WRAPPING(SIZE_MAX, array->len, 1));            \
+                                                                               \
+        status = wp_array_resize(                                              \
+            (void **)&array->buf,                                              \
+            &array->capacity,                                                  \
+            &array->len,                                                       \
+            alloc,                                                             \
+            name##_alignment,                                                  \
+            sizeof(type),                                                      \
+            array->len + 1                                                     \
+        );                                                                     \
+        if (status != W_SUCCESS)                                               \
+        {                                                                      \
+            return status;                                                     \
+        }                                                                      \
+                                                                               \
+        array->buf[array->len - 1] = value;                                    \
+                                                                               \
+        W_ASSERT(status == W_SUCCESS);                                         \
+        return status;                                                         \
+    }                                                                          \
+                                                                               \
+    static enum w_status                                                       \
+    name##_pop(                                                                \
+        struct name *array,                                                    \
+        type *value                                                            \
+    )                                                                          \
+    {                                                                          \
+        W_ASSERT(array != NULL);                                               \
+        W_ASSERT(array->buf != NULL);                                          \
+        W_ASSERT(array->len > 0);                                              \
+                                                                               \
+        --array->len;                                                          \
+        *value = array->buf[array->len];                                       \
+        return W_SUCCESS;                                                      \
+    }                                                                          \
+                                                                               \
+    static enum w_status                                                       \
     name##_extend(                                                             \
         struct name *array,                                                    \
         struct w_alloc *alloc,                                                 \

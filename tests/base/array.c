@@ -25,6 +25,7 @@ RX_TEST_CASE(array, main)
     struct w_linear_alloc linear_alloc;
     struct wp_data_array array;
     struct data *slice;
+    struct data value;
 
     w_linear_alloc_create(&linear_alloc, 8);
     w_linear_alloc_get_universal_alloc(&alloc, &linear_alloc);
@@ -83,6 +84,28 @@ RX_TEST_CASE(array, main)
         memcmp(&array.buf[3], &(struct data){0, 27}, sizeof(struct data)), 0);
     RX_INT_REQUIRE_EQUAL(
         memcmp(&array.buf[4], &(struct data){1, 64}, sizeof(struct data)), 0);
+
+    // LIFO API.
+    status = wp_data_array_pop(&array, &value);
+    RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
+    RX_UINT_REQUIRE_EQUAL(array.len, 4);
+    RX_UINT_REQUIRE_EQUAL(array.capacity, 8);
+    RX_INT_REQUIRE_EQUAL(
+        memcmp(&value, &(struct data){1, 64}, sizeof(struct data)), 0);
+
+    status = wp_data_array_pop(&array, &value);
+    RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
+    RX_UINT_REQUIRE_EQUAL(array.len, 3);
+    RX_UINT_REQUIRE_EQUAL(array.capacity, 8);
+    RX_INT_REQUIRE_EQUAL(
+        memcmp(&value, &(struct data){0, 27}, sizeof(struct data)), 0);
+
+    status = wp_data_array_push(&array, &alloc, (struct data){1, 23});
+    RX_INT_REQUIRE_EQUAL(status, W_SUCCESS);
+    RX_UINT_REQUIRE_EQUAL(array.len, 4);
+    RX_UINT_REQUIRE_EQUAL(array.capacity, 8);
+    RX_INT_REQUIRE_EQUAL(
+        memcmp(&array.buf[3], &(struct data){1, 23}, sizeof(struct data)), 0);
 
     // Destruction.
     wp_data_array_destroy(&array, &alloc);
