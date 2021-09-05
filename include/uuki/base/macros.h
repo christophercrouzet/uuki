@@ -14,6 +14,15 @@
     typedef char                                                               \
     name[expr ? 1 : -1]
 
+// Enumerators
+// ---------------------------------------------------------------- //   O-(''Q)
+
+#define W_DEFINE_ENUM_MEMBER_VALUE(prefix, x)                                  \
+    prefix##_##x
+
+#define W_DEFINE_ENUM_MEMBER_LABEL(prefix, x)                                  \
+    #x
+
 // Math
 // ---------------------------------------------------------------- //   O-(''Q)
 
