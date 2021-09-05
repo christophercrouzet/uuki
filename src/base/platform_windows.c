@@ -33,11 +33,11 @@ wp_platform_copy_str(
 // ---------------------------------------------------------------- //   O-(''Q)
 
 enum wp_platform_break_state {
-    WP_BREAK_STATE_DEFAULT              = 0,
-    WP_BREAK_STATE_ESC                  = 1,
-    WP_BREAK_STATE_ESC_CSI_INITIAL      = 2,
-    WP_BREAK_STATE_ESC_CSI_INTERMEDIATE = 3,
-    WP_BREAK_STATE_ESC_CSI_FINAL        = 4,
+    WP_BREAK_STATE_DEFAULT,
+    WP_BREAK_STATE_ESC,
+    WP_BREAK_STATE_ESC_CSI_INITIAL,
+    WP_BREAK_STATE_ESC_CSI_INTERMEDIATE,
+    WP_BREAK_STATE_ESC_CSI_FINAL,
 };
 
 #define WP_PLATFORM_IS_UNICODE_CONTINUATION_BYTE(x)                            \

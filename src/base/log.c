@@ -36,9 +36,6 @@
 #define WP_LOG_LVL_STYLE_DEBUG                                                 \
     "\x1b[1;32m"
 
-#define WP_LOG_LVL_COUNT                                                       \
-    (WP_LOG_LVL_LAST - WP_LOG_LVL_FIRST + 1)
-
 #if W_DEBUGGING(ENABLED)
     #define WP_LOG_DEFAULT_LEVEL                                               \
         W_LOG_LVL_DEBUG
@@ -56,7 +53,7 @@ struct wp_log_logger {
 };
 
 static const char *
-wp_log_lvl_name[WP_LOG_LVL_COUNT] = {
+wp_log_lvl_name[WP_LOG_LVL_END] = {
     [W_LOG_LVL_NONE]    = "none",
     [W_LOG_LVL_FATAL]   = "fatal",
     [W_LOG_LVL_ERROR]   = "error",
@@ -66,7 +63,7 @@ wp_log_lvl_name[WP_LOG_LVL_COUNT] = {
 };
 
 static const char *
-wp_log_lvl_style_begin[2][WP_LOG_LVL_COUNT] = {
+wp_log_lvl_style_begin[2][WP_LOG_LVL_END] = {
     [0] = {
         [W_LOG_LVL_NONE]    = "",
         [W_LOG_LVL_FATAL]   = "",
@@ -139,7 +136,7 @@ wp_log_fmt_plain(
     char buf[1024];
     size_t len;
 
-    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
+    W_ASSERT(lvl >= 0 && lvl < WP_LOG_LVL_END);
     W_ASSERT(file != NULL);
     W_ASSERT(msg != NULL);
 
@@ -227,7 +224,7 @@ wp_log_va(
     uint16_t i;
     int has_registered_logger;
 
-    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
+    W_ASSERT(lvl >= 0 && lvl < WP_LOG_LVL_END);
     W_ASSERT(file != NULL);
     W_ASSERT(msg != NULL);
 
@@ -314,7 +311,7 @@ wp_log_system_error(
 {
     char msg[512];
 
-    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
+    W_ASSERT(lvl >= 0 && lvl < WP_LOG_LVL_END);
     W_ASSERT(file != NULL);
 
     if (error == 0)
@@ -345,8 +342,8 @@ w_logger_register(
     uint16_t i;
 
     W_ASSERT(logger_handle != NULL);
-    W_ASSERT(lvl >= WP_LOG_LVL_FIRST && lvl <= WP_LOG_LVL_LAST);
-    W_ASSERT(fmt >= WP_LOG_FMT_FIRST && fmt <= WP_LOG_FMT_LAST);
+    W_ASSERT(lvl >= 0 && lvl < WP_LOG_LVL_END);
+    W_ASSERT(fmt >= 0 && fmt < WP_LOG_FMT_END);
 
     if (w_mtx_lock(&wp_log_mtx) != 0)
     {

@@ -36,24 +36,22 @@
     while (0)
 
 enum w_log_lvl {
-    W_LOG_LVL_NONE    = 0,
-    W_LOG_LVL_FATAL   = 1,
-    W_LOG_LVL_ERROR   = 2,
-    W_LOG_LVL_WARNING = 3,
-    W_LOG_LVL_INFO    = 4,
-    W_LOG_LVL_DEBUG   = 5,
+    W_LOG_LVL_NONE,
+    W_LOG_LVL_FATAL,
+    W_LOG_LVL_ERROR,
+    W_LOG_LVL_WARNING,
+    W_LOG_LVL_INFO,
+    W_LOG_LVL_DEBUG,
     W_LOG_LVL_ALL     = W_LOG_LVL_DEBUG,
 
-    WP_LOG_LVL_FIRST  = W_LOG_LVL_NONE,
-    WP_LOG_LVL_LAST   = W_LOG_LVL_ALL,
+    WP_LOG_LVL_END,
 };
 
 enum w_log_fmt {
-    W_LOG_FMT_PLAIN          = 0,
-    W_LOG_FMT_PLAIN_STYLIZED = 1,
+    W_LOG_FMT_PLAIN,
+    W_LOG_FMT_PLAIN_STYLIZED,
 
-    WP_LOG_FMT_FIRST         = W_LOG_FMT_PLAIN,
-    WP_LOG_FMT_LAST          = W_LOG_FMT_PLAIN_STYLIZED,
+    WP_LOG_FMT_END,
 };
 
 struct w_logger {
