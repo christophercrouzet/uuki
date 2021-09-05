@@ -5,6 +5,12 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+typedef char
+wp_platform_invalid_ptr_size[W_PTR_SIZE == sizeof(void *) ? 1 : -1];
+
+typedef char
+wp_platform_invalid_size_t_size[W_SIZE_T_SIZE == sizeof(size_t) ? 1 : -1];
+
 #define WP_PLATFORM_CONTINUATION_CHARS                                         \
     "[…]\n"
 

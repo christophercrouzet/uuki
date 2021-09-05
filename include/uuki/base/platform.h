@@ -183,16 +183,10 @@
     #endif
 #endif
 
-typedef char
-wp_invalid_ptr_size[W_PTR_SIZE == sizeof(void *) ? 1 : -1];
-
 // Assume that the size of the ‘size_t’ and pointer types are the same.
 // Storing this size as a constant is useful in preprocessor conditions where
 // the ‘sizeof’ operator is not yet available.
 #define W_SIZE_T_SIZE W_PTR_SIZE
-
-typedef char
-wp_invalid_size_t_size[W_SIZE_T_SIZE == sizeof(size_t) ? 1 : -1];
 
 // Struct padding removal.
 #if W_COMPILER(GNUC_COMPLIANT)
