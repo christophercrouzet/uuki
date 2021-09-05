@@ -10,6 +10,10 @@
 #define W_GET_ARRAY_LEN(x)                                                     \
     (sizeof (x) / sizeof *(x))
 
+#define W_ASSERT_STATIC(expr, name)                                            \
+    typedef char                                                               \
+    name[expr ? 1 : -1]
+
 // Math
 // ---------------------------------------------------------------- //   O-(''Q)
 
