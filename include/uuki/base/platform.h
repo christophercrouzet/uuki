@@ -343,8 +343,16 @@ w_get_str_len(
 void
 w_copy_str(
     char *dst,
-    size_t len,
+    size_t dst_len,
     const char *src
+);
+
+void
+w_copy_str_bounded(
+    char *dst,
+    size_t dst_len,
+    const char *src,
+    size_t count
 );
 
 #endif // UUKI_BASE_PLATFORM_H
