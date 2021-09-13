@@ -1,6 +1,4 @@
 Uuki
 ====
 
-```
-I have no idea what I'm doing. ¯\_(ツ)_/¯
-```
+Yet another programming language for learning purposes.
