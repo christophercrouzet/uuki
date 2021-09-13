@@ -115,6 +115,13 @@ w_add_library(
         src/base/vmem.c
 )
 
+w_add_library(
+    lang
+    FILES
+        src/lang/token.c
+    DEPENDS base
+)
+
 add_custom_target(
     libraries
     DEPENDS ${W_LIBRARY_TARGETS}
@@ -288,6 +295,12 @@ w_add_test(
     NAME base-vmem
     FILES tests/base/vmem.c
     DEPENDS base
+)
+
+w_add_test(
+    NAME lang-token
+    FILES tests/lang/token.c
+    DEPENDS lang
 )
 
 add_custom_target(tests DEPENDS ${W_TEST_TARGETS})
